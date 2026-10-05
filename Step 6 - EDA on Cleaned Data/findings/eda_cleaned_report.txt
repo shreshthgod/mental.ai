@@ -1,0 +1,119 @@
+======================================================================
+PRIMARY_DATASET (7-class) -- final class distribution
+======================================================================
+rows: 51,055
+word length -> mean:114.5 median:63 p95:400
+  Normal                      16,031  ( 31.4%)
+  Depression                  15,083  ( 29.5%)
+  Suicidal                    10,638  ( 20.8%)
+  Anxiety                      3,617  (  7.1%)
+  Bipolar                      2,501  (  4.9%)
+  Stress                       2,291  (  4.5%)
+  Personality disorder           894  (  1.8%)
+  imbalance ratio (largest:smallest): 17.9 : 1
+
+Top 15 words per class (lemmatized):
+  Anxiety: i, be, and, to, a, have, the, my, it, of, not, do, that, in, but
+  Bipolar: i, be, and, to, a, the, have, my, not, it, of, do, that, in, me
+  Depression: i, be, to, and, a, the, my, not, have, it, do, of, me, that, in
+  Normal: be, i, to, the, a, and, it, you, not, have, do, my, of, that, in
+  Personality disorder: i, be, to, and, a, not, the, have, it, do, of, my, that, me, in
+  Stress: i, be, to, and, a, the, have, my, not, it, do, of, me, in, that
+  Suicidal: i, be, to, and, not, my, a, the, do, have, it, me, of, that, in
+
+Distinctive words for 'Suicidal' vs rest of primary_dataset (lemmatized):
+  perdedor             suicidal_count=201    rest_count=0      ratio=538.3
+  wallsi               suicidal_count=128    rest_count=0      ratio=343.8
+  soy                  suicidal_count=225    rest_count=9      ratio=60.2
+  helium               suicidal_count=35     rest_count=2      ratio=32.0
+  'm                   suicidal_count=135    rest_count=13     ratio=25.9
+  firearm              suicidal_count=21     rest_count=4      ratio=11.7
+  monoxide             suicidal_count=36     rest_count=9      ratio=9.9
+  un                   suicidal_count=243    rest_count=65     ratio=9.9
+  painlessly           suicidal_count=30     rest_count=8      ratio=9.2
+  shotgun              suicidal_count=43     rest_count=12     ratio=9.0
+  slit                 suicidal_count=82     rest_count=25     ratio=8.5
+  painless             suicidal_count=155    rest_count=52     ratio=7.8
+  traumatise           suicidal_count=24     rest_count=8      ratio=7.4
+  cutting              suicidal_count=24     rest_count=8      ratio=7.4
+  kms                  suicidal_count=110    rest_count=42     ratio=6.9
+  afterlife            suicidal_count=63     rest_count=25     ratio=6.6
+  carbon               suicidal_count=38     rest_count=15     ratio=6.5
+  gun                  suicidal_count=371    rest_count=159    ratio=6.2
+  paracetamol          suicidal_count=31     rest_count=13     ratio=6.1
+  goodbye              suicidal_count=298    rest_count=130    ratio=6.1
+  hotlines             suicidal_count=32     rest_count=14     ratio=5.9
+  fentanyl             suicidal_count=20     rest_count=9      ratio=5.6
+  prevention           suicidal_count=25     rest_count=12     ratio=5.3
+  noose                suicidal_count=55     rest_count=29     ratio=5.0
+  heroin               suicidal_count=37     rest_count=21     ratio=4.6
+  homophobic           suicidal_count=28     rest_count=16     ratio=4.5
+  forest               suicidal_count=31     rest_count=18     ratio=4.5
+  rope                 suicidal_count=130    rest_count=78     ratio=4.4
+  overdose             suicidal_count=237    rest_count=143    ratio=4.4
+  pussy                suicidal_count=96     rest_count=58     ratio=4.4
+
+======================================================================
+URGENCY_DATASET (binary) -- final class distribution
+(using Step 5 lemmatized text -- re-run after the urgency-dataset
+ lemmatization background job completed)
+======================================================================
+rows: 231,943
+word length -> mean:138.6 median:64 p95:491
+  suicide                    116,031  ( 50.0%)
+  non-suicide                115,912  ( 50.0%)
+  imbalance ratio (largest:smallest): 1.0 : 1
+
+Top 15 words per class (lemmatized):
+  non-suicide: i, be, to, and, a, the, it, not, do, my, you, of, have, that, me
+  suicide: i, be, to, and, not, a, the, my, have, do, it, of, me, that, in
+
+Distinctive words for 'suicide' vs 'non-suicide' in urgency_dataset (lemmatized):
+  letmedie             suicide_count=398    non_suicide_count=0      ratio=122.7
+  fiance               suicide_count=656    non_suicide_count=1      ratio=101.1
+  retard               suicide_count=541    non_suicide_count=1      ratio=83.4
+  benzos               suicide_count=229    non_suicide_count=0      ratio=70.8
+  nownow               suicide_count=202    non_suicide_count=0      ratio=62.4
+  faggot               suicide_count=184    non_suicide_count=0      ratio=56.9
+  platitude            suicide_count=152    non_suicide_count=0      ratio=47.1
+  anymorei             suicide_count=150    non_suicide_count=0      ratio=46.5
+  wellbutrin           suicide_count=136    non_suicide_count=0      ratio=42.1
+  ideation             suicide_count=1427   non_suicide_count=10     ratio=39.9
+  ativan               suicide_count=119    non_suicide_count=0      ratio=36.9
+  depressants          suicide_count=442    non_suicide_count=3      ratio=34.1
+  aspirin              suicide_count=108    non_suicide_count=0      ratio=33.5
+  lexapro              suicide_count=200    non_suicide_count=1      ratio=30.9
+  effexor              suicide_count=98     non_suicide_count=0      ratio=30.5
+  oxy                  suicide_count=93     non_suicide_count=0      ratio=28.9
+  outpatient           suicide_count=185    non_suicide_count=1      ratio=28.6
+  acetaminophen        suicide_count=92     non_suicide_count=0      ratio=28.6
+  hospitalization      suicide_count=367    non_suicide_count=3      ratio=28.3
+  fleeting             suicide_count=183    non_suicide_count=1      ratio=28.3
+  ambien               suicide_count=91     non_suicide_count=0      ratio=28.3
+  inpatient            suicide_count=543    non_suicide_count=5      ratio=27.9
+  retarded             suicide_count=258    non_suicide_count=2      ratio=26.6
+  ssri                 suicide_count=258    non_suicide_count=2      ratio=26.6
+  citalopram           suicide_count=85     non_suicide_count=0      ratio=26.5
+  tranny               suicide_count=84     non_suicide_count=0      ratio=26.1
+  diei                 suicide_count=83     non_suicide_count=0      ratio=25.8
+  myselfi              suicide_count=83     non_suicide_count=0      ratio=25.8
+  respite              suicide_count=81     non_suicide_count=0      ratio=25.2
+  alwaysdoing          suicide_count=81     non_suicide_count=0      ratio=25.2
+
+======================================================================
+CROSS-VALIDATED urgency keywords (distinctive in BOTH datasets independently): 1
+======================================================================
+painless
+
+======================================================================
+CURATED urgency keyword list (slurs excluded): 95 words
+Excluded (statistically distinctive but not appropriate for a keyword list): ['faggot', 'retard', 'retarded', 'tranny']
+======================================================================
+'m, abort, acetaminophen, afterlife, alwaysdoing, ambien, anymorei, aspirin, ativan, benzodiazepine, benzos, bye, carbon, celexa, citalopram, clonazepam, corpse, coward, craigslist, cutting, defective, depressants, diei, disgustingly, dosent, effexor, existing, fentanyl, fiance, firearm, fleeting, forest, fraternity, gone, goodbye, gun, helium, helpi, heroin, homophobic, hospitalization, hotline, hotlines, ideation, ik, inpatient, kill, klonopin, kms, knife, lease, letmedie, lexapro, medicate, method, monoxide, myselfi, nembutal, noone, noose, nownow, od, opiate, outpatient, overdose, oxy, painkiller, painless, painlessly, paracetamol, paxil, peaceful, peacefully, perdedor, platitude, prevention, prozac, pussy, respite, rope, schizoaffective, shotgun, slit, soy, ssri, suicide, trans, traumatise, un, unemployable, wallsi, wellbutrin, withdrawn, worthlessness, wrist
+
+======================================================================
+GARBAGE / SPAM DETECTION (is_garbage) -- row-drop recommendation
+======================================================================
+primary_dataset: 25 / 51,055 rows flagged (0.049%)
+urgency_dataset: 2,189 / 231,943 rows flagged (0.944%)
+Not dropped here -- flagged rows saved to garbage_flagged_rows.csv for manual review (reversible, auditable). Step 7 (feature extraction) excludes flagged rows when building the training matrices.

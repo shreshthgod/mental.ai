@@ -1,0 +1,8 @@
+pandas==3.0.2
+scikit-learn==1.8.0
+nltk==3.10.3
+emoji==2.15.0
+contractions==0.1.73
+textstat==0.7.13
+NRCLex==4.1.0
+ftfy==6.3.1

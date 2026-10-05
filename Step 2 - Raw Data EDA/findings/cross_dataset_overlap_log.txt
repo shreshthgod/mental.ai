@@ -1,0 +1,19 @@
+unique texts in Combined Data.csv: 51074
+unique texts in Emotion_Sentiment_DataSet.csv: 87983
+exact-text overlap between the two files: 26357
+overlap as % of Combined Data unique texts: 51.61%
+overlap as % of Emotion unique texts: 29.96%
+
+Emotion_Sentiment_DataSet.csv AFTER internal de-dup: 87983 rows
+Emotion
+love          17634
+Normal        16040
+happiness     13038
+Depression    10318
+sadness        8485
+hate           6160
+anger          5952
+fun            4854
+surprise       3430
+worry          2072
+Name: count, dtype: int64

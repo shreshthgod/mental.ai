@@ -1,0 +1,140 @@
+=== urgency_dataset_clean.csv ===
+[urgency_dataset_clean.csv] 2000/231943 rows (0.9%) elapsed=12s rate=162.8 rows/s eta=1413s
+[urgency_dataset_clean.csv] 4000/231943 rows (1.7%) elapsed=22s rate=181.5 rows/s eta=1256s
+[urgency_dataset_clean.csv] 6000/231943 rows (2.6%) elapsed=31s rate=190.7 rows/s eta=1185s
+[urgency_dataset_clean.csv] 8000/231943 rows (3.4%) elapsed=41s rate=192.9 rows/s eta=1161s
+[urgency_dataset_clean.csv] 10000/231943 rows (4.3%) elapsed=51s rate=195.9 rows/s eta=1133s
+[urgency_dataset_clean.csv] 12000/231943 rows (5.2%) elapsed=62s rate=194.9 rows/s eta=1129s
+[urgency_dataset_clean.csv] 14000/231943 rows (6.0%) elapsed=71s rate=196.0 rows/s eta=1112s
+[urgency_dataset_clean.csv] 16000/231943 rows (6.9%) elapsed=81s rate=197.5 rows/s eta=1093s
+[urgency_dataset_clean.csv] 18000/231943 rows (7.8%) elapsed=91s rate=197.7 rows/s eta=1082s
+[urgency_dataset_clean.csv] 20000/231943 rows (8.6%) elapsed=101s rate=197.9 rows/s eta=1071s
+[urgency_dataset_clean.csv] checkpoint saved at 20000/231943 rows
+[urgency_dataset_clean.csv] 22000/231943 rows (9.5%) elapsed=111s rate=198.2 rows/s eta=1059s
+[urgency_dataset_clean.csv] 24000/231943 rows (10.3%) elapsed=121s rate=198.3 rows/s eta=1048s
+[urgency_dataset_clean.csv] 26000/231943 rows (11.2%) elapsed=131s rate=198.9 rows/s eta=1035s
+[urgency_dataset_clean.csv] 28000/231943 rows (12.1%) elapsed=141s rate=199.0 rows/s eta=1025s
+[urgency_dataset_clean.csv] 30000/231943 rows (12.9%) elapsed=152s rate=197.6 rows/s eta=1022s
+[urgency_dataset_clean.csv] 32000/231943 rows (13.8%) elapsed=161s rate=198.2 rows/s eta=1009s
+[urgency_dataset_clean.csv] 34000/231943 rows (14.7%) elapsed=170s rate=199.6 rows/s eta=992s
+[urgency_dataset_clean.csv] 36000/231943 rows (15.5%) elapsed=179s rate=200.9 rows/s eta=975s
+[urgency_dataset_clean.csv] 38000/231943 rows (16.4%) elapsed=189s rate=201.4 rows/s eta=963s
+[urgency_dataset_clean.csv] 40000/231943 rows (17.2%) elapsed=198s rate=201.9 rows/s eta=951s
+[urgency_dataset_clean.csv] checkpoint saved at 40000/231943 rows
+[urgency_dataset_clean.csv] 42000/231943 rows (18.1%) elapsed=209s rate=201.3 rows/s eta=944s
+[urgency_dataset_clean.csv] 44000/231943 rows (19.0%) elapsed=219s rate=201.4 rows/s eta=933s
+[urgency_dataset_clean.csv] 46000/231943 rows (19.8%) elapsed=228s rate=201.5 rows/s eta=923s
+[urgency_dataset_clean.csv] 48000/231943 rows (20.7%) elapsed=238s rate=201.9 rows/s eta=911s
+[urgency_dataset_clean.csv] 50000/231943 rows (21.6%) elapsed=247s rate=202.1 rows/s eta=900s
+[urgency_dataset_clean.csv] 52000/231943 rows (22.4%) elapsed=257s rate=202.0 rows/s eta=891s
+[urgency_dataset_clean.csv] 54000/231943 rows (23.3%) elapsed=267s rate=202.1 rows/s eta=880s
+[urgency_dataset_clean.csv] 56000/231943 rows (24.1%) elapsed=277s rate=202.4 rows/s eta=869s
+[urgency_dataset_clean.csv] 58000/231943 rows (25.0%) elapsed=286s rate=202.7 rows/s eta=858s
+[urgency_dataset_clean.csv] 60000/231943 rows (25.9%) elapsed=296s rate=202.8 rows/s eta=848s
+[urgency_dataset_clean.csv] checkpoint saved at 60000/231943 rows
+[urgency_dataset_clean.csv] 62000/231943 rows (26.7%) elapsed=307s rate=202.3 rows/s eta=840s
+[urgency_dataset_clean.csv] 64000/231943 rows (27.6%) elapsed=316s rate=202.4 rows/s eta=830s
+[urgency_dataset_clean.csv] 66000/231943 rows (28.5%) elapsed=327s rate=202.1 rows/s eta=821s
+[urgency_dataset_clean.csv] 68000/231943 rows (29.3%) elapsed=338s rate=201.5 rows/s eta=814s
+[urgency_dataset_clean.csv] 70000/231943 rows (30.2%) elapsed=347s rate=201.6 rows/s eta=803s
+[urgency_dataset_clean.csv] 72000/231943 rows (31.0%) elapsed=357s rate=201.6 rows/s eta=793s
+[urgency_dataset_clean.csv] 74000/231943 rows (31.9%) elapsed=367s rate=201.7 rows/s eta=783s
+[urgency_dataset_clean.csv] 76000/231943 rows (32.8%) elapsed=376s rate=201.9 rows/s eta=772s
+[urgency_dataset_clean.csv] 78000/231943 rows (33.6%) elapsed=386s rate=201.8 rows/s eta=763s
+[urgency_dataset_clean.csv] 80000/231943 rows (34.5%) elapsed=396s rate=202.1 rows/s eta=752s
+[urgency_dataset_clean.csv] checkpoint saved at 80000/231943 rows
+[urgency_dataset_clean.csv] 82000/231943 rows (35.4%) elapsed=407s rate=201.5 rows/s eta=744s
+[urgency_dataset_clean.csv] 84000/231943 rows (36.2%) elapsed=417s rate=201.5 rows/s eta=734s
+[urgency_dataset_clean.csv] 86000/231943 rows (37.1%) elapsed=427s rate=201.2 rows/s eta=725s
+[urgency_dataset_clean.csv] 88000/231943 rows (37.9%) elapsed=437s rate=201.6 rows/s eta=714s
+[urgency_dataset_clean.csv] 90000/231943 rows (38.8%) elapsed=446s rate=201.7 rows/s eta=704s
+[urgency_dataset_clean.csv] 92000/231943 rows (39.7%) elapsed=455s rate=202.2 rows/s eta=692s
+[urgency_dataset_clean.csv] 94000/231943 rows (40.5%) elapsed=465s rate=202.2 rows/s eta=682s
+[urgency_dataset_clean.csv] 96000/231943 rows (41.4%) elapsed=475s rate=202.2 rows/s eta=672s
+[urgency_dataset_clean.csv] 98000/231943 rows (42.3%) elapsed=484s rate=202.5 rows/s eta=661s
+[urgency_dataset_clean.csv] 100000/231943 rows (43.1%) elapsed=493s rate=202.7 rows/s eta=651s
+[urgency_dataset_clean.csv] checkpoint saved at 100000/231943 rows
+[urgency_dataset_clean.csv] 102000/231943 rows (44.0%) elapsed=505s rate=202.0 rows/s eta=643s
+[urgency_dataset_clean.csv] 104000/231943 rows (44.8%) elapsed=514s rate=202.3 rows/s eta=632s
+[urgency_dataset_clean.csv] 106000/231943 rows (45.7%) elapsed=524s rate=202.4 rows/s eta=622s
+[urgency_dataset_clean.csv] 108000/231943 rows (46.6%) elapsed=534s rate=202.1 rows/s eta=613s
+[urgency_dataset_clean.csv] 110000/231943 rows (47.4%) elapsed=546s rate=201.4 rows/s eta=605s
+[urgency_dataset_clean.csv] 112000/231943 rows (48.3%) elapsed=558s rate=200.7 rows/s eta=597s
+[urgency_dataset_clean.csv] 114000/231943 rows (49.2%) elapsed=570s rate=199.9 rows/s eta=590s
+[urgency_dataset_clean.csv] 116000/231943 rows (50.0%) elapsed=580s rate=200.1 rows/s eta=580s
+[urgency_dataset_clean.csv] 118000/231943 rows (50.9%) elapsed=589s rate=200.3 rows/s eta=569s
+[urgency_dataset_clean.csv] 120000/231943 rows (51.7%) elapsed=599s rate=200.4 rows/s eta=559s
+[urgency_dataset_clean.csv] checkpoint saved at 120000/231943 rows
+[urgency_dataset_clean.csv] 122000/231943 rows (52.6%) elapsed=611s rate=199.7 rows/s eta=551s
+[urgency_dataset_clean.csv] 124000/231943 rows (53.5%) elapsed=621s rate=199.7 rows/s eta=541s
+[urgency_dataset_clean.csv] 126000/231943 rows (54.3%) elapsed=631s rate=199.6 rows/s eta=531s
+[urgency_dataset_clean.csv] 128000/231943 rows (55.2%) elapsed=641s rate=199.8 rows/s eta=520s
+[urgency_dataset_clean.csv] 130000/231943 rows (56.0%) elapsed=651s rate=199.7 rows/s eta=510s
+[urgency_dataset_clean.csv] 132000/231943 rows (56.9%) elapsed=660s rate=199.9 rows/s eta=500s
+[urgency_dataset_clean.csv] 134000/231943 rows (57.8%) elapsed=670s rate=199.9 rows/s eta=490s
+[urgency_dataset_clean.csv] 136000/231943 rows (58.6%) elapsed=680s rate=200.0 rows/s eta=480s
+[urgency_dataset_clean.csv] 138000/231943 rows (59.5%) elapsed=690s rate=200.0 rows/s eta=470s
+[urgency_dataset_clean.csv] 140000/231943 rows (60.4%) elapsed=700s rate=199.9 rows/s eta=460s
+[urgency_dataset_clean.csv] checkpoint saved at 140000/231943 rows
+[urgency_dataset_clean.csv] 142000/231943 rows (61.2%) elapsed=713s rate=199.2 rows/s eta=451s
+[urgency_dataset_clean.csv] 144000/231943 rows (62.1%) elapsed=723s rate=199.2 rows/s eta=441s
+[urgency_dataset_clean.csv] 146000/231943 rows (62.9%) elapsed=733s rate=199.2 rows/s eta=432s
+[urgency_dataset_clean.csv] 148000/231943 rows (63.8%) elapsed=743s rate=199.1 rows/s eta=422s
+[urgency_dataset_clean.csv] 150000/231943 rows (64.7%) elapsed=753s rate=199.2 rows/s eta=411s
+[urgency_dataset_clean.csv] 152000/231943 rows (65.5%) elapsed=763s rate=199.3 rows/s eta=401s
+[urgency_dataset_clean.csv] 154000/231943 rows (66.4%) elapsed=773s rate=199.3 rows/s eta=391s
+[urgency_dataset_clean.csv] 156000/231943 rows (67.3%) elapsed=782s rate=199.4 rows/s eta=381s
+[urgency_dataset_clean.csv] 158000/231943 rows (68.1%) elapsed=792s rate=199.6 rows/s eta=370s
+[urgency_dataset_clean.csv] 160000/231943 rows (69.0%) elapsed=801s rate=199.7 rows/s eta=360s
+[urgency_dataset_clean.csv] checkpoint saved at 160000/231943 rows
+[urgency_dataset_clean.csv] 162000/231943 rows (69.8%) elapsed=815s rate=198.9 rows/s eta=352s
+[urgency_dataset_clean.csv] 164000/231943 rows (70.7%) elapsed=824s rate=199.0 rows/s eta=341s
+[urgency_dataset_clean.csv] 166000/231943 rows (71.6%) elapsed=834s rate=199.0 rows/s eta=331s
+[urgency_dataset_clean.csv] 168000/231943 rows (72.4%) elapsed=844s rate=199.1 rows/s eta=321s
+[urgency_dataset_clean.csv] 170000/231943 rows (73.3%) elapsed=856s rate=198.6 rows/s eta=312s
+[urgency_dataset_clean.csv] 172000/231943 rows (74.2%) elapsed=867s rate=198.5 rows/s eta=302s
+[urgency_dataset_clean.csv] 174000/231943 rows (75.0%) elapsed=876s rate=198.6 rows/s eta=292s
+[urgency_dataset_clean.csv] 176000/231943 rows (75.9%) elapsed=886s rate=198.5 rows/s eta=282s
+[urgency_dataset_clean.csv] 178000/231943 rows (76.7%) elapsed=896s rate=198.6 rows/s eta=272s
+[urgency_dataset_clean.csv] 180000/231943 rows (77.6%) elapsed=906s rate=198.7 rows/s eta=261s
+[urgency_dataset_clean.csv] checkpoint saved at 180000/231943 rows
+[urgency_dataset_clean.csv] 182000/231943 rows (78.5%) elapsed=920s rate=197.9 rows/s eta=252s
+[urgency_dataset_clean.csv] 184000/231943 rows (79.3%) elapsed=929s rate=198.0 rows/s eta=242s
+[urgency_dataset_clean.csv] 186000/231943 rows (80.2%) elapsed=939s rate=198.1 rows/s eta=232s
+[urgency_dataset_clean.csv] 188000/231943 rows (81.1%) elapsed=949s rate=198.1 rows/s eta=222s
+[urgency_dataset_clean.csv] 190000/231943 rows (81.9%) elapsed=958s rate=198.3 rows/s eta=212s
+[urgency_dataset_clean.csv] 192000/231943 rows (82.8%) elapsed=968s rate=198.4 rows/s eta=201s
+[urgency_dataset_clean.csv] 194000/231943 rows (83.6%) elapsed=977s rate=198.5 rows/s eta=191s
+[urgency_dataset_clean.csv] 196000/231943 rows (84.5%) elapsed=987s rate=198.7 rows/s eta=181s
+[urgency_dataset_clean.csv] 198000/231943 rows (85.4%) elapsed=996s rate=198.8 rows/s eta=171s
+[urgency_dataset_clean.csv] 200000/231943 rows (86.2%) elapsed=1005s rate=199.0 rows/s eta=161s
+[urgency_dataset_clean.csv] checkpoint saved at 200000/231943 rows
+[urgency_dataset_clean.csv] 202000/231943 rows (87.1%) elapsed=1019s rate=198.3 rows/s eta=151s
+[urgency_dataset_clean.csv] 204000/231943 rows (88.0%) elapsed=1029s rate=198.2 rows/s eta=141s
+[urgency_dataset_clean.csv] 206000/231943 rows (88.8%) elapsed=1039s rate=198.3 rows/s eta=131s
+[urgency_dataset_clean.csv] 208000/231943 rows (89.7%) elapsed=1049s rate=198.2 rows/s eta=121s
+[urgency_dataset_clean.csv] 210000/231943 rows (90.5%) elapsed=1059s rate=198.3 rows/s eta=111s
+[urgency_dataset_clean.csv] 212000/231943 rows (91.4%) elapsed=1069s rate=198.3 rows/s eta=101s
+[urgency_dataset_clean.csv] 214000/231943 rows (92.3%) elapsed=1078s rate=198.5 rows/s eta=90s
+[urgency_dataset_clean.csv] 216000/231943 rows (93.1%) elapsed=1088s rate=198.5 rows/s eta=80s
+[urgency_dataset_clean.csv] 218000/231943 rows (94.0%) elapsed=1098s rate=198.5 rows/s eta=70s
+[urgency_dataset_clean.csv] 220000/231943 rows (94.9%) elapsed=1108s rate=198.6 rows/s eta=60s
+[urgency_dataset_clean.csv] checkpoint saved at 220000/231943 rows
+[urgency_dataset_clean.csv] 222000/231943 rows (95.7%) elapsed=1122s rate=197.8 rows/s eta=50s
+[urgency_dataset_clean.csv] 224000/231943 rows (96.6%) elapsed=1132s rate=197.9 rows/s eta=40s
+[urgency_dataset_clean.csv] 226000/231943 rows (97.4%) elapsed=1143s rate=197.8 rows/s eta=30s
+[urgency_dataset_clean.csv] 228000/231943 rows (98.3%) elapsed=1153s rate=197.7 rows/s eta=20s
+[urgency_dataset_clean.csv] 230000/231943 rows (99.2%) elapsed=1163s rate=197.8 rows/s eta=10s
+[urgency_dataset_clean.csv] 231943/231943 rows (100.0%) elapsed=1172s rate=198.0 rows/s eta=0s
+Saved C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\output/urgency_dataset_clean_preprocessed.csv (231,943 rows)
+Traceback (most recent call last):
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 128, in <module>
+    run("urgency_dataset_clean.csv")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 118, in run
+    f.write(f"{err}\t{s}\n")
+    ~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u0130' in position 40: character maps to <undefined>

@@ -1,0 +1,85 @@
+=== urgency_dataset_clean.csv ===
+Traceback (most recent call last):
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\corpus\util.py", line 85, in __load
+    root = nltk.data.find(f"{self.subdir}/{zip_name}")
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\data.py", line 877, in find
+    raise LookupError(resource_not_found)
+LookupError: 
+**********************************************************************
+  Resource 'wordnet' not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  >>> import nltk
+  >>> nltk.download('wordnet')
+
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load 'corpora/wordnet.zip/wordnet/'
+
+  Searched in:
+    - 'C:\\Users\\krish/nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\share\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\lib\\nltk_data'
+    - 'C:\\Users\\krish\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - 'C:\\Users\\krish\\AppData\\Roaming\\nltk_data\\taggers\\averaged_perceptron_tagger_eng'
+**********************************************************************
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 128, in <module>
+    run("urgency_dataset_clean.csv")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 106, in run
+    df["text_lemmatized"] = preprocess_series(
+                            ~~~~~~~~~~~~~~~~~^
+        df["text"].astype(str).tolist(), label=name, df=df, out_path=out_path
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 82, in preprocess_series
+    lemmas = [LEM.lemmatize(w, wn_pos(t)) for w, t in tagged if is_word(w)]
+              ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\stem\wordnet.py", line 85, in lemmatize
+    lemmas = self._morphy(word, pos)
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\stem\wordnet.py", line 41, in _morphy
+    return wn._morphy(form, pos, check_exceptions)
+           ^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\corpus\util.py", line 129, in __getattr__
+    self.__load()
+    ~~~~~~~~~~~^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\corpus\util.py", line 87, in __load
+    raise e
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\corpus\util.py", line 82, in __load
+    root = nltk.data.find(f"{self.subdir}/{self.__name}")
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\data.py", line 877, in find
+    raise LookupError(resource_not_found)
+LookupError: 
+**********************************************************************
+  Resource 'wordnet' not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  >>> import nltk
+  >>> nltk.download('wordnet')
+
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load 'corpora/wordnet'
+
+  Searched in:
+    - 'C:\\Users\\krish/nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\share\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\lib\\nltk_data'
+    - 'C:\\Users\\krish\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+    - 'C:\\Users\\krish\\AppData\\Roaming\\nltk_data\\taggers\\averaged_perceptron_tagger_eng'
+**********************************************************************
+

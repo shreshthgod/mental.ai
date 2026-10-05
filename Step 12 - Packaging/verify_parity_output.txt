@@ -1,0 +1,25 @@
+============================================================
+primary_dataset parity check
+============================================================
+  row 1: true_label=Depression             lemmatized_match=True ref_pred=Suicidal               pkg_pred=Suicidal               OK
+  row 2: true_label=Stress                 lemmatized_match=True ref_pred=Personality disorder   pkg_pred=Personality disorder   OK
+  row 3: true_label=Suicidal               lemmatized_match=True ref_pred=Suicidal               pkg_pred=Suicidal               OK
+  row 4: true_label=Anxiety                lemmatized_match=True ref_pred=Suicidal               pkg_pred=Suicidal               OK
+  row 5: true_label=Depression             lemmatized_match=True ref_pred=Depression             pkg_pred=Depression             OK
+
+primary_dataset: 5 rows checked, 0 mismatches
+
+============================================================
+urgency_dataset parity check
+============================================================
+  row 1: true_label=suicide      lemmatized_match=True ref_proba=0.988437 pkg_proba=0.988437 OK
+  row 2: true_label=suicide      lemmatized_match=True ref_proba=0.983620 pkg_proba=0.983620 OK
+  row 3: true_label=suicide      lemmatized_match=True ref_proba=0.960483 pkg_proba=0.960483 OK
+  row 4: true_label=non-suicide  lemmatized_match=True ref_proba=0.029626 pkg_proba=0.029626 OK
+  row 5: true_label=suicide      lemmatized_match=True ref_proba=0.966218 pkg_proba=0.966218 OK
+
+urgency_dataset: 5 rows checked, 0 mismatches
+
+============================================================
+TOTAL: 10 rows checked, 0 mismatches
+PARITY CONFIRMED -- packaged module reproduces the pipeline exactly.

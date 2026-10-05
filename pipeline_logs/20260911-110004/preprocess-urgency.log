@@ -1,0 +1,52 @@
+=== urgency_dataset_clean.csv ===
+Traceback (most recent call last):
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 128, in <module>
+    run("urgency_dataset_clean.csv")
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 106, in run
+    df["text_lemmatized"] = preprocess_series(
+                            ~~~~~~~~~~~~~~~~~^
+        df["text"].astype(str).tolist(), label=name, df=df, out_path=out_path
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\krish\Downloads\DE\DE\Step 5 - Text Preprocessing\code\preprocess_text.py", line 79, in preprocess_series
+    tok_lists = [word_tokenize(s.lower()) for s in expanded]
+                 ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\tokenize\__init__.py", line 142, in word_tokenize
+    sentences = [text] if preserve_line else sent_tokenize(text, language)
+                                             ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\tokenize\__init__.py", line 119, in sent_tokenize
+    tokenizer = _get_punkt_tokenizer(language)
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\tokenize\__init__.py", line 105, in _get_punkt_tokenizer
+    return PunktTokenizer(language)
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\tokenize\punkt.py", line 1795, in __init__
+    self.load_lang(lang)
+    ~~~~~~~~~~~~~~^^^^^^
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\tokenize\punkt.py", line 1800, in load_lang
+    lang_dir = find(f"tokenizers/punkt_tab/{lang}/")
+  File "C:\Users\krish\Downloads\DE\DE\venv\Lib\site-packages\nltk\data.py", line 877, in find
+    raise LookupError(resource_not_found)
+LookupError: 
+**********************************************************************
+  Resource 'punkt_tab' not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  >>> import nltk
+  >>> nltk.download('punkt_tab')
+
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load 'tokenizers/punkt_tab/english/'
+
+  Searched in:
+    - 'C:\\Users\\krish/nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\share\\nltk_data'
+    - 'C:\\Users\\krish\\Downloads\\DE\\DE\\venv\\lib\\nltk_data'
+    - 'C:\\Users\\krish\\AppData\\Roaming\\nltk_data'
+    - 'C:\\nltk_data'
+    - 'D:\\nltk_data'
+    - 'E:\\nltk_data'
+**********************************************************************
+

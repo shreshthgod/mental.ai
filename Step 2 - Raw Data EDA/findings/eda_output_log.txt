@@ -1,0 +1,64 @@
+
+======================================================================
+Combined Data.csv (primary, 7-class)
+======================================================================
+rows: 53,043
+empty/NaN text rows: 362 (0.68%)
+exact duplicate text rows: 3,373 (6.36%)
+'[removed]'/'[deleted]' rows: 0 (0.00%)
+word length -> min:0 max:6300 mean:112.9 median:62 p95:396
+very short (<=2 words) rows: 1,315 (2.48%)
+sample rows (n=3000) with ZERO common-English-stopword hits: 4.90% (rough non-English / junk proxy)
+
+class distribution (status):
+  Normal                      16,351  ( 30.8%)
+  Depression                  15,404  ( 29.0%)
+  Suicidal                    10,653  ( 20.1%)
+  Anxiety                      3,888  (  7.3%)
+  Bipolar                      2,877  (  5.4%)
+  Stress                       2,669  (  5.0%)
+  Personality disorder         1,201  (  2.3%)
+  imbalance ratio (largest:smallest): 13.6 : 1
+
+======================================================================
+Suicide_Detection.csv (urgency layer)
+======================================================================
+rows: 232,074
+empty/NaN text rows: 0 (0.00%)
+exact duplicate text rows: 0 (0.00%)
+'[removed]'/'[deleted]' rows: 0 (0.00%)
+word length -> min:0 max:9685 mean:132.9 median:61 p95:474
+very short (<=2 words) rows: 254 (0.11%)
+sample rows (n=3000) with ZERO common-English-stopword hits: 0.93% (rough non-English / junk proxy)
+
+class distribution (class):
+  suicide                    116,037  ( 50.0%)
+  non-suicide                116,037  ( 50.0%)
+  imbalance ratio (largest:smallest): 1.0 : 1
+
+======================================================================
+Emotion_Sentiment_DataSet.csv (10-class emotion)
+======================================================================
+rows: 160,000
+empty/NaN text rows: 8 (0.01%)
+exact duplicate text rows: 133,807 (83.63%)
+'[removed]'/'[deleted]' rows: 0 (0.00%)
+word length -> min:0 max:2595 mean:32.1 median:20 p95:75
+very short (<=2 words) rows: 917 (0.57%)
+sample rows (n=3000) with ZERO common-English-stopword hits: 1.43% (rough non-English / junk proxy)
+
+class distribution (Emotion):
+  love                        39,553  ( 24.7%)
+  happiness                   27,175  ( 17.0%)
+  sadness                     17,481  ( 10.9%)
+  Normal                      16,351  ( 10.2%)
+  hate                        15,267  (  9.5%)
+  anger                       12,336  (  7.7%)
+  Depression                  10,333  (  6.5%)
+  fun                         10,075  (  6.3%)
+  surprise                     6,954  (  4.3%)
+  worry                        4,475  (  2.8%)
+  imbalance ratio (largest:smallest): 8.8 : 1
+
+
+DONE
