@@ -61,6 +61,18 @@ class MentalHealthScreener:
             self._urgency_model = pickle.load(f)
         self._urgency_threshold = self.config["urgency_dataset"]["decision_threshold"]
         self._urgency_classes = list(self._urgency_model.classes_)
+        # Verify all expected artifacts exist and are loadable
+        required_artifacts = [
+            ("primary_model", self.config["primary_dataset"]["model_file"]),
+            ("urgency_model", self.config["urgency_dataset"]["model_file"]),
+            ("primary_vectorizer", self.config["primary_dataset"]["tfidf_vectorizer_file"]),
+            ("urgency_vectorizer", self.config["urgency_dataset"]["tfidf_vectorizer_file"]),
+            ("primary_chi2", self.config["primary_dataset"]["chi2_selector_file"]),
+        ]
+        for purpose, filename in required_artifacts:
+            artifact_path = os.path.join(artifacts_dir, filename)
+            if not os.path.isfile(artifact_path):
+                raise FileNotFoundError(f"Required artifact missing for {purpose}: {artifact_path}")
         self._suicide_idx = self._urgency_classes.index("suicide")
 
     def _build_primary_features(self, cleaned_text, lemmatized_text, handcrafted):
@@ -72,12 +84,24 @@ class MentalHealthScreener:
         return sp.hstack([X_tfidf_red, X_hand], format="csr")
 
     def screen(self, raw_text: str) -> dict:
+        # Input validation
+        if raw_text is None:
+            raise ValueError("Input text is None")
+        if not isinstance(raw_text, str):
+            raise ValueError(f"Input must be a string, got {type(raw_text).__name__}")
+        if len(raw_text.strip()) == 0:
+            raise ValueError("Input text is empty")
+        if len(raw_text) > 10000:
+            raise ValueError("Input text exceeds maximum length of 10,000 characters")
         cleaned, lemmatized = clean_and_lemmatize(raw_text)
         handcrafted = extract_handcrafted_features(cleaned, lemmatized)
 
         # --- primary_dataset (7-class) ---
         X_primary = self._build_primary_features(cleaned, lemmatized, handcrafted)
-        primary_proba = self._primary_model.predict_proba(X_primary)[0]
+        try:
+            primary_proba = self._primary_model.predict_proba(X_primary)[0]
+        except Exception as exc:
+            raise RuntimeError(f"Primary model prediction failed: {exc}") from exc
         primary_pred_idx = int(np.argmax(primary_proba))
         primary_pred = self._primary_label_encoder.inverse_transform([primary_pred_idx])[0]
         primary_classes = self._primary_label_encoder.inverse_transform(
@@ -90,7 +114,10 @@ class MentalHealthScreener:
 
         # --- urgency_dataset (binary, tuned threshold) ---
         X_urgency = self._urgency_vectorizer.transform([lemmatized])
-        urgency_proba_all = self._urgency_model.predict_proba(X_urgency)[0]
+        try:
+            urgency_proba_all = self._urgency_model.predict_proba(X_urgency)[0]
+        except Exception as exc:
+            raise RuntimeError(f"Urgency model prediction failed: {exc}") from exc
         suicide_proba = float(urgency_proba_all[self._suicide_idx])
         urgency_pred = "suicide" if suicide_proba >= self._urgency_threshold else "non-suicide"
         urgency_result = {

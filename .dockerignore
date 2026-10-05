@@ -1,0 +1,31 @@
+# Git
+.git
+.gitignore
+
+# Python virtual environments
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+# Temporary and log files
+pipeline_logs/
+*.log
+temp/
+
+# Large dataset files (research artifacts, not needed in container)
+datasets/
+
+# Development/test artifacts not needed for deployment
+Step 1 - Data Sourcing/
+Step 2 - Raw Data EDA/findings/*.txt
+*.partial
+
+# Documentation not required at runtime
+Readme/*.docx
+
+# But keep: package artifacts, config, requirements
+!Step 12 - Packaging/package/mental_health_screening/artifacts/
+!Step 12 - Packaging/package/mental_health_screening/

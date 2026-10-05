@@ -70,6 +70,7 @@ def is_word(tok):
 
 def preprocess_series(texts, label="", df=None, out_path=None):
     n = len(texts)
+    lemmatization_failures = 0
     out = [None] * n
     t_start = time.time()
     for batch_i, start in enumerate(range(0, n, BATCH)):
@@ -79,8 +80,16 @@ def preprocess_series(texts, label="", df=None, out_path=None):
         tok_lists = [word_tokenize(s.lower()) for s in expanded]
         tagged_lists = pos_tag_sents(tok_lists)
         for i, tagged in enumerate(tagged_lists):
-            lemmas = [LEM.lemmatize(w, wn_pos(t)) for w, t in tagged if is_word(w)]
-            out[start + i] = " ".join(lemmas)
+            try:
+                lemmas = [LEM.lemmatize(w, wn_pos(t)) for w, t in tagged if is_word(w)]
+                out[start + i] = " ".join(lemmas)
+            except Exception as e:
+                # Preserve original cleaned text on lemmatization failure
+                # Mark with empty lemmatized text so downstream can detect
+                out[start + i] = ""
+                lemmatization_failures += 1
+                # Log minimal metadata, never the raw text
+                print(f"[preprocess] Lemmatization failure at batch {batch_i}, offset {start+i}: {type(e).__name__}", flush=True)
         elapsed = time.time() - t_start
         rate = (end) / elapsed if elapsed > 0 else 0
         eta = (n - end) / rate if rate > 0 else float("inf")
@@ -95,6 +104,8 @@ def preprocess_series(texts, label="", df=None, out_path=None):
             partial["text_lemmatized"] = out[:end]
             partial.to_csv(out_path + ".partial", index=False)
             print(f"[{label}] checkpoint saved at {end}/{n} rows", flush=True)
+    total_processed = sum(1 for o in out if o is not None and o != "")
+    print(f"[preprocess] Completed: {total_processed}/{n} rows lemmatized, {lemmatization_failures} failures", flush=True)
     return out
 
 
@@ -106,7 +117,7 @@ def run(name):
     df["text_lemmatized"] = preprocess_series(
         df["text"].astype(str).tolist(), label=name, df=df, out_path=out_path
     )
-    df.to_csv(out_path, index=False)
+    df.to_csv(out_path, index=False, encoding="utf-8")
     import os
     if os.path.exists(out_path + ".partial"):
         os.remove(out_path + ".partial")
