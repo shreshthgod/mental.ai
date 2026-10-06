@@ -55,8 +55,19 @@
   font-size: clamp(4.2rem, 18.5vw, 16.5rem);
   letter-spacing: -0.045em;
   line-height: 0.9;
-  color: var(--ink);
-  text-shadow: 0 0 60px rgba(123, 92, 255, 0.18);
+  /* 3D metallic chrome gradient + depth shadows */
+  background: linear-gradient(135deg, #e8e8f0 0%, #b8a8e5 25%, #8a7ccc 50%, #6a50b0 75%, #e0d8f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 3px 10px rgba(123, 92, 255, 0.55),
+    0 6px 20px rgba(123, 92, 255, 0.35),
+    0 12px 40px rgba(123, 92, 255, 0.25),
+    -1px -2px 0 rgba(50, 30, 100, 0.7),
+    1px 1px 0 rgba(255, 255, 255, 0.15);
   white-space: nowrap;
   margin-left: -1.5vw; /* intentional edge bleed */
 }
