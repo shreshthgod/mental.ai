@@ -11,13 +11,20 @@ const SIZES = [
   [768, 1024],
   [390, 844],
 ];
-const ROUTES = ["/", "/screen", "/research"];
+const ROUTES = ["/", "/login", "/screen", "/research"];
 
 mkdirSync("shots", { recursive: true });
 
 const browser = await chromium.launch();
 for (const [w, h] of SIZES) {
   const page = await browser.newPage({ viewport: { width: w, height: h } });
+  // Seed the demo session so /screen renders past the login gate.
+  await page.addInitScript(() =>
+    window.localStorage.setItem(
+      "vantage.auth",
+      JSON.stringify({ user: "admin", at: Date.now() })
+    )
+  );
   for (const route of ROUTES) {
     const name = route === "/" ? "home" : route.slice(1);
     await page.goto(`${BASE}${route}`, { waitUntil: "networkidle" });

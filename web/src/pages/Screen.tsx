@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError, MAX_TEXT_LENGTH, type PredictResponse } from "../lib/api";
+import { clearHistory, loadHistory, saveScreening, type ScreeningRecord } from "../lib/history";
 import { SystemStatus } from "../components/chrome/SystemStatus";
 import { Footer } from "../components/chrome/Footer";
 
@@ -40,6 +41,7 @@ export function Screen() {
   const [result, setResult] = useState<PredictResponse | null>(null);
   const [error, setError] = useState<ErrorState | null>(null);
   const [validationMsg, setValidationMsg] = useState<string | null>(null);
+  const [history, setHistory] = useState<ScreeningRecord[]>(() => loadHistory());
   const abortRef = useRef<AbortController | null>(null);
   const timersRef = useRef<number[]>([]);
 
@@ -90,6 +92,17 @@ export function Screen() {
           setStageIdx(STAGE_LABELS.length);
           setResult(res);
           setPhase("success");
+          setHistory(
+            saveScreening({
+              id: res.request_id,
+              text,
+              condition: res.primary.predicted_class,
+              conditionProb:
+                res.primary.class_probabilities[res.primary.predicted_class] ?? 0,
+              urgencyFlagged: res.urgency.flagged,
+              urgencyProb: res.urgency.suicide_probability,
+            })
+          );
         }, Math.min(remaining, 700))
       );
     } catch (err) {
@@ -145,7 +158,9 @@ export function Screen() {
               <p className="workspace__sub">
                 Submit language for signal analysis. The text is sent to the
                 Vantage inference service and answered by the deployed research
-                models - nothing is stored by this interface.
+                models. Your previous screenings stay on this device only -
+                saved in this browser so you can return to them, never sent
+                anywhere else.
               </p>
             </div>
             <SystemStatus />
@@ -189,6 +204,61 @@ export function Screen() {
               </div>
             </div>
           </form>
+
+          {history.length > 0 && (
+            <section className="history" aria-label="Previous screenings">
+              <div className="history__head">
+                <p className="label label--accent">Previous screenings</p>
+                <button
+                  type="button"
+                  className="history__clear"
+                  onClick={() => {
+                    clearHistory();
+                    setHistory([]);
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+              <ul className="history__list">
+                {history.map((r) => (
+                  <li key={r.id}>
+                    <button
+                      type="button"
+                      className="history__row"
+                      onClick={() => {
+                        setText(r.text);
+                        setValidationMsg(null);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      title="Restore this text into the editor"
+                    >
+                      <span className="history__date num">
+                        {new Date(r.at).toLocaleString(undefined, {
+                          day: "2-digit",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                      <span className="history__cond">{r.condition}</span>
+                      <span
+                        className={`history__urg ${
+                          r.urgencyFlagged ? "history__urg--flag" : ""
+                        }`}
+                      >
+                        {r.urgencyFlagged ? "Elevated" : "Not elevated"}
+                      </span>
+                      <span className="history__preview">
+                        {r.text.slice(0, 96)}
+                        {r.text.length > 96 ? "…" : ""}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {phase === "analyzing" && (
             <div className="analysis" aria-live="polite">
@@ -302,6 +372,47 @@ export function Screen() {
                   <p className="label">Provenance</p>
                   <p>{result.provenance_caveat}</p>
                 </div>
+              )}
+
+              {result.primary.predicted_class === "Anxiety" && (
+                <aside className="support" aria-label="Support resources and government initiatives">
+                  <p className="label label--accent">Support and government initiatives</p>
+                  <p className="support__lead">
+                    If this text reflects what you or someone you know is going
+                    through, free and confidential support is available across
+                    India:
+                  </p>
+                  <ul className="support__list">
+                    <li>
+                      <strong>Tele MANAS</strong>
+                      <span className="support__org">
+                        Ministry of Health and Family Welfare, Government of India
+                      </span>
+                      Toll-free <a className="support__tel" href="tel:14416">14416</a> or{" "}
+                      <a className="support__tel" href="tel:18008914416">1800-891-4416</a> - 24x7
+                      trained counsellors, choice of language.
+                    </li>
+                    <li>
+                      <strong>KIRAN mental health helpline</strong>
+                      <span className="support__org">
+                        Ministry of Social Justice and Empowerment, Government of India
+                      </span>
+                      Toll-free <a className="support__tel" href="tel:18005990019">1800-599-0019</a>{" "}
+                      - 24x7 across India in 13 languages.
+                    </li>
+                    <li>
+                      <strong>NIMHANS psychosocial helpline</strong>
+                      <span className="support__org">NIMHANS, Bengaluru (an apex centre under the National Tele Mental Health Programme)</span>
+                      <a className="support__tel" href="tel:08046110007">080-4611 0007</a> - 24x7
+                      psychosocial support.
+                    </li>
+                  </ul>
+                  <p className="support__note">
+                    A screening result is not a diagnosis. A qualified
+                    professional can confirm what you are experiencing and
+                    advise on next steps.
+                  </p>
+                </aside>
               )}
 
               <div className="results__actions">

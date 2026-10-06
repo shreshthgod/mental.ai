@@ -1,7 +1,7 @@
 .footer {
   position: relative;
   z-index: 2;
-  background: var(--bg);
+  background: rgba(5, 5, 7, 0.75);
   border-top: 1px solid var(--line);
 }
 .footer__inner {
@@ -23,11 +23,11 @@
   font-weight: 640;
   letter-spacing: 0.2em;
 }
-.footer__desc { margin-top: 14px; color: var(--ink-3); font-size: 13px; line-height: 1.7; max-width: 40ch; }
+.footer__desc { margin-top: 14px; color: var(--ink-3); font-size: 14.5px; line-height: 1.7; max-width: 42ch; }
 .footer__cols { display: flex; gap: 64px; flex-wrap: wrap; }
 .footer__col .label { display: block; margin-bottom: 14px; }
 .footer__col ul { display: flex; flex-direction: column; gap: 9px; }
-.footer__col a { font-size: 13px; color: var(--ink-2); transition: color 200ms; }
+.footer__col a { font-size: 14.5px; color: var(--ink-2); transition: color 200ms; }
 .footer__col a:hover { color: var(--ink); }
 .footer__base {
   border-top: 1px solid var(--line);
@@ -37,4 +37,4 @@
   gap: 20px;
   flex-wrap: wrap;
 }
-.footer__base p { font-size: 12px; color: var(--ink-3); }
+.footer__base p { font-size: 13.5px; color: var(--ink-3); }

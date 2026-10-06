@@ -7,6 +7,13 @@ mkdirSync("shots", { recursive: true });
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+// Seed the demo session so /screen renders past the login gate.
+await page.addInitScript(() =>
+  window.localStorage.setItem(
+    "vantage.auth",
+    JSON.stringify({ user: "admin", at: Date.now() })
+  )
+);
 
 // Oversized input (backend max 10,000) - fill 10,500 chars
 await page.goto(`${BASE}/screen`, { waitUntil: "networkidle" });

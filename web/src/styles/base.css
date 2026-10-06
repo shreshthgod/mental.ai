@@ -36,7 +36,7 @@ ul, ol { padding: 0; list-style: none; }
 
 .label {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -59,6 +59,18 @@ ul, ol { padding: 0; list-style: none; }
   transition: top 160ms var(--ease-soft);
 }
 .skip-link:focus { top: 12px; }
+
+/* Site-wide animated gradient waves (background layer) */
+.site-waves {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-waves { opacity: 0.38; }
+}
 
 /* Page transition veil */
 .page-veil {

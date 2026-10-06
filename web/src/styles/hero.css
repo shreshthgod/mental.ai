@@ -116,9 +116,9 @@
 }
 
 .hero__sub {
-  max-width: 46ch;
+  max-width: 48ch;
   color: var(--ink-2);
-  font-size: clamp(14px, 1.4vw, 16px);
+  font-size: clamp(15.5px, 1.5vw, 18px);
   line-height: 1.65;
 }
 

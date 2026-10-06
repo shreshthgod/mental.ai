@@ -1,0 +1,97 @@
+/* ------------------------------- LOGIN ---------------------------------- */
+
+.login {
+  position: relative;
+  z-index: 2;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px var(--pad-x) 90px;
+  background:
+    radial-gradient(ellipse 80% 55% at 50% -5%, rgba(79, 70, 229, 0.14), transparent 62%),
+    rgba(5, 5, 7, 0.58);
+}
+
+.login__card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(10, 10, 16, 0.88);
+  border: 1px solid var(--line);
+  border-top: 2px solid var(--violet);
+  border-radius: 3px;
+  padding: clamp(30px, 5vw, 46px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+}
+
+.login__title {
+  margin-top: 14px;
+  font-size: clamp(34px, 6vw, 46px);
+  font-weight: 640;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.login__sub {
+  margin-top: 14px;
+  color: var(--ink-2);
+  font-size: 15.5px;
+  line-height: 1.65;
+}
+
+.login__form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login__field { display: flex; flex-direction: column; gap: 9px; }
+
+.login__input {
+  width: 100%;
+  background: var(--bg-inset);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16.5px;
+  padding: 13px 15px;
+  transition: border-color 250ms ease, box-shadow 300ms ease;
+}
+.login__input:focus {
+  outline: none;
+  border-color: rgba(123, 92, 255, 0.55);
+  box-shadow: 0 0 0 1px rgba(123, 92, 255, 0.35), 0 0 32px rgba(123, 92, 255, 0.12);
+}
+
+.login__err {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.05em;
+  color: var(--warn);
+}
+
+.login__submit { justify-content: center; margin-top: 6px; }
+
+.login__demo {
+  margin-top: 26px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.login__back {
+  display: block;
+  margin-top: 18px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  transition: color 200ms ease;
+}
+.login__back:hover { color: var(--ink); }

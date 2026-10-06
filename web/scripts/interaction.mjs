@@ -17,8 +17,18 @@ await page.screenshot({ path: "shots/intro-2-converge.png" });
 await page.waitForTimeout(1200);
 await page.screenshot({ path: "shots/intro-3-live.png" });
 
-// 2. Screening flow - real backend
+// 2. Login gate (START -> /screen redirects to /login for signed-out users)
 await page.goto(`${BASE}/screen`, { waitUntil: "networkidle" });
+await page.waitForSelector("#login-id", { timeout: 10000 });
+await page.screenshot({ path: "shots/login-1-form.png" });
+await page.fill("#login-id", "admin");
+await page.fill("#login-pass", "password");
+await page.click("button[type=submit]");
+await page.waitForSelector("#screen-input", { timeout: 10000 });
+console.log("login flow ok");
+await page.screenshot({ path: "shots/login-2-authed.png" });
+
+// 3. Screening flow - real backend
 await page.waitForSelector(".status--ready, .status--down", { timeout: 15000 });
 await page.fill("#screen-input", "I have been feeling empty and hopeless for weeks. I do not enjoy anything anymore and I cannot sleep.");
 await page.click("button[type=submit]");
@@ -28,7 +38,7 @@ await page.waitForSelector(".results", { timeout: 30000 });
 await page.waitForTimeout(1300);
 await page.screenshot({ path: "shots/flow-2-results.png", fullPage: true });
 
-// 3. Urgent text
+// 4. Urgent text
 await page.click("text=New analysis");
 await page.fill("#screen-input", "I want to end my life. There is no reason to keep going and nobody would miss me.");
 await page.click("button[type=submit]");
@@ -36,7 +46,19 @@ await page.waitForSelector(".results", { timeout: 30000 });
 await page.waitForTimeout(1300);
 await page.screenshot({ path: "shots/flow-3-urgent.png", fullPage: true });
 
-// 4. Empty input validation
+// 5. Anxiety result surfaces support panel + history accumulates
+await page.click("text=New analysis");
+await page.fill("#screen-input", "I worry about everything all the time. My heart races and I cannot calm down. Everything feels like a threat and I cannot stop the loop of anxious thoughts.");
+await page.click("button[type=submit]");
+await page.waitForSelector(".results", { timeout: 30000 });
+await page.waitForTimeout(1300);
+const supportShown = await page.isVisible(".support");
+console.log("anxiety support panel visible =", supportShown);
+await page.screenshot({ path: "shots/flow-5-anxiety.png", fullPage: true });
+const historyCount = await page.locator(".history__row").count();
+console.log("history entries =", historyCount);
+
+// 6. Empty input validation
 await page.click("text=New analysis");
 await page.fill("#screen-input", "");
 await page.screenshot({ path: "shots/flow-4-empty.png" });
