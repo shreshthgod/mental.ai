@@ -1,4 +1,6 @@
-# Mental Health Screening Pipeline (Phase 1) — Hardened & Deployable
+# Vantage-The-Emotional-Signaler
+
+# Mental Health Screening Pipeline (Phase 1) - Hardened & Deployable
 
 Research pipeline + packaged inference + production API + Docker deployment + documentation.
 
@@ -16,14 +18,14 @@ Both are trained on public proxy-label datasets (Kaggle / Pushshift subreddit or
 ### Working
 - Pipeline orchestration (`pipeline.py`) with 12 stages (prepare / train / report)
 - Dataset sourcing and cleaning (`datasets/`, `Step 2-4`)
-- Unified dataset construction (`Step 3` — primary from `Combined Data.csv`, urgency from `Suicide_Detection.csv`)
-- Text preprocessing (`Step 5`) — encoding crash (`\u0130`) fixed; defensive error handling added; full urgency run times out at 300s (232k rows)
-- Feature engineering (`Step 7`) — handcrafted features + TF-IDF (primary `.npz` regenerated; urgency `.npz` partial: `train` present, `val`/`test` missing due to timeout)
+- Unified dataset construction (`Step 3` - primary from `Combined Data.csv`, urgency from `Suicide_Detection.csv`)
+- Text preprocessing (`Step 5`) - encoding crash (`\u0130`) fixed; defensive error handling added; full urgency run times out at 300s (232k rows)
+- Feature engineering (`Step 7`) - handcrafted features + TF-IDF (primary `.npz` regenerated; urgency `.npz` partial: `train` present, `val`/`test` missing due to timeout)
 - Model artifacts (`primary_xgboost.pkl`, `urgency_logreg.pkl`, `primary_chi2_selector.pkl`, vectorizers, lexicons)
-- SHAP explainability (`Step 11`) — global importance and bar plots verified
-- Packaged inference (`Step 12/package/mental_health_screening/`) — `MentalHealthScreener.screen()` produces predictions
-- API (`api/api.py`) — `/predict`, `/health`, `/ready`, `/metrics`
-- Docker (`Dockerfile`, `.dockerignore`) — container builds with dependencies + NLTK resources
+- SHAP explainability (`Step 11`) - global importance and bar plots verified
+- Packaged inference (`Step 12/package/mental_health_screening/`) - `MentalHealthScreener.screen()` produces predictions
+- API (`api/api.py`) - `/predict`, `/health`, `/ready`, `/metrics`
+- Docker (`Dockerfile`, `.dockerignore`) - container builds with dependencies + NLTK resources
 
 ### Fixed During Hardening
 - Dependency installation (`ftfy`, `emoji`, `contractions`, `textstat`, `NRCLex`, `nltk` data) verified
@@ -36,11 +38,11 @@ Both are trained on public proxy-label datasets (Kaggle / Pushshift subreddit or
 - `scripts/verify_project.py` added (verification: 6 PASS, 2 FAIL, 1 SKIPPED)
 
 ### Not Completed / Verified Incomplete
-- **Urgency TF-IDF `.npz` matrices** (`urgency_dataset_tfidf_val.npz`, `.test.npz`) — missing; urgency preprocessing timed out at 300s; `train.npz` verified present. Does NOT block inference (`.pkl` vectorizer sufficient for predictions).
-- **Statistical significance tests** — not added; only point estimates preserved from `config.json` (primary macro F1 ≈ 0.6926; urgency 0.8981 @ threshold 0.15)
-- **Full urgency preprocessing cycle** — requires >10 minutes; not completed within environment timeout constraints
-- **Transformer fine-tuning script** (`Step 9/code/train_transformer_finetune.py`) — exists but NOT integrated into `pipeline.py` STAGES; NOT included in packaged artifacts
-- **Frontend** — NOT built (must wait for stable API contract; this repository delivers verified backend + documentation per instructions)
+- **Urgency TF-IDF `.npz` matrices** (`urgency_dataset_tfidf_val.npz`, `.test.npz`) - missing; urgency preprocessing timed out at 300s; `train.npz` verified present. Does NOT block inference (`.pkl` vectorizer sufficient for predictions).
+- **Statistical significance tests** - not added; only point estimates preserved from `config.json` (primary macro F1 ≈ 0.6926; urgency 0.8981 @ threshold 0.15)
+- **Full urgency preprocessing cycle** - requires >10 minutes; not completed within environment timeout constraints
+- **Transformer fine-tuning script** (`Step 9/code/train_transformer_finetune.py`) - exists but NOT integrated into `pipeline.py` STAGES; NOT included in packaged artifacts
+- **Frontend** - NOT built (must wait for stable API contract; this repository delivers verified backend + documentation per instructions)
 
 ## Quick Start
 
@@ -142,7 +144,7 @@ python scripts/verify_project.py
 
 Current verified result: 6 PASS | 2 FAIL | 1 SKIPPED
 - PASS: Dependencies, artifacts, inference, health check, primary `.npz`, preprocessing fix
-- FAIL: NLTK resource path discrepancy (package works; verification script searches different path) — does NOT block inference; urgency `.npz` incomplete (`val`, `test` missing)
+- FAIL: NLTK resource path discrepancy (package works; verification script searches different path) - does NOT block inference; urgency `.npz` incomplete (`val`, `test` missing)
 - SKIPPED: API not running locally (expected unless `uvicorn` started manually)
 
 ## Git Safety Note
