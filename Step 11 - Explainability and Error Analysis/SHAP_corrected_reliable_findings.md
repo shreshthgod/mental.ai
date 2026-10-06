@@ -1,13 +1,13 @@
-# SHAP — Corrected Findings (Reliable, Prevalence-Gated Only)
+# SHAP - Corrected Findings (Reliable, Prevalence-Gated Only)
 
 Only the corrected view: terms present in ≥0.5% of test rows, ranked by
 SHAP impact measured on the rows that actually contain them (not diluted
 by the rows that don't), cross-checked against Step 6's curated
 crisis-keyword list and Step 7's emotion lexicon. The old frequency-averaged
-rankings are not repeated here — see Step 11's README for those and for
+rankings are not repeated here - see Step 11's README for those and for
 the full methodology.
 
-## primary_dataset (XGBoost) — top 20 reliable terms
+## primary_dataset (XGBoost) - top 20 reliable terms
 
 | Feature | Prevalence | Impact when present | Signal category |
 |---|---|---|---|
@@ -33,10 +33,10 @@ the full methodology.
 | manic | 1.0% (n=49) | 0.106 | emotion_specific |
 
 Rare-but-real, below the 0.5% cutoff so excluded above: avpd, pdoc,
-lamictal, depakote — each in 5–19 of 5,103 test posts (0.1–0.4%),
+lamictal, depakote - each in 5–19 of 5,103 test posts (0.1–0.4%),
 individually strong when present, too rare to call "top words."
 
-## urgency_dataset (Logistic Regression) — reliable terms, n=2,000 sample
+## urgency_dataset (Logistic Regression) - reliable terms, n=2,000 sample
 
 **Toward suicide:**
 
@@ -79,7 +79,7 @@ individually strong when present, too rare to call "top words."
 | hot | 1.1% (n=23) | −0.551 | emotion_specific |
 
 For reference: "die" (15.9% of the sample, impact −0.302) and "to die"
-(8.3%, −0.329) are still real non-suicide signal — they just no longer
+(8.3%, −0.329) are still real non-suicide signal - they just no longer
 lead this ranking once rarer, more specific terms are compared on equal
 footing.
 

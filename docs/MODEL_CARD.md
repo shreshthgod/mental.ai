@@ -1,4 +1,4 @@
-# Model Card — Mental Health Screening (Phase 1)
+# Model Card - Mental Health Screening (Phase 1)
 
 ## Model Details
 
@@ -8,14 +8,14 @@
   - Urgency: Binary suicide/urgency safety-net (suicide / non-suicide)
 - **Models**: XGBoost (primary, chi2-selected 1500 features + handcrafted), Logistic Regression (urgency, full 30k TF-IDF)
 - **Feature space**: Handcrafted (38 dims) + TF-IDF (unigram+bigram, min_df=5, max_df=0.9, max_features=30000) + chi2 selection (primary k=1500)
-- **Labels**: Proxy labels (subreddit of origin via Pushshift / Kaggle sources) — NOT clinician-verified diagnoses
+- **Labels**: Proxy labels (subreddit of origin via Pushshift / Kaggle sources) - NOT clinician-verified diagnoses
 - **Threshold**: Urgency decision threshold = 0.15 (chosen for recall: suicide recall 0.987 vs default 0.934, at cost of precision 0.840 vs 0.952)
 
 ## Training Data
 
 - `Combined Data.csv`: 53,043 rows → 51,048 after cleaning/drop duplicates → primary dataset
 - `Suicide_Detection.csv`: 232,074 rows → 231,943 after cleaning/drop duplicates → urgency dataset
-- `Emotion_Sentiment_DataSet.csv`: 160,000 rows (87,983 unique) — used ONLY for emotion lexicon feature engineering (NOT for training labels)
+- `Emotion_Sentiment_DataSet.csv`: 160,000 rows (87,983 unique) - used ONLY for emotion lexicon feature engineering (NOT for training labels)
 - Split: Stratified 80/10/10 train/val/test (random_state=42, fixed seed)
 
 ## Performance (Verified from `config.json` and `Step 10` outputs)
@@ -32,13 +32,13 @@ Verified artifacts present (`Step 12 - Packaging/package/mental_health_screening
 - `emotion_lexicon.json`, `curated_urgency_keywords.json`, `config.json`
 
 Verified missing/reproduced:
-- `primary_dataset_tfidf_train.npz`, `.val`, `.test` — regenerated (verified present after hardening)
-- `urgency_dataset_tfidf_train.npz` — partially regenerated (`.val` and `.test` still missing due to preprocessing timeout at 300s; `train` verified present)
+- `primary_dataset_tfidf_train.npz`, `.val`, `.test` - regenerated (verified present after hardening)
+- `urgency_dataset_tfidf_train.npz` - partially regenerated (`.val` and `.test` still missing due to preprocessing timeout at 300s; `train` verified present)
 
 ## Known Limitations (Verified from Source Code and Documentation)
 
 - **Not a clinical diagnostic tool**. Both models are trained on proxy labels (subreddit origin). The urgency output is a screening signal designed for human review, not autonomous crisis intervention.
-- **No speech/audio module** — text only (Phase 1 only).
+- **No speech/audio module** - text only (Phase 1 only).
 - **Dataset overlap**: 51.6% of `Combined Data.csv` unique text overlaps with `Emotion_Sentiment_DataSet.csv` (verified in Step 2 EDA findings).
 - **No author-level split**: No user/author identifier column exists; exact-text deduplication is the only leakage mitigation.
 - **Class imbalance**: Primary dataset ratio 13.6:1 (Normal 30.8% → Personality disorder 2.3%). Class weights applied.

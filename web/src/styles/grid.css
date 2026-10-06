@@ -1,0 +1,33 @@
+/* Fixed editorial grid overlay - hairline columns across the whole site. */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1200ms var(--ease-soft) 900ms;
+}
+.grid-overlay--on { opacity: 1; }
+
+.grid-overlay__cols {
+  height: 100%;
+  background-image:
+    linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px);
+  background-repeat: no-repeat;
+  background-size: 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%;
+  background-position: 20% 0, 40% 0, 60% 0, 80% 0, 100% 0;
+}
+
+@media (max-width: 767px) {
+  .grid-overlay__cols {
+    background-image:
+      linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 0 1px, transparent 1px);
+    background-size: 1px 100%, 1px 100%;
+    background-position: 33.33% 0, 66.66% 0;
+  }
+}

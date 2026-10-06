@@ -1,4 +1,4 @@
-# Step 5 — Text Preprocessing
+# Step 5 - Text Preprocessing
 
 ## What was done
 Runs on both Step 4 cleaned outputs. Code: `code/preprocess_text.py`.
@@ -10,8 +10,8 @@ negation survives as its own token → lowercase + tokenize (NLTK `word_tokenize
 `text_lemmatized` column, kept alongside the original cleaned `text` column.
 
 **Deliberately not done:** stopword removal. Standard stopword lists strip
-"no", "not", "never", "I", "me", "my" — exactly the signal this task depends
-on — so no blanket stopword filter is applied anywhere in this step.
+"no", "not", "never", "I", "me", "my" - exactly the signal this task depends
+on - so no blanket stopword filter is applied anywhere in this step.
 
 ## Environment note
 NLTK's data downloader (tokenizer models, WordNet corpus) initially refused to
@@ -43,15 +43,15 @@ intact, confirming the no-stopword-removal decision is actually holding in
 practice, not just in the plan.
 
 ## Status
-- `primary_dataset_clean_preprocessed.csv` — **done**, 51,055 rows (re-run after
-  Step 4's glued-title/body-text fix — see Step 4 and Step 6 READMEs).
-- `urgency_dataset_clean_preprocessed.csv` — **done**, 231,943 rows. First attempt
+- `primary_dataset_clean_preprocessed.csv` - **done**, 51,055 rows (re-run after
+  Step 4's glued-title/body-text fix - see Step 4 and Step 6 READMEs).
+- `urgency_dataset_clean_preprocessed.csv` - **done**, 231,943 rows. First attempt
   crashed at ~54% (row ~126,000/231,943) with an `IndexError` inside the
-  `contractions`/`textsearch` library's bounds-check — a rare library bug,
+  `contractions`/`textsearch` library's bounds-check - a rare library bug,
   root-caused to the Turkish dotted capital `İ` character (U+0130) appearing in
   two posts, not a data problem otherwise. Fixed with two changes to
   `code/preprocess_text.py`:
-  1. `safe_fix()` wraps `contractions.fix()` in a try/except — on failure it
+  1. `safe_fix()` wraps `contractions.fix()` in a try/except - on failure it
      falls back to the original, un-expanded string and logs the failure to
      `output/<name>_contractions_failures.txt` instead of crashing the whole
      231,943-row job.
@@ -59,7 +59,7 @@ practice, not just in the plan.
      so a future crash doesn't lose all progress on this 20-25 minute job again.
 
   Job was restarted as a background process after the fix and completed
-  cleanly this time — only 2/231,943 rows (both containing `İ`) fell back to
+  cleanly this time - only 2/231,943 rows (both containing `İ`) fell back to
   un-expanded contractions, logged in `output/urgency_dataset_clean_contractions_failures.txt`.
   Step 6's urgency-dataset word-frequency analysis and Step 7's feature
   extraction were both then run (or re-run) against this final lemmatized

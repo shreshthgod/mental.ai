@@ -1,4 +1,4 @@
-# Step 1 — Data Sourcing
+# Step 1 - Data Sourcing
 
 ## What was done
 Sourced public, already-labeled text datasets for the multi-class mental-health
@@ -10,9 +10,9 @@ be a duplicate of an existing file, not a new dataset (see Decisions below).
 
 | Dataset | Rows | Labels | Role in the pipeline |
 |---|---|---|---|
-| `Combined Data.csv` | 53,043 | Normal, Depression, Suicidal, Anxiety, Bipolar, Stress, Personality disorder (7) | **Primary training set** — matches the 7-class target scheme directly |
+| `Combined Data.csv` | 53,043 | Normal, Depression, Suicidal, Anxiety, Bipolar, Stress, Personality disorder (7) | **Primary training set** - matches the 7-class target scheme directly |
 | `Suicide_Detection.csv` | 232,074 | suicide, non-suicide (2, perfectly balanced 50/50) | **Urgency/crisis safety-net layer** (Step 0) |
-| `Emotion_Sentiment_DataSet.csv` | 160,000 (87,983 unique) | love, happiness, sadness, Normal, hate, anger, Depression, fun, surprise, worry (10) | **Feature-engineering signal only** (Step 7) — see Decisions |
+| `Emotion_Sentiment_DataSet.csv` | 160,000 (87,983 unique) | love, happiness, sadness, Normal, hate, anger, Depression, fun, surprise, worry (10) | **Feature-engineering signal only** (Step 7) - see Decisions |
 
 ## Decisions
 

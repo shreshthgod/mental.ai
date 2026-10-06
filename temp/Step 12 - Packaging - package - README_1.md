@@ -1,9 +1,9 @@
-# mental_health_screening — Phase 1 inference module
+# mental_health_screening - Phase 1 inference module
 
 Takes raw text in, returns predictions from both trained models. Bundles
 everything needed: the fitted TF-IDF vectorizers, chi2 selector, curated
 urgency-keyword list, custom emotion lexicon, and the two winning models
-(Step 9/10's picks) — nothing to regenerate, nothing external except the
+(Step 9/10's picks) - nothing to regenerate, nothing external except the
 listed packages and NLTK's data files.
 
 ## Install
@@ -42,8 +42,8 @@ result = screener.screen("some raw text")
 ```
 
 ## Read this before using the output for anything real
-Both models are trained on **proxy labels** — subreddit of origin via the
-Pushshift API — not clinician-verified diagnoses. Treat every output as a
+Both models are trained on **proxy labels** - subreddit of origin via the
+Pushshift API - not clinician-verified diagnoses. Treat every output as a
 screening signal that should be reviewed by a person, never as a diagnosis
 or an automatic action trigger. See the paper-details doc's Limitations
 section (items 53–56) and Step 11's error analysis for the specific,
@@ -53,8 +53,8 @@ source datasets).
 
 ## Why urgency_dataset uses threshold 0.15, not 0.5
 Step 10 swept the decision threshold and found 0.15 keeps suicide-class
-recall at 0.987 (vs. 0.934 at the default 0.5) — missing only 151 of 11,594
-real crisis posts in testing, instead of 766 — at the cost of more false
+recall at 0.987 (vs. 0.934 at the default 0.5) - missing only 151 of 11,594
+real crisis posts in testing, instead of 766 - at the cost of more false
 positives (precision 0.840 vs. 0.952). For a safety-net layer meant to
 route posts to human review, a missed crisis post is a worse outcome than
 an extra false alarm, so this was a deliberate choice, not an oversight.
@@ -75,11 +75,11 @@ Full reasoning in Step 10's README.
 ## Verified, not assumed
 `code/verify_parity.py` (one directory up) feeds genuinely raw, pre-cleaning
 text through this package end to end and checks the result against the
-pipeline's own saved artifacts — 10/10 test rows matched exactly (both the
+pipeline's own saved artifacts - 10/10 test rows matched exactly (both the
 intermediate cleaned/lemmatized text and the final prediction) before this
 was called done. Re-run it any time this package is modified.
 
 ## What this module does NOT include
-- The transformer fine-tuning handoff script (Step 9c) — separate, GPU-only, not part of this classical-ML package.
-- Training code — this is inference-only. Full training code is in Steps 7–9's folders.
-- Batch/dataframe processing — `screen()` takes one string at a time; wrap it in a loop for batches.
+- The transformer fine-tuning handoff script (Step 9c) - separate, GPU-only, not part of this classical-ML package.
+- Training code - this is inference-only. Full training code is in Steps 7–9's folders.
+- Batch/dataframe processing - `screen()` takes one string at a time; wrap it in a loop for batches.

@@ -1,4 +1,4 @@
-# Step 3 — Build the Unified Dataset
+# Step 3 - Build the Unified Dataset
 
 ## What was done
 Built two separate, split, ready-to-train tables instead of one merged table. Code:
@@ -11,12 +11,12 @@ On building it, that turned out to be the wrong call, so it was changed (per the
 standing permission to adjust the dataset for the most accurate model):
 
 - Combined Data.csv's `Suicidal` class maps cleanly to Suicide_Detection.csv's
-  `suicide` class — but `non-suicide` (general Reddit posts not about suicide) has
+  `suicide` class - but `non-suicide` (general Reddit posts not about suicide) has
   **no honest mapping** onto Normal/Depression/Anxiety/etc. Guessing one would inject
   116,037 mislabeled rows into the primary 7-class target.
 - Adding only the `suicide` rows (mapped to `Suicidal`) without their matched
   `non-suicide` counterparts would have made `Suicidal` the dominant majority class
-  by a huge margin (10,641 existing vs. +116,037 more) — a worse imbalance problem
+  by a huge margin (10,641 existing vs. +116,037 more) - a worse imbalance problem
   than the one Step 3 was supposed to solve.
 
 **Decision:** keep the 7-class classifier and the urgency/crisis safety-net as two
@@ -30,7 +30,7 @@ was always meant to sit outside the multi-class model, not inside it):
 
 ## Processing applied (both tables)
 1. Dropped empty/NaN text rows.
-2. Dropped exact-duplicate text rows (kept first occurrence) — required before
+2. Dropped exact-duplicate text rows (kept first occurrence) - required before
    splitting, otherwise the same post can land in both train and test.
 3. Stratified 80/10/10 train/val/test split by label.
 
@@ -41,7 +41,7 @@ leakage across splits is not fully ruled out and is worth a manual spot-check la
 
 ## Results
 
-**`primary_dataset.csv`** — 51,073 rows (from 53,043 raw: -362 empty, -1,608 exact
+**`primary_dataset.csv`** - 51,073 rows (from 53,043 raw: -362 empty, -1,608 exact
 dupes after empty removal). `urgency_flag` column added (1 where label == Suicidal).
 
 | Label | Rows | Share |
@@ -54,11 +54,11 @@ dupes after empty removal). `urgency_flag` column added (1 where label == Suicid
 | Stress | 2,293 | 4.5% |
 | Personality disorder | 895 | 1.8% |
 
-Imbalance ratio is now ~17.9:1 (Normal vs. Personality disorder) — slightly worse
+Imbalance ratio is now ~17.9:1 (Normal vs. Personality disorder) - slightly worse
 than the raw 13.6:1 because duplicate removal wasn't even across classes. This is
-exactly what Step 8 (handle class imbalance) exists to address — no action needed yet.
+exactly what Step 8 (handle class imbalance) exists to address - no action needed yet.
 
-**`urgency_dataset.csv`** — 232,074 rows, unchanged from raw (it was already
+**`urgency_dataset.csv`** - 232,074 rows, unchanged from raw (it was already
 duplicate-free), perfectly balanced 50/50 suicide vs. non-suicide, split 80/10/10.
 
 ## Columns
@@ -67,5 +67,5 @@ duplicate-free), perfectly balanced 50/50 suicide vs. non-suicide, split 80/10/1
 
 ## Next
 Step 4 (cleaning) runs on both tables: URL/username stripping, emoji-to-text,
-unicode normalization, PII scrub, language filtering — none of that has been applied
+unicode normalization, PII scrub, language filtering - none of that has been applied
 yet, this step only handled what was required to split safely.

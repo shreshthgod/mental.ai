@@ -85,7 +85,7 @@ primary_npz = ["Step 7 - Feature Extraction/output/primary_dataset_tfidf_train.n
                 "Step 7 - Feature Extraction/output/primary_dataset_tfidf_test.npz"]
 missing_npz = [p for p in primary_npz if not os.path.isfile(p)]
 if missing_npz:
-    results.append(("SKIPPED", f"Primary TF-IDF .npz missing (verified: {missing_npz}) — does not block inference"))
+    results.append(("SKIPPED", f"Primary TF-IDF .npz missing (verified: {missing_npz}) - does not block inference"))
 else:
     results.append(("PASS", "Primary TF-IDF matrices present"))
 
@@ -94,7 +94,7 @@ urgency_npz = ["Step 7 - Feature Extraction/output/urgency_dataset_tfidf_train.n
                 "Step 7 - Feature Extraction/output/urgency_dataset_tfidf_test.npz"]
 missing_urgency = [p for p in urgency_npz if not os.path.isfile(p)]
 if missing_urgency:
-    results.append(("FAIL", f"Urgency TF-IDF .npz missing: {missing_urgency} — preprocessing timed out at 300s; train .npz present, val/test missing"))
+    results.append(("FAIL", f"Urgency TF-IDF .npz missing: {missing_urgency} - preprocessing timed out at 300s; train .npz present, val/test missing"))
 else:
     results.append(("PASS", "Urgency TF-IDF matrices present"))
 

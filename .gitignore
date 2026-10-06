@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+*.log
+.env
+
+# Web build & QA artifacts
+web/node_modules/
+web/dist/
+web/shots/

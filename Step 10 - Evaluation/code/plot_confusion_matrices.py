@@ -45,14 +45,14 @@ def plot_cm(cm, labels, title, out_path, normalize=True):
 
 primary = json.load(open(f"{OUT_DIR}/primary_dataset_test_results.json"))
 plot_cm(primary["confusion_matrix"], primary["labels_order"],
-        "primary_dataset (test) — XGBoost", f"{OUT_DIR}/primary_dataset_confusion_matrix.png")
+        "primary_dataset (test) - XGBoost", f"{OUT_DIR}/primary_dataset_confusion_matrix.png")
 
 urgency = json.load(open(f"{OUT_DIR}/urgency_dataset_test_results.json"))
 plot_cm(urgency["default_threshold_0.5"]["confusion_matrix"], urgency["labels_order"],
-        "urgency_dataset (test) — Logistic Regression, threshold=0.5",
+        "urgency_dataset (test) - Logistic Regression, threshold=0.5",
         f"{OUT_DIR}/urgency_dataset_confusion_matrix_default.png")
 plot_cm(urgency["recommended_threshold_results"]["confusion_matrix"], urgency["labels_order"],
-        f"urgency_dataset (test) — Logistic Regression, threshold={urgency['recommended_threshold']}",
+        f"urgency_dataset (test) - Logistic Regression, threshold={urgency['recommended_threshold']}",
         f"{OUT_DIR}/urgency_dataset_confusion_matrix_recommended.png")
 
 print("DONE", flush=True)

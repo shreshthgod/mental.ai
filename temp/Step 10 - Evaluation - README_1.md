@@ -1,12 +1,12 @@
-# Step 10 — Evaluation
+# Step 10 - Evaluation
 
-Final numbers on the held-out **test** split — untouched by every model in
+Final numbers on the held-out **test** split - untouched by every model in
 Step 9, used here for the first and only time. These are the numbers that
 belong in the paper's Results section; the val-set numbers from Step 9 were
 for model selection only, not results.
 
-## primary_dataset — XGBoost (leading candidate from Step 9)
-**Test macro-F1: 0.6926** (val was 0.7067 — a 1.4-point drop, in the normal
+## primary_dataset - XGBoost (leading candidate from Step 9)
+**Test macro-F1: 0.6926** (val was 0.7067 - a 1.4-point drop, in the normal
 range for a held-out split, not a sign of overfitting).
 
 | Class | Precision | Recall | F1 | Support |
@@ -23,8 +23,8 @@ Same pattern as val: Normal and Anxiety are strong, Stress and Personality
 disorder are the weakest (both smallest classes, 17.9:1 imbalance ratio).
 Confusion matrix: `output/primary_dataset_confusion_matrix.png`.
 
-## urgency_dataset — Logistic Regression (leading candidate from Step 9)
-**Test macro-F1 at the default 0.5 threshold: 0.9431** (val was 0.9434 — 
+## urgency_dataset - Logistic Regression (leading candidate from Step 9)
+**Test macro-F1 at the default 0.5 threshold: 0.9431** (val was 0.9434 - 
 essentially identical, no overfitting).
 
 | Class | Precision | Recall | F1 | Support |
@@ -54,7 +54,7 @@ safety-net layer isn't flooded with false alarms), maximizing recall within
 that constraint. At 0.15: recall 0.987 (only 151 of 11,594 real suicide-class
 test posts missed, vs. 766 missed at the default threshold), precision 0.840
 (2,172 of 11,406 non-suicide posts get a false flag). Macro-F1 drops from
-0.943 to 0.898 at this threshold — a deliberate, documented trade, not an
+0.943 to 0.898 at this threshold - a deliberate, documented trade, not an
 oversight: for this specific layer's job (catch crisis signal, let a human
 review flagged posts), recall matters more than a clean-looking aggregate
 score. Confusion matrices: `output/urgency_dataset_confusion_matrix_default.png`
@@ -62,8 +62,8 @@ score. Confusion matrices: `output/urgency_dataset_confusion_matrix_default.png`
 (threshold=0.15).
 
 ## What's in output/
-- `primary_dataset_test_results.json`, `urgency_dataset_test_results.json` — full classification reports, confusion matrices, the complete threshold sweep.
-- `*_confusion_matrix*.png` — row-normalized confusion matrix plots for the paper's Results section (item 43).
+- `primary_dataset_test_results.json`, `urgency_dataset_test_results.json` - full classification reports, confusion matrices, the complete threshold sweep.
+- `*_confusion_matrix*.png` - row-normalized confusion matrix plots for the paper's Results section (item 43).
 
 ## What Step 11 should do
 Error analysis: pull actual misclassified test examples (especially
