@@ -11,4 +11,5 @@ Step */output/
 # Web build & QA artifacts
 web/node_modules/
 web/dist/
+web/*.tsbuildinfo
 web/shots/

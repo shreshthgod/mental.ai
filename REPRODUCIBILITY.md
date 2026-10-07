@@ -79,8 +79,8 @@ Verified endpoints:
 ## Docker Verification
 
 ```bash
-docker build -t mental-health-screening .
-docker run -p 8000:8000 mental-health-screening
+docker build -t mental-ai .
+docker run -p 8000:8000 mental-ai
 ```
 
 Container includes:

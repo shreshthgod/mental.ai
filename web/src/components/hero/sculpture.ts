@@ -1,7 +1,7 @@
 /**
- * Vantage Sculpture - WebGL hero engine (vanilla Three.js).
+ * mental.ai Sculpture - WebGL hero engine (vanilla Three.js).
  *
- * A massive dark-chrome sculpture abstracting the Vantage architecture:
+ * A massive dark-chrome sculpture abstracting the mental.ai architecture:
  * two intertwined solid ribbons (the dual signal paths), three beveled
  * gyroscopic rings (precision machine components), and a polished core -
  * rendered in a procedural dark-studio environment with traveling
@@ -12,6 +12,7 @@
  * Reduced motion renders a single composed frame.
  */
 import * as THREE from "three";
+import { buildStudioEnvironment } from "./studioEnv";
 
 export interface SculptureOptions {
   reducedMotion: boolean;
@@ -26,44 +27,6 @@ const CHROME_MID = 0x2e2e36;
 const CHROME_RING = 0x36363f;
 const VIOLET = 0x7b5cff;
 const BLUE = 0x4d9fff;
-
-/** Procedural dark studio: black void + a few bright emissive strips. */
-function buildStudioEnvironment(renderer: THREE.WebGLRenderer): THREE.Texture {
-  const env = new THREE.Scene();
-  env.background = new THREE.Color(0x010102);
-
-  const strip = (
-    w: number,
-    h: number,
-    color: THREE.Color,
-    pos: [number, number, number],
-    rot: [number, number, number]
-  ) => {
-    const m = new THREE.Mesh(
-      new THREE.PlaneGeometry(w, h),
-      new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide })
-    );
-    m.position.set(...pos);
-    m.rotation.set(...rot);
-    env.add(m);
-  };
-
-  // Key strip - large soft white overhead-left
-  strip(10, 2.4, new THREE.Color(5.5, 5.5, 5.8), [-5, 6, 3], [-0.5, 0.5, 0.15]);
-  // Long thin white rim strip right
-  strip(0.7, 9, new THREE.Color(4.2, 4.4, 4.8), [6.5, 0.5, -1], [0, -1.05, 0]);
-  // Deep blue wash low-left
-  strip(7, 1.6, new THREE.Color(0.35, 0.62, 2.6), [-4.5, -4.2, -2.5], [0.6, 0.6, 0]);
-  // Violet accent behind
-  strip(5, 1.1, new THREE.Color(1.35, 0.8, 3.2), [2.5, 3.2, -6], [0.15, -0.35, 0]);
-  // Faint neutral floor bounce
-  strip(12, 3, new THREE.Color(0.5, 0.52, 0.6), [0, -7, 1.5], [1.35, 0, 0]);
-
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  const rt = pmrem.fromScene(env, 0.05);
-  pmrem.dispose();
-  return rt.texture;
-}
 
 /** Intertwined ribbon pair - a breathing double sweep, not a DNA poster. */
 function ribbonCurve(phase: number): THREE.CatmullRomCurve3 {

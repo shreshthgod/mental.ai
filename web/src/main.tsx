@@ -11,6 +11,7 @@ import "./styles/sections.css";
 import "./styles/screen.css";
 import "./styles/research.css";
 import "./styles/login.css";
+import "./styles/entry.css";
 import "./styles/footer.css";
 import App from "./App";
 

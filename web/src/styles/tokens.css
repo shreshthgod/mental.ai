@@ -24,6 +24,58 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  --pad-x: clamp(20px, 5vw, 64px);
+  /* ---- Layout -----------------------------------------------------------
+     One horizontal gutter for the whole product. The logo, the navigation,
+     the hero copy, the credentials panel and the technical annotation all
+     resolve against this value, so their edges line up by construction
+     rather than by each component repeating its own number.
+
+     3.4vw reads ~65px at 1920, ~52px at 1536, ~46px at 1366 and floors at
+     24px on a phone. */
+  --pad-x: clamp(24px, 3.4vw, 72px);
   --max-w: 1320px;
+
+  /* Header. Shrinks on short viewports so the first screen still holds a
+     complete composition rather than pushing the form under the fold. */
+  --header-h: clamp(72px, 8.4vh, 92px);
+
+  /* The two columns of the entry composition. 1.62 / 0.88 keeps the visual
+     stage near 65% of the width and the credentials near 35%, which is the
+     proportion the negative space was drawn for. */
+  --layout-gap: clamp(26px, 3.4vw, 72px);
+  --auth-width: clamp(352px, 31vw, 460px);
+  /* Measure for the hero copy. The headline needs ~10.1em and the paragraph is
+     capped separately at 44ch, so this only has to keep the headline on one
+     line: 48px of type at 1920 is ~486px wide. */
+  --copy-width: clamp(330px, 36vw, 490px);
+
+  /* Beyond this the composition stops widening; the environment (background,
+     WebGL, grid) may still run the full viewport. */
+  --entry-max: 1920px;
+
+  /* ---- Stacking ---------------------------------------------------------
+     A fixed scale, so a layer's position in the composition is readable from
+     its declaration rather than from an arbitrary integer. Page scale first,
+     then the scale inside the hero stage - which is its own stacking context,
+     so the two are counted independently and both start from the same floor. */
+
+  /* Page: environment to interface. */
+  --z-atmosphere: 0;
+  --z-grid: 1;
+  --z-grain: 2;
+  --z-scene: 3;
+  --z-auth: 20;
+  --z-greeting: 24;
+  --z-nav-overlay: 28;
+  --z-nav: 30;
+  --z-dropdown: 40;
+  --z-skip: 60;
+
+  /* Hero stage: type behind, metal, type in front, then falloff and copy. */
+  --z-word-back: 3;
+  --z-sculpture: 4;
+  --z-word-front: 5;
+  --z-vignette: 6;
+  --z-labels: 7;
+  --z-copy: 10;
 }

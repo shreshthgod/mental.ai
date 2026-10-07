@@ -1,0 +1,721 @@
+/* ------------------------------ ENTRY ---------------------------------- */
+
+/* The first screen. One page grid, two columns: a visual stage on the left
+   and the credentials on the right. Everything that belongs to the picture -
+   canvas, both word planes, the falloff, the annotations - lives inside the
+   stage and is clipped to it; everything that belongs to the interface is laid
+   out by grid and flex. Nothing is positioned against the viewport, so the two
+   halves cannot drift into each other as the window changes shape.
+
+   The composition depends on the sculpture passing between two copies of the
+   wordmark, so the three of them are siblings in a container with no stacking
+   context of its own: any ancestor transform, opacity, filter or blend mode
+   would trap both planes on the same side of the metal and the effect would be
+   lost. */
+
+/* The frame. min-height rather than height: on a short window the composition
+   grows and the page scrolls instead of cropping the form out of reach. */
+.entry {
+  position: relative;
+  min-height: 100svh;
+  /* Clipped on the inline axis only, so a decorative layer can never introduce
+     a horizontal scrollbar, while vertical overflow still scrolls normally. */
+  overflow-x: clip;
+  background: #030306;
+  /* Atmospheric bloom behind the form, anchored on the sculpture's focal point
+     in page coordinates. The right-hand stops are the counterweight: they darken
+     the credentials side so the panel sits on air rather than on scene. */
+  --entry-halo:
+    radial-gradient(circle at 30% 36%, rgba(76, 50, 160, 0.12), transparent 46%),
+    linear-gradient(
+      90deg,
+      rgba(3, 3, 6, 0) 52%,
+      rgba(3, 3, 6, 0.34) 72%,
+      rgba(3, 3, 6, 0.62) 88%,
+      rgba(3, 3, 6, 0.72) 100%
+    );
+}
+
+/* 1. Atmosphere + WebGL fallback surface */
+.entry__atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-atmosphere);
+  background: var(--entry-halo);
+}
+
+/* 2. Grain */
+.entry__grain {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-grain);
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+}
+
+/* ------------------------------- GRID ---------------------------------- */
+
+/* The two columns. Same gutter as the header, so the logo, the hero copy and the
+   panel share one set of vertical lines. Capped at --entry-max and centred, so
+   an ultrawide window widens the environment rather than the layout. */
+.entry__main {
+  position: relative;
+  z-index: var(--z-scene);
+  display: grid;
+  grid-template-columns: minmax(0, 1.62fr) minmax(0, 0.88fr);
+  align-items: stretch;
+  gap: var(--layout-gap);
+  width: 100%;
+  max-width: var(--entry-max);
+  margin-inline: auto;
+  padding: var(--header-h) var(--pad-x) clamp(20px, 3vh, 40px);
+  min-height: 100svh;
+}
+
+/* ---------------------------- HERO STAGE ------------------------------- */
+
+/* Owns the picture and clips it. `container-type` is what lets the wordmark
+   and the annotation anchors be sized from the stage's own width, so they
+   respond to the column rather than to the viewport. */
+.hero-stage {
+  position: relative;
+  z-index: var(--z-scene);
+  min-width: 0;
+  overflow: hidden;
+  container-type: inline-size;
+  /* The stage is a stacking context (containment), which is what isolates the
+     front word plane's screen blending to the metal behind it. */
+  pointer-events: none;
+}
+
+.hero-stage__scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* 3/4/5. Back plane, sculpture, front plane. No z-index on the wrapper: it must
+   not create a stacking context, or the three children could not interleave. */
+.entry__depth {
+  position: absolute;
+  inset: 0;
+}
+
+.entry__word-plane {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+}
+.entry__word-plane--back { z-index: var(--z-word-back); }
+/* Screen blending is what makes near-black type read as light rather than as a
+   dark shape punched into the scene. */
+.entry__word-plane--front {
+  z-index: var(--z-word-front);
+  mix-blend-mode: screen;
+}
+
+/* The word is anchored to the stage, not to the page: it starts on the page
+   gutter (the same line as the logo and the hero copy) and stops short of the
+   stage's right edge, so the last letters read clear of the credentials. */
+.entry__word {
+  position: absolute;
+  left: 0;
+  top: 47%;
+  transform: translateY(-50%);
+  display: flex;
+  font-weight: 660;
+  /* 5.161em is this string in Inter at 660 with -0.05em tracking, so ~18.7cqw
+     fills the stage width less its right inset. Derived from the stage rather
+     than the viewport: the word can never outgrow the column it lives in. */
+  font-size: clamp(40px, 18.7cqw, 226px);
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  white-space: nowrap;
+}
+
+.entry__letter {
+  display: inline-block;
+  /* Painted per letter rather than on the flex container. An inline-block child
+     is its own painting surface, so a text-clipped background on the container
+     fills each letter's box instead of its glyphs. The gradient is vertical,
+     which makes per-letter identical to a word-wide one. */
+  background-image: linear-gradient(
+    180deg,
+    rgba(184, 162, 255, 0.94) 0%,
+    rgba(126, 91, 255, 0.78) 58%,
+    rgba(84, 58, 190, 0.62) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  opacity: 0;
+  transform: translate(var(--lx, 0), var(--ly, 0.4em)) rotate(var(--lr, 4deg)) scale(1.06);
+  filter: blur(10px);
+  transition:
+    opacity 900ms var(--ease-out-expo),
+    transform 1100ms var(--ease-out-expo),
+    filter 1000ms var(--ease-out-expo);
+  transition-delay: var(--ld, 0ms);
+  will-change: transform, opacity, filter;
+}
+.entry__letter--in {
+  opacity: 1;
+  transform: none;
+  filter: blur(0);
+}
+/* Occupies its slot in the front plane without painting, so both planes stay
+   metrically identical and the letters line up across the sculpture. */
+.entry__letter--behind { visibility: hidden; }
+
+.entry__letter--dot { position: relative; top: 0.06em; }
+
+/* The front plane is slightly hotter than the back one: the letters that pass
+   in front of the metal should feel lit by it. */
+.entry__word-plane--front .entry__letter {
+  background-image: linear-gradient(
+    180deg,
+    rgba(214, 200, 255, 0.98) 0%,
+    rgba(150, 120, 255, 0.88) 55%,
+    rgba(110, 78, 235, 0.74) 100%
+  );
+}
+/* drop-shadow follows the painted glyphs; a text-shadow would show through a
+   transparent fill as a blurred silhouette. */
+.entry__word-plane--front {
+  filter: drop-shadow(0 0 38px rgba(140, 105, 255, 0.34));
+}
+.entry__word-plane--back {
+  filter: drop-shadow(0 0 26px rgba(96, 62, 220, 0.22));
+}
+
+.entry__word-plane--dim .entry__word {
+  transition: opacity 600ms var(--ease-soft);
+  opacity: 0.32;
+}
+
+/* The canvas fills the stage exactly. Its renderer measures this element and
+   re-frames the sculpture whenever the column changes width. */
+.entry__stage {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-sculpture);
+  opacity: 0;
+  transform: scale(0.965);
+  transition:
+    opacity 1500ms var(--ease-out-expo) 320ms,
+    transform 2200ms var(--ease-out-expo) 320ms;
+}
+.entry--live .entry__stage,
+.entry--welcome .entry__stage { opacity: 1; transform: none; }
+.entry__stage canvas { display: block; width: 100%; height: 100%; }
+
+/* 6. Falloff. Load-bearing for readability: the lower stops hold the hero copy
+   and the right-hand stops hand the composition over to the credentials. */
+.entry__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-vignette);
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 3, 6, 0) 58%,
+      rgba(3, 3, 6, 0.3) 84%,
+      rgba(3, 3, 6, 0.52) 100%
+    ),
+    radial-gradient(
+      ellipse 122% 88% at 44% 40%,
+      transparent 40%,
+      rgba(3, 3, 5, 0.44) 82%,
+      rgba(3, 3, 5, 0.84) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(5, 5, 7, 0.5),
+      transparent 15%,
+      transparent 60%,
+      rgba(5, 5, 7, 0.92) 100%
+    );
+}
+
+/* Structural rules. Hairlines on the lines the composition is actually built
+   on: the page gutter, the stage's internal division, the handover to the
+   credentials and the page's right boundary. Deliberately fainter than any
+   content - they describe the grid, they do not draw it. */
+.entry__rules {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-soft) 1400ms;
+}
+.entry--live .entry__rules,
+.entry--welcome .entry__rules { opacity: 0.55; }
+.entry__rule {
+  position: absolute;
+  width: 1px;
+  background: var(--grid-line);
+}
+/* Inside the scene: runs the full height of the visual stage. */
+.hero-stage__scene .entry__rules { inset: 0; z-index: var(--z-labels); }
+.entry__rule--gutter { left: 0; top: 0; bottom: 0; }
+.entry__rule--split { left: 52%; top: 0; bottom: 0; }
+/* Inside the page grid: from below the header to the foot of the composition. */
+.entry__main > .entry__rules {
+  inset: var(--header-h) var(--pad-x) auto;
+  height: calc(100% - var(--header-h));
+  z-index: 4;
+}
+.entry__rule--boundary {
+  left: calc((100% - var(--pad-x) * 2 - var(--layout-gap)) * 0.648);
+  top: 0;
+  bottom: 0;
+}
+.entry__rule--edge { right: 0; top: 0; bottom: 0; }
+
+/* Field annotations. Texture, not information: each one is pinned to a named
+   region of the stage rather than dropped at a viewport percentage. */
+.entry__labels {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-labels);
+  pointer-events: none;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  opacity: 0;
+  transition: opacity 1.2s var(--ease-soft) 1400ms;
+}
+.entry--live .entry__labels,
+.entry--welcome .entry__labels { opacity: 0.5; }
+.entry__label { position: absolute; white-space: nowrap; }
+.entry__label--1 { top: 17%; left: 0; }
+.entry__label--2 { top: 64%; left: 71%; }
+.entry__label--3 { top: 15%; right: 4%; }
+
+/* ------------------------------ COPY ----------------------------------- */
+
+/* On the gutter, below the wordmark, clear of the sculpture's mass. */
+.entry__copy {
+  position: absolute;
+  left: 0;
+  bottom: clamp(40px, 6vh, 84px);
+  z-index: var(--z-copy);
+  width: min(100%, var(--copy-width));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  pointer-events: auto;
+}
+.entry__copy > * {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 800ms var(--ease-out-expo), transform 800ms var(--ease-out-expo);
+}
+.entry--live .entry__copy > * { opacity: 1; transform: none; }
+.entry--live .entry__copy > *:nth-child(1) { transition-delay: 380ms; }
+.entry--live .entry__copy > *:nth-child(2) { transition-delay: 470ms; }
+.entry--live .entry__copy > *:nth-child(3) { transition-delay: 560ms; }
+.entry--live .entry__copy > *:nth-child(4) { transition-delay: 650ms; }
+
+.entry__headline {
+  /* Sized so the line holds on one pass down to the laptop breakpoint: the
+     string is ~10.1em wide, and this ceiling keeps it inside the copy's
+     measure rather than letting it break in two. */
+  font-size: clamp(36px, 3vw, 48px);
+  font-weight: 640;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+}
+.entry__sub {
+  max-width: 44ch;
+  color: var(--ink-2);
+  font-size: 15.5px;
+  line-height: 1.68;
+}
+/* One baseline, one gap, one row. Sized to its own content and bounded by the
+   stage rather than by the paragraph's measure: a call-to-action pair broken
+   over two lines is the loudest misalignment a single-frame composition can
+   have, and the overhang past the paragraph is a few pixels of clear space. */
+.entry__ctas {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 2.1vw, 36px);
+  margin-top: 10px;
+  width: max-content;
+  max-width: 100cqw;
+  flex-wrap: wrap;
+}
+.entry__ctas .cta { white-space: nowrap; }
+
+/* ---------------------------- AUTH STAGE ------------------------------- */
+
+/* The right column. The panel is optically centred in the space above the
+   annotation, and sits flush to the stage's right edge - which is the page
+   gutter, and therefore the same line as the navigation's call to action. */
+.auth-stage {
+  position: relative;
+  z-index: var(--z-auth);
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  /* Clearance for the annotation, so the panel can never grow into it. */
+  padding-bottom: clamp(56px, 7vh, 78px);
+  /* Optical centring: mathematically centred in the stage sits a shade low
+     against a stage that is taller above than below, so it is lifted a little.
+     Kept under 2vh so it never reads as a hand-placed offset. */
+  transform: translateY(-0.5vh);
+}
+
+.entry__panel-slot {
+  width: 100%;
+  max-width: var(--auth-width);
+  transition: opacity 380ms var(--ease-soft), transform 380ms var(--ease-soft);
+}
+.entry__panel-slot--out {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+
+/* Credentials panel. A tinted plane rather than a card: no fill you could
+   point at as "the box", just enough blur and a hairline to hold the form
+   against a moving background. No fixed height - the panel is sized by its
+   content, so a short window shortens it rather than clipping it. */
+.entry__panel-inner {
+  background: rgba(5, 5, 10, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  padding: clamp(24px, 2.2vw, 34px);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 700ms var(--ease-out-expo) 430ms, transform 700ms var(--ease-out-expo) 430ms;
+}
+.entry--live .entry__panel-inner,
+.entry--welcome .entry__panel-inner { opacity: 1; transform: none; }
+.entry__panel-inner--out {
+  opacity: 0 !important;
+  transform: translateY(-10px);
+  visibility: hidden;
+  pointer-events: none;
+  transition-delay: 0ms;
+}
+
+.entry__heading {
+  margin-top: 20px;
+  font-size: clamp(28px, 2.6vw, 36px);
+  font-weight: 640;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.entry__panel-inner .entry__sub {
+  margin-top: 10px;
+  color: var(--ink-2);
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.entry__link {
+  display: block;
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  transition: color 200ms ease;
+}
+.entry__link:hover { color: var(--ink); }
+
+.entry__submit-link {
+  margin-top: 26px;
+  text-decoration: none;
+}
+.entry__panel-links {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+.entry__quiet {
+  background: none;
+  border: 0;
+  padding: 6px 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  transition: color 200ms ease;
+}
+.entry__quiet:hover { color: var(--ink); }
+.entry__micro {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+
+/* Technical annotation. Right edge is the panel's right edge, which is also the
+   page gutter and the navigation's call-to-action edge. */
+.auth-stage__foot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  max-width: 250px;
+  text-align: right;
+  line-height: 1.75;
+  color: var(--ink-3);
+  opacity: 0;
+  transition: opacity 1.1s ease 1500ms;
+  pointer-events: none;
+}
+.entry--live .auth-stage__foot,
+.entry--welcome .auth-stage__foot { opacity: 0.36; }
+
+/* Success state, inside the same composition. */
+
+/* A soft scrim behind the greeting. The wordmark is dimmed rather than removed
+   and the sculpture keeps running, so the greeting would otherwise sit directly
+   on both. Local enough to leave the rest of the scene alone. */
+.entry--welcome .entry__vignette {
+  background:
+    radial-gradient(
+      ellipse 40% 30% at 50% 47%,
+      rgba(3, 3, 6, 0.94) 0%,
+      rgba(3, 3, 6, 0.72) 45%,
+      rgba(3, 3, 6, 0) 78%
+    ),
+    linear-gradient(
+      90deg,
+      rgba(3, 3, 6, 0) 34%,
+      rgba(3, 3, 6, 0.42) 56%,
+      rgba(3, 3, 6, 0.82) 74%,
+      rgba(3, 3, 6, 0.93) 100%
+    ),
+    radial-gradient(
+      ellipse 118% 88% at 42% 44%,
+      transparent 40%,
+      rgba(3, 3, 5, 0.5) 82%,
+      rgba(3, 3, 5, 0.88) 100%
+    ),
+    linear-gradient(to bottom, rgba(5, 5, 7, 0.55), transparent 16%, transparent 66%, rgba(5, 5, 7, 0.92) 100%);
+  transition: opacity 500ms var(--ease-soft);
+}
+
+/* Fills the credentials stage, so the greeting lands exactly where the form
+   was rather than over the wordmark. */
+.entry__greeting {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-greeting);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  animation: entry-greeting-in 620ms var(--ease-out-expo) both;
+}
+.entry__greeting-hello {
+  margin-top: 22px;
+  font-size: clamp(34px, 4.4vw, 52px);
+  font-weight: 640;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  color: var(--ink-2);
+}
+/* Sentence case, unlike the technical uppercase elsewhere: this is the one
+   moment the interface speaks rather than labels. */
+.entry__greeting-name { color: var(--ink); }
+.entry__greeting-sub {
+  margin-top: 12px;
+  color: var(--ink-3);
+  font-size: 15px;
+}
+.entry__greeting-pulse {
+  position: relative;
+  margin-top: 30px;
+  width: 150px;
+  height: 1px;
+  overflow: hidden;
+  background: linear-gradient(90deg, var(--violet), transparent);
+}
+.entry__greeting-pulse::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--signal), transparent);
+  animation: entry-greeting-pulse 1400ms var(--ease-soft) infinite;
+}
+@keyframes entry-greeting-pulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+@keyframes entry-greeting-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------------------- RESPONSIVE ------------------------------- */
+
+/* Extra large: the composition is already capped and centred. The wordmark
+   grows with the stage (cqw) up to its own ceiling; nothing else widens. */
+@media (min-width: 1700px) {
+  .entry__copy { bottom: clamp(56px, 7vh, 96px); }
+}
+
+/* Small desktop / laptop. The column ratio holds; the panel and the vertical
+   rhythm tighten so the whole frame still lands inside one screen. */
+@media (max-width: 1399px) and (min-width: 1181px) {
+  .auth-stage { padding-bottom: clamp(50px, 6vh, 66px); }
+  .entry__panel-inner { padding: clamp(24px, 2vw, 30px); }
+  .entry__copy { bottom: clamp(36px, 5vh, 56px); }
+}
+
+/* Below the two-column threshold the page stops being a single fixed frame and
+   becomes a scene band with the interface in normal flow beneath it.
+
+   This is not only a layout preference: the desktop composition is a 100svh
+   frame, so at these widths two columns would leave neither enough room. In
+   flow, the page simply grows and scrolls. */
+@media (max-width: 1180px) {
+  .entry__main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding: var(--header-h) var(--pad-x) clamp(48px, 9vh, 88px);
+  }
+  .hero-stage {
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    margin-bottom: 30px;
+  }
+  .hero-stage__scene {
+    position: relative;
+    inset: auto;
+    /* Taller than a proportional share of the window: the page scrolls on this
+       layout anyway, and a deeper band gives the sculpture somewhere to be. */
+    height: min(50vh, 420px);
+    flex: 0 0 auto;
+    /* The band still owns its own frame; the copy below it is not clipped. */
+    margin-inline: calc(var(--pad-x) * -1);
+    overflow: hidden;
+  }
+  .entry__vignette {
+    background:
+      linear-gradient(to bottom, rgba(3, 3, 6, 0.86) 0%, rgba(3, 3, 6, 0.3) 42%, rgba(3, 3, 6, 0.92) 100%),
+      radial-gradient(ellipse 130% 80% at 46% 40%, transparent 26%, rgba(3, 3, 5, 0.72) 100%);
+  }
+  /* The band runs full-bleed, so the word is pulled back onto the gutter to stay
+     on the same line as the copy and the logo. Sized from both axes: a wide,
+     short band would otherwise set it by width alone and swallow the sculpture. */
+  .entry__word {
+    top: 48%;
+    left: var(--pad-x);
+    font-size: min(15cqw, 17vh, 150px);
+  }
+  .entry__copy {
+    position: static;
+    width: 100%;
+    max-width: 560px;
+    margin-top: 0;
+  }
+  .auth-stage {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-bottom: 0;
+    transform: none;
+  }
+  .entry__panel-slot { max-width: 470px; }
+  .auth-stage__foot {
+    position: static;
+    max-width: 320px;
+    margin-top: 26px;
+    text-align: left;
+  }
+  .entry__labels { display: none; }
+  /* The greeting fills a stage on desktop; in a scrolling page there is no fixed
+     box to fill, so it becomes a full-screen moment with its own scrim. */
+  .entry__greeting {
+    position: fixed;
+    inset: 0;
+    padding-inline: var(--pad-x);
+    background: rgba(3, 3, 6, 0.9);
+  }
+}
+
+@media (max-width: 900px) {
+  .entry__headline { font-size: clamp(32px, 5vw, 42px); }
+}
+
+/* Mobile: a shorter band, so the first field is not pushed down the page. The
+   word is centred in the band here rather than hung off the gutter - at this
+   width the band is a plate of its own, and a name hung to one side of it
+   reads as an accident rather than a composition. */
+@media (max-width: 767px) {
+  .hero-stage { margin-bottom: 24px; }
+  .hero-stage__scene { height: 230px; }
+  .entry__word {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: min(16cqw, 17vh, 150px);
+  }
+  .entry__panel-inner { padding: 22px 20px; }
+  .entry__headline { font-size: clamp(28px, 7.5vw, 34px); }
+  .entry__sub { font-size: 14.5px; }
+  .entry__ctas { gap: 14px; margin-top: 6px; }
+}
+
+@media (max-width: 380px) {
+  .hero-stage__scene { height: 200px; }
+}
+
+/* Short desktop viewports: keep the single frame, but give the copy and the
+   form less to sit in so the primary controls stay above the fold. Width-gated
+   so this never reaches the stacked layout, which scrolls anyway. */
+@media (min-width: 1181px) and (max-height: 860px) {
+  .entry__copy { bottom: clamp(28px, 4vh, 48px); gap: 13px; }
+  .entry__headline { font-size: clamp(34px, 2.7vw, 42px); }
+  .entry__ctas { margin-top: 6px; }
+  .auth-stage { padding-bottom: clamp(44px, 6vh, 56px); }
+  .entry__panel-inner { padding: clamp(22px, 1.8vw, 27px); }
+  .signin { margin-top: 26px; gap: 15px; }
+  .signin__field { gap: 8px; }
+  .signin__input { height: 48px; }
+  .signin__submit { height: 48px; margin-top: 4px; }
+  .entry__heading { margin-top: 16px; }
+  .entry__link { margin-top: 16px; padding-top: 12px; }
+  .entry__micro { margin-top: 12px; padding-top: 11px; }
+  /* Decoration before content: two of the three annotations go rather than
+     competing with the form for the last row of pixels. */
+  .entry__label--2 { display: none; }
+}
+
+/* -------------------------- REDUCED MOTION ----------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .entry__letter {
+    transition: opacity 300ms ease;
+    transform: none;
+    filter: none;
+  }
+  .entry__stage { transition: opacity 500ms ease; transform: none; }
+  .entry__copy > *,
+  .entry__panel-inner,
+  .entry__panel-slot { transition: opacity 400ms ease; transform: none; }
+  .entry__greeting { animation: none; }
+  .entry__greeting-pulse::after { animation: none; opacity: 0.5; }
+}

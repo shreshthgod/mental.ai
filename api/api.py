@@ -1,28 +1,58 @@
 """
-Production HTTP API for the mental-health screening inference package.
+Production HTTP API for the MENTAL.AI screening inference package.
 
 Architecture:
-    HTTP → FastAPI validation → MentalHealthScreener.screen() → JSON response
+    HTTP → bearer session check → FastAPI validation
+         → MentalHealthScreener.screen() → JSON response
 
-This layer contains NO model logic; it only transports and validates.
+This layer contains NO model logic; it only authenticates, transports and
+validates. Raw user text is never logged.
 """
 import os
 import sys
 import time
 import uuid
 import logging
-import traceback
 from typing import Optional
 
-# Ensure package is importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "Step 12 - Packaging", "package"))
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_ROOT = os.path.dirname(_HERE)
 
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import JSONResponse
+# Load .env before anything reads os.environ. Real environment variables win,
+# so container and CI configuration is never overridden by a local file.
+#
+# The confirmation is printed rather than logged: logging is not configured until
+# further down (it needs LOG_LEVEL, which may come from this file), so a logger
+# call here would be discarded.
+_ENV_PATH = os.environ.get("MENTAL_AI_ENV_FILE", os.path.join(_ROOT, ".env"))
+_ENV_SOURCE: Optional[str] = None
+try:
+    from dotenv import load_dotenv
+except ImportError:
+    if os.path.isfile(_ENV_PATH):
+        print(
+            f"WARNING: python-dotenv is not installed, so {_ENV_PATH} was ignored. "
+            "Install it or export the variables directly.",
+            file=sys.stderr,
+        )
+else:
+    if load_dotenv(_ENV_PATH, override=False):
+        _ENV_SOURCE = _ENV_PATH
+
+# Ensure the inference package and the repo root are importable, so this module
+# works both as `uvicorn api.api:app` from the root and as `python3 api/api.py`.
+sys.path.insert(0, os.path.join(_ROOT, "Step 12 - Packaging", "package"))
+sys.path.insert(0, _ROOT)
+
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 import uvicorn
 
 from mental_health_screening.inference import MentalHealthScreener
+
+from api import auth
 
 # ------------------------------------------------------------------
 # Logging: structured, no raw user text, no PII
@@ -33,13 +63,17 @@ logging.basicConfig(
 )
 logger = logging.getLogger("screening-api")
 
+if _ENV_SOURCE:
+    logger.info("configuration loaded from %s", _ENV_SOURCE)
+
 # ------------------------------------------------------------------
 # App initialization with explicit artifact verification
 # ------------------------------------------------------------------
 ARTIFACTS_DIR = os.environ.get("ARTIFACTS_DIR", os.path.join(
-    os.path.dirname(__file__), "..", "Step 12 - Packaging", "package",
-    "mental_health_screening", "artifacts"
+    _ROOT, "Step 12 - Packaging", "package", "mental_health_screening", "artifacts"
 ))
+SERVICE_VERSION = os.environ.get("SERVICE_VERSION", "0.1.0")
+START_TIME = time.time()
 
 try:
     screener = MentalHealthScreener(artifacts_dir=ARTIFACTS_DIR)
@@ -49,14 +83,69 @@ except Exception as exc:
     screener = None  # Will be caught by /health
 
 app = FastAPI(
-    title="Mental Health Screening API",
+    title="mental.ai Screening API",
     description="Research/screening inference layer over packaged ML artifacts. NOT a clinical diagnostic system.",
-    version=os.environ.get("SERVICE_VERSION", "0.1.0"),
+    version=SERVICE_VERSION,
 )
+
+# Dev origin is proxied through Vite (no CORS needed in the default setup).
+# Listed explicitly so a split-origin deployment via VITE_API_URL works too.
+_DEFAULT_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        origin.strip()
+        for origin in os.environ.get("MENTAL_AI_CORS_ORIGINS", _DEFAULT_ORIGINS).split(",")
+        if origin.strip()
+    ],
+    allow_credentials=False,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID"],
+)
+
+bearer_scheme = HTTPBearer(auto_error=False)
+
+
+# ------------------------------------------------------------------
+# Session dependency
+# ------------------------------------------------------------------
+def require_session(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+) -> dict:
+    """FastAPI dependency: resolve a valid bearer token or raise 401."""
+    if credentials is None or not credentials.credentials:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    try:
+        return auth.decode_token(credentials.credentials)
+    except auth.InvalidToken as exc:
+        raise HTTPException(status_code=401, detail=str(exc)) from exc
+
 
 # ------------------------------------------------------------------
 # Request / response contracts (typed, based on actual inference output)
 # ------------------------------------------------------------------
+class LoginRequest(BaseModel):
+    user_id: str = Field(..., min_length=1, max_length=128, description="Configured user id")
+    password: str = Field(..., min_length=1, max_length=256, description="Account password")
+
+
+class LoginResponse(BaseModel):
+    token: str
+    token_type: str
+    expires_in: int
+    expires_at: int
+    user: str
+    name: str
+
+
+class SessionResponse(BaseModel):
+    user: str
+    name: str
+    issued_at: int
+    expires_at: int
+    service_version: str
+
+
 class PredictRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=10000, description="Raw user text for screening")
 
@@ -127,7 +216,7 @@ async def health():
     status = "healthy" if artifacts_ok else "unhealthy"
     return HealthStatus(
         status=status,
-        service_version=os.environ.get("SERVICE_VERSION", "0.1.0"),
+        service_version=SERVICE_VERSION,
         artifacts_ok=artifacts_ok,
         artifacts_detail=artifacts_detail,
         screener_available=screener is not None,
@@ -140,13 +229,76 @@ async def health():
 async def ready():
     if screener is None:
         raise HTTPException(status_code=503, detail="Screener not available")
-    return {"ready": True, "service_version": os.environ.get("SERVICE_VERSION", "0.1.0")}
+    return {"ready": True, "service_version": SERVICE_VERSION}
 
 # ------------------------------------------------------------------
-# Prediction endpoint
+# Authentication endpoints
+# ------------------------------------------------------------------
+@app.post("/auth/login", response_model=LoginResponse)
+async def login(req: LoginRequest, request: Request):
+    """
+    Exchange configured credentials for a signed bearer token.
+
+    The response says nothing about which half of the credential pair was
+    wrong. Failure counts are tracked per client IP and throttled.
+    """
+    client_id = request.client.host if request.client else "unknown"
+    request_id = request.state.request_id
+
+    try:
+        auth.enforce_attempt_limit(client_id)
+        auth.verify_credentials(req.user_id, req.password)
+    except auth.RateLimited as exc:
+        logger.warning(
+            f"login_throttled request_id={request_id} client={client_id} "
+            f"retry_after_s={exc.retry_after_seconds}"
+        )
+        raise HTTPException(
+            status_code=429,
+            detail=(
+                "Too many failed sign-in attempts. "
+                f"Try again in {exc.retry_after_seconds} seconds."
+            ),
+            headers={"Retry-After": str(exc.retry_after_seconds)},
+        ) from exc
+    except auth.InvalidCredentials as exc:
+        auth.record_failed_attempt(client_id)
+        logger.warning(f"login_failed request_id={request_id} client={client_id}")
+        raise HTTPException(status_code=401, detail="Invalid user id or password") from exc
+
+    auth.clear_attempts(client_id)
+    user = auth.configured_user()
+    token, expires_in = auth.issue_token(user)
+    logger.info(
+        f"login_complete request_id={request_id} user={user} "
+        f"demo_credentials={auth.using_demo_credentials()}"
+    )
+    return LoginResponse(
+        token=token,
+        token_type="bearer",
+        expires_in=expires_in,
+        expires_at=int(time.time()) + expires_in,
+        user=user,
+        name=auth.configured_name(),
+    )
+
+
+@app.get("/auth/session", response_model=SessionResponse)
+async def session(claims: dict = Depends(require_session)):
+    """Validate a stored token on page load so a revoked session cannot linger."""
+    return SessionResponse(
+        user=claims["sub"],
+        name=auth.configured_name(),
+        issued_at=claims["iat"],
+        expires_at=claims["exp"],
+        service_version=SERVICE_VERSION,
+    )
+
+# ------------------------------------------------------------------
+# Prediction endpoint (authenticated)
 # ------------------------------------------------------------------
 @app.post("/predict", response_model=PredictResponse)
-async def predict(req: PredictRequest, request: Request):
+async def predict(req: PredictRequest, request: Request, claims: dict = Depends(require_session)):
     request_id = request.state.request_id
     if screener is None:
         logger.error(f"Prediction rejected: screener unavailable request_id={request_id}")
@@ -174,14 +326,14 @@ async def predict(req: PredictRequest, request: Request):
             cleaned_text=result.get("cleaned_text"),
             lemmatized_text=result.get("lemmatized_text"),
             provenance_caveat=result.get("provenance_caveat", "This is a screening signal, not a clinical diagnosis."),
-            service_version=os.environ.get("SERVICE_VERSION", "0.1.0"),
+            service_version=SERVICE_VERSION,
         )
     except Exception as exc:
         logger.error(
             f"prediction_failed request_id={request_id} error_type={type(exc).__name__} msg={str(exc)}"
         )
         # Never expose raw tracebacks or internal paths to the client
-        raise HTTPException(status_code=500, detail=f"Prediction failed: {str(exc)}")
+        raise HTTPException(status_code=500, detail="Prediction failed")
 
 # ------------------------------------------------------------------
 # Metrics endpoint (operational, no user data)
@@ -190,8 +342,8 @@ async def predict(req: PredictRequest, request: Request):
 async def metrics():
     return MetricsResponse(
         status="operational",
-        version=os.environ.get("SERVICE_VERSION", "0.1.0"),
-        uptime_seconds=time.time() - (time.time() - time.time()),  # placeholder; real metric would need start time
+        version=SERVICE_VERSION,
+        uptime_seconds=round(time.time() - START_TIME, 3),
     )
 
 # ------------------------------------------------------------------
@@ -200,11 +352,20 @@ async def metrics():
 @app.get("/")
 async def root():
     return {
-        "service": "mental-health-screening",
-        "version": os.environ.get("SERVICE_VERSION", "0.1.0"),
+        "service": "mental.ai",
+        "version": SERVICE_VERSION,
         "description": "Research/screening inference API. Not a clinical diagnostic system.",
+        "uptime_seconds": round(time.time() - START_TIME, 3),
+        "auth": {
+            "login_required_for": ["/predict"],
+            "login": "POST /auth/login",
+            "session": "GET /auth/session",
+            "demo_credentials_in_use": auth.using_demo_credentials(),
+        },
         "endpoints": {
-            "/predict": "POST - screen text",
+            "/auth/login": "POST - exchange credentials for a bearer token",
+            "/auth/session": "GET - validate a bearer token",
+            "/predict": "POST - screen text (authenticated)",
             "/health": "GET - service health",
             "/ready": "GET - readiness",
             "/metrics": "GET - operational metrics",

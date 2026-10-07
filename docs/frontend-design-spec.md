@@ -1,6 +1,6 @@
-# Vantage - Frontend Design Spec
+# mental.ai - Frontend Design Spec
 
-Cinematic redesign of the Vantage frontend: a dark, editorial, research-grade
+Cinematic redesign of the mental.ai frontend: a dark, editorial, research-grade
 product experience over the verified FastAPI inference backend.
 
 References: TRUST-SAT (`trustsat.mpst.me`, local `SIH26/TRUST-SAT/web`) for
@@ -12,7 +12,7 @@ atmospheric WebGL layer.
 
 ## 1. Product framing
 
-- Vantage is a **research screening instrument**, not a healthcare product.
+- mental.ai is a **research screening instrument**, not a healthcare product.
 - Copy uses: *screening, signals, patterns, urgency, human review, research*.
 - Copy never uses: *diagnosis, clinical, doctor, patient, treatment*.
 - The site should read as: digital art + research technology + working system.
@@ -75,44 +75,67 @@ they enter the viewport.
 one static frame), collapses the intro to a short fade, disables parallax and
 count-up, keeps simple opacity fades. Site must look complete when static.
 
-## 6. Hero composition (`/`)
+## 6. Entry composition (`/`)
 
-- 100svh, no scroll needed to understand the product.
-- Layers back→front: black base → Grainient (near-black indigo/violet/blue,
-  subtle) → editorial grid → hero canvas (signal structure) → giant VANTAGE
-  wordmark interleaved with the structure (some letters behind, copy in front)
-  → nav → hero copy → scroll cue.
-- Intro timeline: 0.0 black · 0.2 letters assemble (staggered, blur→sharp,
-  slight rotation, converge) · ~0.9 nav · ~1.0 hero object emerges · ~1.3 copy
-  · ~1.5 CTA. Intro runs once per session (sessionStorage), skipped elsewhere.
-- Pointer parallax: subtle camera/structure/light response. Expensive, not
-  gamey.
+`/` is the entry experience and doubles as the sign-in page. `/login` renders the
+same component, so there is exactly one login surface and deep links behave.
 
-### Hero object - "Signal Structure"
+- 100svh on desktop; below 1180px the page becomes a scene band with the
+  interface in normal flow beneath it, so nothing is clipped and the page
+  scrolls normally.
+- Layers back→front, by z-index in one stacking context:
+  black base + radial violet halo → Grainient grain → editorial grid (App) →
+  **wordmark back plane** → WebGL canvas → **wordmark front plane** → vignette
+  and field annotations → hero copy + credentials → nav (App).
+- The two wordmark planes are what make the sculpture and the type occupy the
+  same space: identical metrics, and the front plane paints only the middle run
+  of letters. The container must not create a stacking context (no transform,
+  filter, opacity or blend mode) or both planes would trap on one side of the
+  metal.
+- Intro timeline: 0.0 black · 0.15 letters assemble (staggered, blur→sharp,
+  slight rotation) · 0.32 canvas emerges from darkness · 0.38 copy · 0.43
+  credentials. Runs once per session (sessionStorage), skipped on return visits.
+- Pointer parallax: rAF-coalesced, ~4% easing per frame, capped at a few pixels
+  of perceived movement.
 
-Canvas 2D with real 3D projection (perspective, depth fog, additive glow -
-no WebGL dependency for the object itself):
+### Entry object - "Neural Signal" (`components/hero/neural.ts`)
 
-- Central core node; two branching paths that converge - an abstraction of
-  TEXT → {CONDITION, URGENCY} → REVIEW, never drawn as a flowchart.
-- Gyroscopic rings of nodes, thin luminous edges, small particle field.
-- Layered life: slow rotation · signals traveling along edges · particles
-  emerging/fading · a soft pulse event every ~6–9s.
-- Colors: white/violet/blue on black; glow via additive blending + shadowBlur,
-  used sparingly for performance.
-- Mobile: reduced node/particle counts, smaller radius.
+Three.js. Six strands threaded past an invisible core - three tubes, two
+flattened ribbons (a tube scaled on one axis), one thin emissive wire - built
+from `CatmullRomCurve3` + `TubeGeometry` with per-strand control-point
+perturbation, so no two share a silhouette and nothing closes into a torus knot.
+
+- Material: `MeshPhysicalMaterial`, metalness 0.86–0.9, roughness 0.26–0.31,
+  clearcoat 0.75–0.85. Base tints are dark grey, **not** near-black: for a metal
+  the base colour is the specular reflectance, and a near-black albedo renders as
+  a void regardless of lighting. The form reads as dark chrome because the
+  environment is a black void with a few bright strips.
+- Environment: procedural PMREM bake of emissive planes
+  (`components/hero/studioEnv.ts`), shared with the About hero.
+- Lighting: dim violet rim, blue edge, low white key, minimal fill. The strips
+  do the modelling; the lights only shape the silhouette.
+- Motion: per-strand breathing injected via `onBeforeCompile` (two low-frequency
+  sines on `transformed`, driven by one shared uniform - GPU-side, no per-frame
+  allocation), plus group drift ≤0.11 rad, camera drift, and a violet bead that
+  rides one strand every ~4–7s.
+- Cost control: DPR capped at 1.75 (1.25 on mobile), single rAF loop, paused on
+  `document.hidden` and when the canvas leaves the viewport, one composed frame
+  under reduced motion, full disposal on unmount.
+- Fallback: WebGL → existing 2D `engine.ts` signal structure → the CSS halo.
+  Login never depends on any of the three; verified by `qa:entry`.
 
 ## 7. Navigation
 
-Flat, transparent, tiny, editorial. Left: `VANTAGE` wordmark (small). Right:
-`SCREEN · RESEARCH · METHODOLOGY(→/research#method) · ABOUT(→/#limits)` + a
-restrained `START →` text-link CTA. No pill navbar. After scroll: hairline
+Flat, transparent, tiny, editorial. Left: `Mental.ai` wordmark (small). Right:
+`SCREEN · RESEARCH · METHODOLOGY(→/research#method) · ABOUT(→/about#limits)` + a
+light rectangular `LOGIN` CTA when signed out, or `HELLO, <FIRST NAME> ▾` with
+an account panel (restart screening · log out) when signed in. No pill navbar. After scroll: hairline
 bottom border + 8px blur backdrop. Mobile: compact menu overlay.
 
-## 8. Landing sections (order)
+## 8. About page sections (`/about`, order)
 
 1. **Hero** (above).
-2. **Statement** - "Language contains signals. Vantage makes them visible."
+2. **Statement** - "Language contains signals. mental.ai makes them visible."
    Editorial typographic interlude: SEE THE SIGNAL → LANGUAGE → PATTERN → REVIEW.
 3. **Pipeline** - numbered technical sequence 01 INPUT · 02 CLEAN ·
    03 PREPROCESS · 04 FEATURES · 05 MODELS · 06 REVIEW as a horizontal/vertical
@@ -125,15 +148,25 @@ bottom border + 8px blur backdrop. Mobile: compact menu overlay.
    `53,043` primary records · `232,074` urgency records · `0.6926` primary
    macro-F1 · `0.987` suicide recall @ 0.15 · plus `0.9431` macro-F1 @ 0.5 and
    `0.8981` @ 0.15 explained as a deliberate recall-first trade-off.
-6. **What Vantage is not** - limitations as strong typography:
+6. **What mental.ai is not** - limitations as strong typography:
    NOT A DIAGNOSIS / NOT A CLINICAL DECISION / NOT AUTONOMOUS CRISIS RESPONSE.
    Proxy labels, public datasets, human review routing.
 7. **CTA** - START SCREENING →.
 8. **Footer** - minimal: name, one-line description, section links.
 
-## 9. `/screen` - screening workspace
+## 9. `/screen` - check-in then workspace
 
-Calmer than landing: dark raised surface, faint grid, no Grainient.
+Behind the gate. Calmer than the entry: dark raised surface, faint grid, no
+Grainient. Two stages in one route.
+
+**Stage 1 - check-in** (`components/screen/CheckInFlow.tsx`). Four prompts, one
+per screen, `STEP n OF 4`, starting with `BEFORE ANYTHING ELSE` / "How are you
+today?". Answers are browser-local and are never transmitted from this screen;
+completing it flattens them into the editor text and opens stage 2. A saved
+check-in is restored from storage, so a reload does not re-ask. `Restart
+check-in` in the stage-2 header clears it and returns here.
+
+**Stage 2 - workspace.**
 
 - Title `SCREEN`, subtitle "Submit language for signal analysis."
 - Large multiline textarea (the dominant element), character count `n / 10000`

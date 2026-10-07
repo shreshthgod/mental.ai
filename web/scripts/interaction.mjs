@@ -1,11 +1,11 @@
-// Interaction QA: intro frames, screening flow, error states.
-import { chromium } from "playwright";
+// Interaction QA: intro frames, sign-in flow, screening flow, error states.
 import { mkdirSync } from "node:fs";
+import { completeCheckIn, launchChromium, signIn } from "./auth.mjs";
 
 const BASE = process.argv[2] ?? "http://localhost:5173";
 mkdirSync("shots", { recursive: true });
 
-const browser = await chromium.launch();
+const browser = await launchChromium();
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 
 // 1. Intro assembly frames (fresh session)
@@ -17,15 +17,31 @@ await page.screenshot({ path: "shots/intro-2-converge.png" });
 await page.waitForTimeout(1200);
 await page.screenshot({ path: "shots/intro-3-live.png" });
 
-// 2. Login gate (START -> /screen redirects to /login for signed-out users)
+// 2. The gate. Visiting /screen while signed out is what produces the redirect,
+// so the landing here is the sign-in page rather than the screening.
 await page.goto(`${BASE}/screen`, { waitUntil: "networkidle" });
-await page.waitForSelector("#login-id", { timeout: 10000 });
-await page.screenshot({ path: "shots/login-1-form.png" });
-await page.fill("#login-id", "admin");
-await page.fill("#login-pass", "password");
-await page.click("button[type=submit]");
-await page.waitForSelector("#screen-input", { timeout: 10000 });
-console.log("login flow ok");
+await page.waitForSelector(".signin__input", { timeout: 10000 });
+console.log("redirected to", new URL(page.url()).pathname);
+await page.screenshot({ path: "shots/login-1-gate.png" });
+
+await signIn(page);
+await page.waitForSelector(".checkin__input", { timeout: 15000 });
+console.log("signed in, check-in reached");
+
+// 3. The four screening questions, then the workspace with the prefill.
+await completeCheckIn(page, [
+  "Not great, work has been heavy.",
+  "Anxious and pretty isolated.",
+  "Mostly my thesis deadline.",
+  "Could not sleep again.",
+]);
+
+await page.waitForSelector("#screen-input", { timeout: 15000 });
+console.log("check-in + login flow ok");
+console.log(
+  "check-in prefilled the workspace =",
+  (await page.inputValue("#screen-input")).split("\n").length > 0
+);
 await page.screenshot({ path: "shots/login-2-authed.png" });
 
 // 3. Screening flow - real backend

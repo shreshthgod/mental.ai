@@ -8,7 +8,7 @@ export interface ScreeningRecord {
   urgencyProb: number;
 }
 
-const KEY = "vantage.history";
+const KEY = "mental.ai.history";
 const MAX_ENTRIES = 12;
 
 export function loadHistory(): ScreeningRecord[] {

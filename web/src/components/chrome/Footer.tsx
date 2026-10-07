@@ -7,7 +7,7 @@ export function Footer() {
       <div className="footer__inner">
         <div className="footer__top">
           <div>
-            <p className="footer__brand">VANTAGE</p>
+            <p className="footer__brand">MENTAL.AI</p>
             <p className="footer__desc">
               AI-assisted mental health screening research system. Dual-model NLP
               pipeline producing screening signals for human review - not a

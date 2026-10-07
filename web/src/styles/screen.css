@@ -331,3 +331,140 @@
   .history__row { grid-template-columns: 1fr; gap: 5px; padding: 14px 4px; }
   .history__preview { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
 }
+
+/* --------------------------- CHECK-IN FLOW ------------------------------ */
+
+/* Stage one of the screening: four prompts, one per screen. Same typography
+   and controls as the workspace below it, so moving between them reads as one
+   surface rather than two pages. */
+.checkin {
+  margin-top: 44px;
+  max-width: 720px;
+  animation: checkin-in 560ms var(--ease-out-expo) both;
+}
+.checkin__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.checkin__form {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.checkin__field { display: flex; flex-direction: column; gap: 10px; }
+
+/* The question is the visual anchor of each step, so it is set as display type
+   rather than as a small label. tabIndex -1 makes it programmatically
+   focusable so the step change can move focus here. */
+.checkin__prompt {
+  margin: 0;
+  font-size: clamp(22px, 3.4vw, 30px);
+  font-weight: 640;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+  color: var(--ink);
+}
+.checkin__prompt:focus { outline: none; }
+.checkin__prompt:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+
+.checkin__input {
+  width: 100%;
+  min-height: 96px;
+  resize: vertical;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.55;
+  padding: 14px 15px;
+  transition: border-color 200ms ease, box-shadow 260ms ease;
+}
+.checkin__input::placeholder { color: rgba(255, 255, 255, 0.32); }
+.checkin__input:hover:not(:focus) { border-color: rgba(255, 255, 255, 0.15); }
+.checkin__input:focus {
+  outline: none;
+  border-color: rgba(124, 92, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(124, 92, 255, 0.08);
+}
+
+.checkin__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.checkin__submit { flex: 1 1 auto; justify-content: center; }
+.checkin__back {
+  flex: 0 0 auto;
+  background: none;
+  border: 0;
+  padding: 10px 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  transition: color 200ms ease;
+}
+.checkin__back:hover:not(:disabled) { color: var(--ink); }
+.checkin__back:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+
+/* On the first step there is nowhere to go back to. Hidden rather than shown
+   disabled: an inert control at the start of a flow reads as broken. */
+.checkin__back[disabled] { visibility: hidden; pointer-events: none; }
+
+.checkin__note {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.65;
+  letter-spacing: 0.04em;
+  color: var(--ink-3);
+  border-left: 2px solid var(--line-2);
+  padding-left: 12px;
+}
+
+/* Workspace head controls: status and the way back to step one. */
+.workspace__head-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.workspace__restart {
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  padding: 8px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+  transition: color 200ms ease, border-color 200ms ease;
+}
+.workspace__restart:hover { color: var(--ink); border-color: var(--line-2); }
+.workspace__restart:focus-visible { outline: 2px solid var(--violet); outline-offset: 3px; }
+
+@keyframes checkin-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 767px) {
+  .checkin { margin-top: 32px; }
+  .checkin__actions { flex-direction: column-reverse; align-items: stretch; }
+  .checkin__submit { width: 100%; }
+  .workspace__head-actions { width: 100%; justify-content: space-between; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .checkin { animation: none; }
+}

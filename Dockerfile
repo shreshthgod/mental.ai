@@ -38,6 +38,13 @@ ENV PORT=8000
 ENV HOST=0.0.0.0
 ENV LOG_LEVEL=INFO
 
+# Session auth. These carry the documented research demo values so the image
+# runs as-is; override MENTAL_AI_AUTH_USER, MENTAL_AI_AUTH_PASSWORD and
+# MENTAL_AI_TOKEN_SECRET at run time for any real deployment.
+ENV MENTAL_AI_AUTH_USER=admin
+ENV MENTAL_AI_AUTH_PASSWORD=password
+ENV MENTAL_AI_SESSION_TTL=43200
+
 # Expose the service port
 EXPOSE 8000
 

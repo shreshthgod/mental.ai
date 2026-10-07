@@ -1,5 +1,5 @@
 /**
- * Vantage API client - the single transport layer to the FastAPI backend.
+ * mental.ai API client - the single transport layer to the FastAPI backend.
  * No component performs fetch() directly.
  */
 
@@ -33,7 +33,30 @@ export interface HealthResponse {
   screener_available: boolean;
 }
 
-export type ApiErrorKind = "validation" | "server" | "unavailable" | "timeout";
+export interface LoginResponse {
+  token: string;
+  token_type: string;
+  expires_in: number;
+  expires_at: number;
+  user: string;
+  name: string;
+}
+
+export interface SessionResponse {
+  user: string;
+  name: string;
+  issued_at: number;
+  expires_at: number;
+  service_version: string;
+}
+
+export type ApiErrorKind =
+  | "validation"
+  | "server"
+  | "unavailable"
+  | "timeout"
+  | "unauthorized"
+  | "throttled";
 
 export class ApiError extends Error {
   kind: ApiErrorKind;
@@ -53,6 +76,24 @@ const BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
 
 const HEALTH_TIMEOUT_MS = 8_000;
 const PREDICT_TIMEOUT_MS = 30_000;
+const AUTH_TIMEOUT_MS = 10_000;
+
+/**
+ * Bearer token for authenticated calls.
+ *
+ * Held in memory by the auth store. Read lazily through this indirection so
+ * api.ts never has to import the store (which would create a cycle) and so
+ * sign-out takes effect on the very next request.
+ */
+let authToken: string | null = null;
+
+export function setAuthToken(token: string | null): void {
+  authToken = token;
+}
+
+export function getAuthToken(): string | null {
+  return authToken;
+}
 
 function combineSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
   const ctrl = new AbortController();
@@ -74,7 +115,9 @@ async function doRequest<T>(
 
   let res: Response;
   try {
-    res = await fetch(`${BASE}${path}`, { ...init, signal });
+    const headers = new Headers(init.headers);
+    if (authToken) headers.set("Authorization", `Bearer ${authToken}`);
+    res = await fetch(`${BASE}${path}`, { ...init, headers, signal });
   } catch (err) {
     clearTimeout(timer);
     if (err instanceof DOMException && err.name === "AbortError") {
@@ -96,6 +139,8 @@ async function doRequest<T>(
     } catch {
       /* non-JSON error body */
     }
+    if (res.status === 401) throw new ApiError("unauthorized", detail, res.status, requestId);
+    if (res.status === 429) throw new ApiError("throttled", detail, res.status, requestId);
     if (res.status === 422) throw new ApiError("validation", detail, res.status, requestId);
     if (res.status === 503) throw new ApiError("unavailable", detail, res.status, requestId);
     throw new ApiError("server", detail, res.status, requestId);
@@ -122,6 +167,28 @@ export const api = {
   },
   ready(signal?: AbortSignal): Promise<{ ready: boolean; service_version: string }> {
     return doRequest("/ready", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
+  },
+  /**
+   * Exchange credentials for a bearer token.
+   *
+   * Sent with an explicitly empty Authorization header: a stale token from a
+   * previous session must never be attached to a sign-in attempt.
+   */
+  login(userId: string, password: string, signal?: AbortSignal): Promise<LoginResponse> {
+    return doRequest<LoginResponse>(
+      "/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "" },
+        body: JSON.stringify({ user_id: userId, password }),
+      },
+      AUTH_TIMEOUT_MS,
+      signal
+    );
+  },
+  /** Validate the stored token. Used on boot to confirm a session is still live. */
+  session(signal?: AbortSignal): Promise<SessionResponse> {
+    return doRequest<SessionResponse>("/auth/session", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
   },
 };
 

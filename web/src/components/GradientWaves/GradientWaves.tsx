@@ -192,15 +192,25 @@ const GradientWaves = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const renderer = new Renderer({
-      webgl: 2,
-      alpha: true,
-      premultipliedAlpha: true,
-      antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
-    });
+    // This layer is decoration. If the browser refuses a WebGL context the
+    // effect has to give up quietly: an unhandled failure here unmounts the
+    // whole React tree, which would take the sign-in form with it. Same
+    // contract as the Grainient component.
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        webgl: 2,
+        alpha: true,
+        premultipliedAlpha: true,
+        antialias: false,
+        dpr: Math.min(window.devicePixelRatio || 1, 2),
+      });
+    } catch {
+      return;
+    }
 
     const gl = renderer.gl;
+    if (!gl) return;
     gl.clearColor(0, 0, 0, 0);
     const canvas = gl.canvas as HTMLCanvasElement;
     canvas.style.width = '100%';

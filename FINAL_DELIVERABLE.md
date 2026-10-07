@@ -1,4 +1,4 @@
-# Final Deliverable Report - Mental Health Screening Hardening
+# Final Deliverable Report - MENTAL.AI Screening Hardening
 
 ## A. What Was Already Working (Verified Before Changes)
 

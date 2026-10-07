@@ -60,7 +60,7 @@ export function Metrics() {
             <span className="label label--accent">The 0.15 threshold, honestly</span>
             <p>
               The urgency model scores <strong>0.9431 macro-F1</strong> at the default
-              0.5 threshold. Vantage deploys it at <strong>0.15</strong> - macro-F1
+              0.5 threshold. MENTAL.AI deploys it at <strong>0.15</strong> - macro-F1
               drops to <strong>0.8981</strong> and precision falls from 0.952 to
               0.840 - because a safety net exists to catch: suicide-class recall
               rises from 0.934 to <strong>0.987</strong>. The trade is deliberate and

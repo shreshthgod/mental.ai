@@ -21,7 +21,7 @@ export function Statement() {
         ))}
         <Reveal delayMs={380}>
           <p className="statement__big">
-            Language contains signals. <strong>Vantage makes them visible</strong> -
+            Language contains signals. <strong>MENTAL.AI makes them visible</strong> -
             a research pipeline that turns raw text into structured condition and
             urgency signals, always decided on by a human.
           </p>

@@ -13,7 +13,9 @@ body {
   font-family: var(--font-sans);
   font-feature-settings: "ss01", "cv11";
   min-height: 100svh;
-  overflow-x: hidden;
+  /* clip rather than hidden: it contains the scroll container without turning the
+     body into a scroll box, so fixed chrome and dropdowns are unaffected. */
+  overflow-x: clip;
 }
 
 ::selection { background: rgba(123, 92, 255, 0.35); color: var(--ink); }
@@ -50,7 +52,7 @@ ul, ol { padding: 0; list-style: none; }
   position: fixed;
   left: 16px;
   top: -48px;
-  z-index: 200;
+  z-index: var(--z-skip);
   padding: 8px 14px;
   background: var(--ink);
   color: var(--bg);
@@ -59,6 +61,20 @@ ul, ol { padding: 0; list-style: none; }
   transition: top 160ms var(--ease-soft);
 }
 .skip-link:focus { top: 12px; }
+
+/* Visually hidden but available to assistive technology. Used where a brand
+   mark is built from styled spans and would otherwise be read letter by letter. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 /* Site-wide animated gradient waves (background layer) */
 .site-waves {
@@ -73,20 +89,18 @@ ul, ol { padding: 0; list-style: none; }
 }
 
 /* Page transition veil */
-.page-veil {
-  position: fixed;
-  inset: 0;
-  z-index: 150;
-  background: var(--bg);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 420ms var(--ease-soft);
-}
-.page-veil--enter { opacity: 1; }
+/* (a .page-veil layer was removed here: it was never rendered by any
+   component, and the .route transition now covers route-to-route fades.) */
 
-/* Route container fade-in */
+/* Route container fade-in.
+   `backwards`, not `both`: the animation ends on the element's own styles, which
+   have no transform. Filling forwards would leave an identity matrix behind for
+   the life of the page, and any element with a computed transform - even the
+   identity one - becomes the containing block for its fixed descendants. That
+   silently turns every `position: fixed` overlay inside a route into one
+   positioned against the route box. */
 .route {
-  animation: route-in 560ms var(--ease-out-expo) both;
+  animation: route-in 560ms var(--ease-out-expo) backwards;
 }
 @keyframes route-in {
   from { opacity: 0; transform: translateY(10px); }

@@ -1,18 +1,28 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { AccountMenu, useAccountActions } from "./AccountMenu";
+import { useAccount } from "../../lib/authContext";
 
 const LINKS = [
   { to: "/screen", label: "Screen" },
   { to: "/research", label: "Research" },
   { to: "/research#method", label: "Methodology", hash: "method" },
-  { to: "/#limits", label: "About", hash: "limits" },
+  { to: "/about#limits", label: "About", hash: "limits" },
 ];
 
-export function Navigation({ introSettled = true }: { introSettled?: boolean }) {
+interface Props {
+  introSettled?: boolean;
+  /** True once a session is live; swaps the call to action for the account menu. */
+  signedIn?: boolean;
+}
+
+export function Navigation({ introSettled = true, signedIn = false }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const account = useAccount();
+  const { restartScreening, logOut } = useAccountActions();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -38,8 +48,11 @@ export function Navigation({ introSettled = true }: { introSettled?: boolean }) 
   return (
     <>
       <header className={`nav ${scrolled ? "nav--scrolled" : ""} ${introSettled ? "" : "nav--hidden-intro"}`}>
-        <Link to="/" className="nav__wordmark" aria-label="Vantage home">
-          Vantage
+        <Link to="/" className="nav__wordmark" aria-label="MENTAL.AI home">
+          <span className="nav__wordmark-mark">MENTAL</span>
+          <span className="nav__wordmark-dot" aria-hidden="true" />
+          <span className="nav__wordmark-tld">AI</span>
+          <span className="sr-only">MENTAL.AI</span>
         </Link>
         <nav className="nav__links" aria-label="Primary">
           {LINKS.map((l) =>
@@ -53,20 +66,58 @@ export function Navigation({ introSettled = true }: { introSettled?: boolean }) 
               </NavLink>
             )
           )}
-          <Link to="/screen" className="nav__cta">
-            Start
-          </Link>
+          {signedIn ? <AccountMenu /> : <Link to="/" className="nav__cta">Login</Link>}
         </nav>
-        <button className="nav__burger" onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls="nav-overlay">
+        <button
+          className="nav__burger"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-controls="nav-overlay"
+        >
           {open ? "Close" : "Menu"}
         </button>
       </header>
       <div id="nav-overlay" className={`nav__overlay ${open ? "nav__overlay--open" : ""}`} aria-hidden={!open}>
-        <Link to="/" onClick={() => setOpen(false)}>Home</Link>
+        <Link to="/" onClick={() => setOpen(false)}>Start</Link>
+        {/* The assessment is behind the gate, so the link goes to /screen and
+            the router decides: straight through when signed in, to the sign-in
+            page when not. One destination, no second branch to keep in sync. */}
         <Link to="/screen" onClick={() => setOpen(false)}>Screen</Link>
         <Link to="/research" onClick={() => setOpen(false)}>Research</Link>
         <a href="/research#method" onClick={go("/research", "method")}>Methodology</a>
-        <a href="/#limits" onClick={go("/", "limits")}>About</a>
+        <a href="/about#limits" onClick={go("/about", "limits")}>About</a>
+        {signedIn && account ? (
+          /* The account actions, not a second copy of the dropdown: two widgets
+             would mean two elements with the same id and the same label in the
+             accessibility tree. */
+          <div className="nav__overlay-account">
+            <p className="label">
+              Hello, {account.firstName}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                restartScreening();
+              }}
+            >
+              Restart screening
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                logOut();
+              }}
+            >
+              Log out
+            </button>
+          </div>
+        ) : (
+          <Link to="/" className="nav__overlay-cta" onClick={() => setOpen(false)}>
+            Login
+          </Link>
+        )}
       </div>
     </>
   );

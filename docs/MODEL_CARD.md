@@ -1,8 +1,8 @@
-# Model Card - Mental Health Screening (Phase 1)
+# Model Card - MENTAL.AI Screening (Phase 1)
 
 ## Model Details
 
-- **Project**: Phase 1 mental-health text screening pipeline (research prototype)
+- **Project**: MENTAL.AI, Phase 1 mental-health text screening pipeline (research prototype)
 - **Tracks**: Two independent classifiers (NOT merged)
   - Primary: 7-class condition classification (Normal, Depression, Suicidal, Anxiety, Bipolar, Stress, Personality disorder)
   - Urgency: Binary suicide/urgency safety-net (suicide / non-suicide)

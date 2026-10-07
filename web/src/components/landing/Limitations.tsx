@@ -35,7 +35,7 @@ export function Limitations() {
         </Reveal>
         <Reveal delayMs={160}>
           <p className="statement__big" style={{ marginTop: 26 }}>
-            Vantage is a <strong>research system</strong> for screening
+            MENTAL.AI is a <strong>research system</strong> for screening
             language-derived signals and supporting human review.
           </p>
         </Reveal>

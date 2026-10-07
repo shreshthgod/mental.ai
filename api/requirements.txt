@@ -1,0 +1,28 @@
+# Service runtime dependencies (FastAPI transport layer + packaged inference).
+#
+# The inference package itself is pinned separately in
+# Step 12 - Packaging/package/requirements.txt. For a full local run:
+#
+#   pip install -r "Step 12 - Packaging/package/requirements.txt" -r api/requirements.txt
+#
+# Versions below are lower bounds rather than exact pins for the transport
+# layer: these libraries track Starlette closely and an exact pin here breaks
+# against the scikit-learn/numpy pins in the inference package. The ML stack
+# stays exactly pinned because artifact reproducibility depends on it.
+
+# Transport layer
+fastapi>=0.115
+uvicorn>=0.30
+pydantic>=2.7
+
+# Loads .env for local runs. Real environment variables always take precedence,
+# so this only supplies values that are not already exported.
+python-dotenv>=1.0
+
+# Test suite: TestClient needs an ASGI-capable HTTP client
+httpx>=0.27
+
+# Pipeline and reporting only. Not needed to serve the API.
+pytest>=8.0
+matplotlib>=3.8
+shap>=0.45

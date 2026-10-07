@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError, MAX_TEXT_LENGTH, type PredictResponse } from "../lib/api";
 import { clearHistory, loadHistory, saveScreening, type ScreeningRecord } from "../lib/history";
+import { clearCheckIn, loadCheckIn } from "../lib/checkin";
+import { invalidateIfRejected } from "../lib/auth";
+import { CheckInFlow } from "../components/screen/CheckInFlow";
 import { SystemStatus } from "../components/chrome/SystemStatus";
 import { Footer } from "../components/chrome/Footer";
 
@@ -25,6 +28,8 @@ function errorState(err: unknown): ErrorState {
       };
     if (err.kind === "timeout")
       return { title: "Analysis timed out", body: "The request exceeded the time limit. The service may be under load.", meta: err.requestId ? `request ${err.requestId}` : undefined };
+    if (err.kind === "unauthorized")
+      return { title: "Session expired", body: "Sign in again to continue screening.", meta: undefined };
     if (err.kind === "validation")
       return { title: "Rejected by the service", body: err.message, meta: err.requestId ? `request ${err.requestId}` : undefined };
     return { title: "Analysis failed", body: err.message, meta: err.requestId ? `request ${err.requestId}` : undefined };
@@ -35,6 +40,9 @@ function errorState(err: unknown): ErrorState {
 }
 
 export function Screen() {
+  // Prefill from the check-in captured at the start of the flow, so the user
+  // begins with their own words rather than a blank box. Never sent
+  // automatically: the textarea is still edited and submitted by hand.
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [stageIdx, setStageIdx] = useState(0);
@@ -44,6 +52,36 @@ export function Screen() {
   const [history, setHistory] = useState<ScreeningRecord[]>(() => loadHistory());
   const abortRef = useRef<AbortController | null>(null);
   const timersRef = useRef<number[]>([]);
+
+  // Whether the opening check-in has been completed. Seeded from storage so a
+  // reload does not ask the same four questions again.
+  const [checkedIn, setCheckedIn] = useState<boolean>(() => loadCheckIn() !== null);
+
+  /**
+   * Enter the workspace with the assembled check-in text.
+   *
+   * The text is written straight into the editor rather than submitted: opening
+   * the workspace must not start an analysis the user did not ask for.
+   */
+  const startWorkspace = (checkInText: string) => {
+    setText(checkInText);
+    setCheckedIn(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  /** Return to the first check-in question, discarding the prefilled text. */
+  const restart = () => {
+    clearTimers();
+    abortRef.current?.abort();
+    clearCheckIn();
+    setCheckedIn(false);
+    setText("");
+    setResult(null);
+    setError(null);
+    setValidationMsg(null);
+    setPhase("idle");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const len = text.length;
   const overLimit = len > MAX_TEXT_LENGTH;
@@ -111,6 +149,13 @@ export function Screen() {
         return;
       }
       clearTimers();
+      // A rejected token means the session is gone server side. Drop it and
+      // return to the gate instead of leaving every action failing.
+      if (err instanceof ApiError && err.kind === "unauthorized") {
+        clearCheckIn();
+        invalidateIfRejected(err);
+        return;
+      }
       setError(errorState(err));
       setPhase("error");
     }
@@ -152,18 +197,42 @@ export function Screen() {
     <>
       <main id="main" className="workspace">
         <div className="workspace__inner">
+          {!checkedIn ? (
+            /* Stage one: the opening check-in. Reached only after signing in. */
+            <>
+              <div className="workspace__head">
+                <div>
+                  <h1 className="workspace__title">SCREEN</h1>
+                  <p className="workspace__sub">
+                    Four short questions, then the workspace. What you write here
+                    stays in this browser and becomes the text you can review
+                    before anything is analysed.
+                  </p>
+                </div>
+                <SystemStatus />
+              </div>
+              <CheckInFlow initial={loadCheckIn()} onComplete={startWorkspace} />
+            </>
+          ) : (
+            <>
           <div className="workspace__head">
             <div>
               <h1 className="workspace__title">SCREEN</h1>
               <p className="workspace__sub">
                 Submit language for signal analysis. The text is sent to the
-                Vantage inference service and answered by the deployed research
+                MENTAL.AI inference service and answered by the deployed research
                 models. Your previous screenings stay on this device only -
                 saved in this browser so you can return to them, never sent
                 anywhere else.
               </p>
             </div>
-            <SystemStatus />
+            <div className="workspace__head-actions">
+              <SystemStatus />
+              {/* Back to step one of 4, discarding the prefilled text. */}
+              <button type="button" className="workspace__restart" onClick={restart}>
+                Restart check-in
+              </button>
+            </div>
           </div>
 
           <form
@@ -428,6 +497,8 @@ export function Screen() {
                 replace professional assessment.
               </div>
             </section>
+          )}
+            </>
           )}
         </div>
       </main>

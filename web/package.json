@@ -1,5 +1,5 @@
 {
-  "name": "vantage-web",
+  "name": "mental.ai-web",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,7 +9,9 @@
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
-    "qa:shots": "node scripts/screenshots.mjs"
+    "qa:shots": "node scripts/screenshots.mjs",
+    "qa:auth": "node scripts/authflow.mjs",
+    "qa:entry": "node scripts/entryqa.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",

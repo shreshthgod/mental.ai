@@ -7,7 +7,7 @@ import { Metrics } from "../components/landing/Metrics";
 import { Limitations, ClosingCta } from "../components/landing/Limitations";
 import { Footer } from "../components/chrome/Footer";
 
-const INTRO_KEY = "vantage_intro_played";
+const INTRO_KEY = "mental.ai_intro_played";
 
 export function Landing({ onSettled }: { onSettled: (settled: boolean) => void }) {
   const [live, setLive] = useState(false);

@@ -6,11 +6,26 @@ const Grainient = lazy(() =>
 );
 const Stage = lazy(() => import("./Stage"));
 
-const LETTERS = ["V", "A", "N", "T", "A", "G", "E"];
+/**
+ * Wordmark glyphs. The full stop is rendered as its own node rather than a
+ * character so it can carry the brand accent colour and read as a deliberate
+ * separator instead of a stray baseline dot.
+ */
+const GLYPHS = [
+  { ch: "M" },
+  { ch: "E" },
+  { ch: "N" },
+  { ch: "T" },
+  { ch: "A" },
+  { ch: "L" },
+  { ch: ".", dot: true },
+  { ch: "A" },
+  { ch: "I" },
+];
 
-/** Per-letter scattered start poses (staircase assembly → clean word). */
+/** Per-glyph scattered start poses (staircase assembly → clean word). */
 function letterPose(i: number) {
-  const mid = (LETTERS.length - 1) / 2;
+  const mid = (GLYPHS.length - 1) / 2;
   const dx = (i - mid) * -0.05;
   const dy = (i - mid) * 0.16 + 0.3;
   const rot = (i % 2 === 0 ? 1 : -1) * (3 + i);
@@ -25,7 +40,7 @@ interface Props {
 export function Hero({ live, instant }: Props) {
   const stateCls = live ? "hero--live" : "hero--boot";
   return (
-    <section className={`hero ${stateCls} ${instant ? "hero--instant" : ""}`} aria-label="Vantage - AI-assisted mental health screening">
+    <section className={`hero ${stateCls} ${instant ? "hero--instant" : ""}`} aria-label="MENTAL.AI - AI-assisted mental health screening">
       <Suspense fallback={<div className="hero__grainient" style={{ background: "radial-gradient(ellipse at 50% 30%, #16102e 0%, #0a0718 50%, #050507 100%)" }} />}>
         <Grainient
           className="hero__grainient"
@@ -56,14 +71,14 @@ export function Hero({ live, instant }: Props) {
         <Stage className="hero__stage" emergeDelayMs={instant ? 100 : 1000} />
       </Suspense>
 
-      <div className="hero__wordmark" aria-hidden="true">
+      <div className="hero__wordmark">
         <h1 className="hero__word">
-          {LETTERS.map((ch, i) => {
+          {GLYPHS.map(({ ch, dot }, i) => {
             const p = letterPose(i);
             return (
               <span
                 key={i}
-                className="hero__letter"
+                className={`hero__letter ${dot ? "hero__letter--dot" : ""}`}
                 style={{
                   ["--lx" as string]: `${p.dx}em`,
                   ["--ly" as string]: `${p.dy}em`,
@@ -76,13 +91,14 @@ export function Hero({ live, instant }: Props) {
             );
           })}
         </h1>
+        <span className="sr-only">MENTAL.AI</span>
       </div>
 
       <div className="hero__copy">
         <p className="label label--accent">AI-assisted mental health screening</p>
-        <p className="hero__headline">See the signal.</p>
+        <p className="hero__headline">Inside the pipeline.</p>
         <p className="hero__sub">
-          Vantage analyzes language with a dual-model NLP pipeline - surfacing
+          MENTAL.AI analyses language with a dual-model NLP pipeline - surfacing
           condition patterns and an independent urgency signal, routed to human review.
         </p>
         <div className="hero__ctas">

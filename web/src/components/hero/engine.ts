@@ -1,5 +1,5 @@
 /**
- * Vantage Signal Structure - procedural canvas engine.
+ * mental.ai Signal Structure - procedural canvas engine.
  *
  * An abstract "neural sculpture": a double signal strand (the two-model
  * branch), two gyroscopic node rings, and an ambient particle field -
@@ -15,6 +15,22 @@ export interface SignalStructureOptions {
   emergeDelayMs?: number;
   /** 0..1 quality scale (mobile ~0.55). */
   quality?: number;
+  /**
+   * Where the structure sits inside the canvas, in fractions of its box.
+   *
+   * Same contract as the WebGL sculpture's framing, so the two tiers hold the
+   * same place in the composition when a machine falls back to 2D.
+   */
+  framing?: SignalFraming;
+}
+
+export interface SignalFraming {
+  /** Horizontal centre of the mass, 0..1 across the canvas. */
+  x?: number;
+  /** Vertical centre of the mass, 0..1 down the canvas. */
+  y?: number;
+  /** Multiplies the size the structure would otherwise occupy. */
+  scale?: number;
 }
 
 interface Node3 {
@@ -77,6 +93,11 @@ export function createSignalStructure(canvas: HTMLCanvasElement, opts: SignalStr
   const ctx: CanvasRenderingContext2D = context;
 
   const quality = opts.quality ?? 1;
+  const framing: Required<SignalFraming> = {
+    x: opts.framing?.x ?? 0.5,
+    y: opts.framing?.y ?? 0.47,
+    scale: opts.framing?.scale ?? 1,
+  };
   const rnd = mulberry32(20261005);
   const sprites = [makeGlowSprite(VIOLET), makeGlowSprite(BLUE), makeGlowSprite(WHITE)];
 
@@ -243,9 +264,11 @@ export function createSignalStructure(canvas: HTMLCanvasElement, opts: SignalStr
   const p3: [number, number, number] = [0, 0, 0];
 
   function project(time: number) {
-    const S = Math.min(w, h) * 0.44;
-    const cx = w / 2;
-    const cy = h / 2 - Math.min(w, h) * 0.03;
+    // The structure is composed into fractions of the canvas box rather than
+    // the window, so a grid column of any aspect frames it identically.
+    const S = Math.min(w, h) * 0.44 * framing.scale;
+    const cx = w * framing.x;
+    const cy = h * framing.y;
     smoothX += (pointerX - smoothX) * 0.045;
     smoothY += (pointerY - smoothY) * 0.045;
     const rotY = time * 0.05 + smoothX * 0.35;

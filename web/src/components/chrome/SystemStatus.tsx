@@ -14,7 +14,7 @@ export function SystemStatus({ compact = false }: { compact?: boolean }) {
   return (
     <span className={`status ${cls}`} role="status" aria-live="polite">
       <span className="status__dot" aria-hidden="true" />
-      {compact ? STATUS_TEXT[state] : `Vantage engine · ${STATUS_TEXT[state]}`}
+      {compact ? STATUS_TEXT[state] : `MENTAL.AI engine · ${STATUS_TEXT[state]}`}
     </span>
   );
 }

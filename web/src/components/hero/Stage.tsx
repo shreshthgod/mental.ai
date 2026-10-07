@@ -49,7 +49,7 @@ export default function Stage({ emergeDelayMs = 0, className }: Props) {
 
   return (
     <div className={className} aria-hidden="true">
-      <canvas ref={canvasRef} role="img" aria-label="Abstract dark-chrome sculpture: two intertwined metallic ribbons and precision rings representing Vantage's dual-signal inference system" />
+      <canvas ref={canvasRef} role="img" aria-label="Abstract dark-chrome sculpture: two intertwined metallic ribbons and precision rings representing MENTAL.AI's dual-signal inference system" />
     </div>
   );
 }
