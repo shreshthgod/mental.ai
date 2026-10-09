@@ -15,6 +15,7 @@
  */
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { checkInToText, saveCheckIn } from "../../lib/checkin";
+import { generateWelcomeGreeting, clearRememberedThemes, type WelcomeGreeting } from "../../lib/personalization";
 
 type StepId = "greeting" | "feeling" | "weighing" | "today";
 
@@ -62,11 +63,14 @@ interface Props {
   onComplete: (text: string, answers: Record<string, string>) => void;
   /** Answers recovered from a previous visit, used to prefill the fields. */
   initial?: Record<string, string> | null;
+  /** Optional user name for personalization */
+  userName?: string;
 }
 
-export function CheckInFlow({ onComplete, initial }: Props) {
+export function CheckInFlow({ onComplete, initial, userName }: Props) {
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(initial ?? {});
+  const [greeting, setGreeting] = useState<WelcomeGreeting>(() => generateWelcomeGreeting(userName));
   const headingRef = useRef<HTMLParagraphElement>(null);
 
   const stepId = STEPS[stepIndex];
@@ -83,6 +87,11 @@ export function CheckInFlow({ onComplete, initial }: Props) {
     setAnswers((prev) => ({ ...prev, [stepId]: value }));
 
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
+
+  const handleStartFresh = () => {
+    clearRememberedThemes();
+    setGreeting(generateWelcomeGreeting(userName));
+  };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -104,6 +113,48 @@ export function CheckInFlow({ onComplete, initial }: Props) {
           Step {stepIndex + 1} of {STEPS.length}
         </p>
       </div>
+
+      {stepIndex === 0 && (
+        <aside
+          style={{
+            marginBottom: 28,
+            padding: "18px 20px",
+            background: "var(--bg-raise)",
+            border: "1px solid var(--line-2)",
+            borderRadius: 3,
+            lineHeight: 1.6,
+          }}
+          aria-label="Welcome reflection"
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 10 }}>
+            <p className="label label--accent" style={{ margin: 0 }}>
+              {greeting.headline}
+            </p>
+            {greeting.hasPastContext && (
+              <button
+                type="button"
+                onClick={handleStartFresh}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ink-3)",
+                  fontSize: 11,
+                  fontFamily: "var(--font-mono)",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  padding: 0,
+                }}
+                title="Clears remembered context from previous visits"
+              >
+                Start completely fresh today
+              </button>
+            )}
+          </div>
+          <p style={{ margin: "10px 0 0", color: "var(--ink-2)", fontSize: 14.5 }}>
+            {greeting.subtext}
+          </p>
+        </aside>
+      )}
 
       <form className="checkin__form" onSubmit={submit}>
         <div className="checkin__field">
