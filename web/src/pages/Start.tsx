@@ -49,6 +49,23 @@ const WELCOME_MS = 1150;
 
 const INTRO_KEY = "mental.ai_intro_played";
 
+/**
+ * When the full-bleed presentation hands over to the 70/30 composition.
+ *
+ * Derived from the existing entry timeline rather than invented. The glyph
+ * assembly is the last thing to finish: the ninth glyph starts at
+ * `150 + 8 * 85 = 830ms` and its longest transition is 1100ms, so the word is
+ * whole at ~1930ms. The sculpture emerges at 620ms and its transform runs
+ * 2200ms from a 320ms delay, landing at ~3140ms. This waits past both, then
+ * leaves the hand-over itself the full `--entry-handover`, so the move reads as
+ * one continuous motion rather than a cut.
+ *
+ * A returning visitor has already seen all of it in this session, so they get
+ * the composed state rather than the sequence.
+ */
+const HANDOVER_MS = 3250;
+const HANDOVER_INSTANT_MS = 260;
+
 type Phase = "form" | "authenticating" | "welcome";
 
 /**
@@ -91,11 +108,13 @@ export function Start() {
   const authed = useAuth() === "authed";
 
   const [live, setLive] = useState(false);
+  const [split, setSplit] = useState(false);
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState<string | null>(null);
   const [greeting, setGreeting] = useState("");
   const [focusSignal, setFocusSignal] = useState(0);
   const timerRef = useRef<number | null>(null);
+  const handoverRef = useRef<number | null>(null);
 
   // The full glyph assembly plays once per browsing session. Returning
   // visitors should land on a usable page immediately, not watch it again.
@@ -119,6 +138,14 @@ export function Start() {
 
   useEffect(() => {
     const raf = requestAnimationFrame(() => setLive(true));
+    // The hand-over is a separate step from the intro rather than part of it:
+    // the composition holds full-bleed until the word and the sculpture have
+    // both finished, then moves. Cancelled on unmount like every other timer
+    // here, so navigating away mid-sequence cannot set state on a dead tree.
+    handoverRef.current = window.setTimeout(
+      () => setSplit(true),
+      instant ? HANDOVER_INSTANT_MS : HANDOVER_MS
+    );
     if (!instant) {
       try {
         sessionStorage.setItem(INTRO_KEY, "1");
@@ -126,7 +153,10 @@ export function Start() {
         /* private mode */
       }
     }
-    return () => cancelAnimationFrame(raf);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (handoverRef.current !== null) window.clearTimeout(handoverRef.current);
+    };
   }, [instant]);
 
   useEffect(
@@ -159,7 +189,12 @@ export function Start() {
   const beginLogin = () => setFocusSignal((n) => n + 1);
 
   return (
-    <main id="main" className={`entry ${live ? "entry--live" : ""} ${welcome ? "entry--welcome" : ""}`}>
+    <main
+      id="main"
+      className={`entry ${live ? "entry--live" : ""} ${split ? "entry--split" : ""} ${
+        welcome ? "entry--welcome" : ""
+      }`}
+    >
       {/* Atmosphere. Also the WebGL fallback surface: if both GL tiers fail,
           this gradient is what remains, so it has to stand on its own. */}
       <div className="entry__atmosphere" aria-hidden="true" />
@@ -189,7 +224,11 @@ export function Start() {
         />
       </Suspense>
 
-      {/* The composition. Two columns on the same page grid as the header. */}
+      {/* The composition. Two columns on the same page grid as the header.
+          The presentation holds this full-bleed while the word and the
+          sculpture assemble, then the tracks change to the 70/30 pair; nothing
+          here is re-mounted, so the canvas keeps its GL context across the
+          hand-over. */}
       <div className="entry__main">
         <section className="hero-stage" aria-label="MENTAL.AI">
           {/* The scene box. A stage of its own so the single-frame desktop

@@ -20,6 +20,7 @@ function check(label, actual, expected) {
   results.push(ok);
   console.log(`${ok ? "pass" : "FAIL"}  ${label}${ok ? "" : ` (got ${JSON.stringify(actual)}, want ${JSON.stringify(expected)})`}`);
 }
+const near = (a, b, tol = 1.5) => Math.abs(a - b) <= tol;
 
 const DESKTOP = [
   [1920, 1080],
@@ -47,8 +48,10 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
 
   await page.goto(BASE, { waitUntil: "networkidle" });
   await page.waitForSelector(".signin__submit", { timeout: 30000 });
-  // Let the entrance finish so measurements are of the settled layout.
-  await page.waitForTimeout(2200);
+  // Let the whole entrance finish so measurements are of the settled layout:
+  // the intro assembles to ~3140ms and the hand-over to the 70/30 composition
+  // then runs for --entry-handover (1200ms), so 5s clears both with margin.
+  await page.waitForTimeout(5000);
 
   const m = await page.evaluate(() => {
     const box = (sel) => {
@@ -161,8 +164,161 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 2. The greeting stage, inside the composition ----------------------
+// ---- 2. The opening sequence and the hand-over --------------------------
+//
+// The entry is two states, not one: a full-bleed presentation while the word and
+// the sculpture assemble, then the 70/30 composition that carries the
+// credentials. This asserts the sequence and, more importantly, the resting
+// geometry - that after the hand-over the hero stage holds ~70% and the
+// credentials ~30%, that the word has moved to the stage's left edge, and that
+// nothing about the scene was re-created to get there.
 {
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const page = await ctx.newPage();
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(String(e)));
+
+  const read = () =>
+    page.evaluate(() => {
+      const el = document.querySelector(".entry");
+      const box = (sel) => {
+        const node = document.querySelector(sel);
+        if (!node) return null;
+        const r = node.getBoundingClientRect();
+        return { x: r.x, y: r.y, w: r.width, h: r.height, right: r.right };
+      };
+      const canvas = document.querySelector(".entry__stage canvas");
+      return {
+        classes: el?.className ?? "",
+        hero: box(".hero-stage"),
+        auth: box(".auth-stage"),
+        word: box(".entry__word-plane--back .entry__word"),
+        panel: box(".entry__panel-inner"),
+        // Identity of the canvas node, so a remount during the hand-over is
+        // detectable rather than invisible behind identical geometry.
+        canvasTag: canvas ? canvas.dataset.engine ?? "" : "",
+        authVisible: getComputedStyle(document.querySelector(".auth-stage")).visibility,
+        authOpacity: Number(getComputedStyle(document.querySelector(".entry__panel-inner")).opacity),
+      };
+    });
+
+  await page.goto(BASE, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector(".hero-stage");
+
+  // First paint: full-bleed. The credentials track is zero-width and the panel
+  // is not yet focusable, so the first Tab press cannot land on an invisible
+  // form.
+  const boot = await read();
+  check("sequence starts full-bleed", boot.hero.w / 1440 > 0.88, true);
+  check("sequence starts unsplit", boot.classes.includes("entry--split"), false);
+  check("credentials hidden before the hand-over", boot.authVisible, "hidden");
+
+  // Mid-intro: the word is assembling and centred in the full-bleed stage.
+  await page.waitForTimeout(1200);
+  const during = await read();
+  check("wordmark assembling during the intro",
+    await page.locator(".entry__letter").count() > 0, true);
+  check("wordmark centred while full-bleed",
+    near(during.word.x + during.word.w / 2, during.hero.x + during.hero.w / 2, 2), true);
+  check("composition still unsplit mid-intro", during.classes.includes("entry--split"), false);
+
+  // Past the hand-over: the resting composition.
+  await page.waitForTimeout(4600);
+  const settled = await read();
+  check("composition splits", settled.classes.includes("entry--split"), true);
+
+  const heroShare = settled.hero.w / 1440;
+  const authShare = settled.auth.w / 1440;
+  // 7fr / 3fr of the grid's content box, which is the window less both gutters
+  // and the gap. Allow 2 points of slack for those.
+  check("hero stage holds ~70% after the hand-over", heroShare > 0.62 && heroShare < 0.72, true);
+  check("credentials hold ~30% after the hand-over", authShare > 0.22 && authShare < 0.32, true);
+  check("credentials revealed", settled.authVisible, "visible");
+  check("panel fully faded in", settled.authOpacity > 0.99, true);
+
+  // The shift is what makes the word land on the stage's left edge, the same
+  // line as the logo and the hero copy.
+  check("wordmark moves to the stage edge",
+    near(settled.word.x, settled.hero.x, 2), true);
+  check("wordmark inside the stage", settled.word.right <= settled.hero.right + 1, true);
+  check("wordmark still centred on the vertical",
+    near(settled.word.y + settled.word.h / 2, settled.hero.y + settled.hero.h * 0.47, 4), true);
+  check("copy and credentials still separated",
+    settled.hero.right < settled.auth.x, true);
+
+  // The sculpture must survive the hand-over: the sequence is a change of track
+  // sizes, not a remount, so the same GL context keeps painting.
+  check("sculpture survives the hand-over",
+    settled.canvasTag === during.canvasTag && settled.canvasTag !== "none", true);
+  check("no console errors during the sequence", errors, []);
+
+  await page.screenshot({ path: "shots/entry-handover.png" });
+  await ctx.close();
+}
+
+// ---- 3. Reduced motion: the composed state, without the travel -----------
+{
+  const ctx = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: "reduce",
+  });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForSelector(".signin__submit", { timeout: 30000 });
+  await page.waitForTimeout(4600);
+
+  const m = await page.evaluate(() => {
+    const box = (sel) => {
+      const node = document.querySelector(sel);
+      if (!node) return null;
+      const r = node.getBoundingClientRect();
+      return { x: r.x, w: r.width };
+    };
+    return {
+      split: document.querySelector(".entry").className.includes("entry--split"),
+      hero: box(".hero-stage"),
+      word: box(".entry__word-plane--back .entry__word"),
+      // The grid and the word must not be mid-travel when reduced motion is on.
+      gridTransition: getComputedStyle(document.querySelector(".entry__main")).transitionDuration,
+      wordTransition: getComputedStyle(document.querySelector(".entry__word")).transitionDuration,
+      submit: !!document.querySelector(".signin__submit")?.offsetParent,
+    };
+  });
+
+  check("reduced motion still reaches the split state", m.split, true);
+  check("reduced motion: no transform travel on the grid",
+    m.gridTransition.split(",").every((d) => parseFloat(d) === 0), true);
+  check("reduced motion: no transform travel on the word",
+    m.wordTransition.split(",").every((d) => parseFloat(d) === 0), true);
+  check("reduced motion: wordmark still on the stage edge", near(m.word.x, m.hero.x, 2), true);
+  check("reduced motion: form still usable", m.submit, true);
+  await page.screenshot({ path: "shots/entry-handover-reduced.png" });
+  await page.close();
+}
+
+// ---- 4. Return visit: the composed state directly, no replay -------------
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  // Same session, so the intro key is already set: this is what a returning
+  // visitor inside one browsing session sees.
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForSelector(".signin__submit", { timeout: 30000 });
+  await page.waitForTimeout(900);
+
+  const m = await page.evaluate(() => ({
+    split: document.querySelector(".entry").className.includes("entry--split"),
+    visible: getComputedStyle(document.querySelector(".auth-stage")).visibility,
+  }));
+  check("return visit reaches the composed state quickly", m.split, true);
+  check("return visit reveals the credentials", m.visible, "visible");
+  await page.close();
+}
+
+// ---- 5. The greeting stage, inside the composition ----------------------
+if (!CREDS.email || !CREDS.password) {
+  console.log("skip  greeting stage QA (no MENTAL_AI_QA_EMAIL / SUPABASE_QA_EMAIL configured)");
+} else {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   // Hold the transition open so the stage can actually be captured.
   await page.addInitScript(() => {
@@ -195,7 +351,7 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 3. WebGL unavailable: the form must still work ----------------------
+// ---- 6. WebGL unavailable: the form must still work ----------------------
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await ctx.addInitScript(() => {
@@ -223,17 +379,21 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   // what must be absent is an uncaught exception taking the page down.
   check("no WebGL: no uncaught errors", errors, []);
 
-  await page.fill(".signin__input >> nth=0", CREDS.email);
-  await page.fill(".signin__input >> nth=1", CREDS.password);
-  await page.click(".signin__submit");
-  await page.waitForSelector(".entry__greeting", { timeout: 20000 });
-  check("no WebGL: sign-in still completes", true, true);
+  if (CREDS.email && CREDS.password) {
+    await page.fill(".signin__input >> nth=0", CREDS.email);
+    await page.fill(".signin__input >> nth=1", CREDS.password);
+    await page.click(".signin__submit");
+    await page.waitForSelector(".entry__greeting", { timeout: 20000 });
+    check("no WebGL: sign-in still completes", true, true);
+  }
   await page.screenshot({ path: "shots/entry-no-webgl.png" });
   await ctx.close();
 }
 
-// ---- 4. Return state for an authenticated visitor ------------------------
-{
+// ---- 7. Return state for an authenticated visitor ------------------------
+if (!CREDS.email || !CREDS.password) {
+  console.log("skip  authenticated visitor QA (no MENTAL_AI_QA_EMAIL / SUPABASE_QA_EMAIL configured)");
+} else {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await seedSession(page, BASE);
   await page.goto(BASE, { waitUntil: "networkidle" });
@@ -246,7 +406,7 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 5. Resize without a reload, and remount -----------------------------
+// ---- 8. Resize without a reload, and remount -----------------------------
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(BASE, { waitUntil: "networkidle" });

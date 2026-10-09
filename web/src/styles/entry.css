@@ -23,18 +23,31 @@
   overflow-x: clip;
   background: #030306;
   /* Atmospheric bloom behind the form, anchored on the sculpture's focal point
-     in page coordinates. The right-hand stops are the counterweight: they darken
-     the credentials side so the panel sits on air rather than on scene. */
-  --entry-halo:
-    radial-gradient(circle at 30% 36%, rgba(76, 50, 160, 0.12), transparent 46%),
-    linear-gradient(
-      90deg,
-      rgba(3, 3, 6, 0) 52%,
-      rgba(3, 3, 6, 0.34) 72%,
-      rgba(3, 3, 6, 0.62) 88%,
-      rgba(3, 3, 6, 0.72) 100%
-    );
+     in page coordinates. */
+  --entry-halo: radial-gradient(circle at 34% 40%, rgba(76, 50, 160, 0.13), transparent 48%);
 }
+
+/* The counterweight: darkens the credentials side so the panel sits on air
+   rather than on scene. Separate from --entry-halo and faded in with the
+   handover, because a gradient cannot be transitioned between two different
+   images - it would snap. As its own layer it cross-fades. */
+.entry__atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--entry-handover) var(--ease-out-expo);
+  background: linear-gradient(
+    90deg,
+    rgba(3, 3, 6, 0) 46%,
+    rgba(3, 3, 6, 0.34) 70%,
+    rgba(3, 3, 6, 0.62) 88%,
+    rgba(3, 3, 6, 0.72) 100%
+  );
+}
+.entry--split .entry__atmosphere::after { opacity: 1; }
 
 /* 1. Atmosphere + WebGL fallback surface */
 .entry__atmosphere {
@@ -57,12 +70,19 @@
 
 /* The two columns. Same gutter as the header, so the logo, the hero copy and the
    panel share one set of vertical lines. Capped at --entry-max and centred, so
-   an ultrawide window widens the environment rather than the layout. */
+   an ultrawide window widens the environment rather than the layout.
+
+   The intro runs the composition full-bleed and then hands it over to the
+   credentials: the split state is a genuine 70/30 pair, and the change between
+   the two is a transition on the track sizes alone, so the hero stage narrows
+   from the right while its left edge stays on the page gutter. That is the whole
+   motion of the sequence - the composition moves left into the space it keeps,
+   rather than being re-laid out or re-rendered. */
 .entry__main {
   position: relative;
   z-index: var(--z-scene);
   display: grid;
-  grid-template-columns: minmax(0, 1.62fr) minmax(0, 0.88fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0fr);
   align-items: stretch;
   gap: var(--layout-gap);
   width: 100%;
@@ -70,6 +90,10 @@
   margin-inline: auto;
   padding: var(--header-h) var(--pad-x) clamp(20px, 3vh, 40px);
   min-height: 100svh;
+  transition: grid-template-columns var(--entry-handover) var(--ease-out-expo);
+}
+.entry--split .entry__main {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
 }
 
 /* ---------------------------- HERO STAGE ------------------------------- */
@@ -115,23 +139,35 @@
   mix-blend-mode: screen;
 }
 
-/* The word is anchored to the stage, not to the page: it starts on the page
-   gutter (the same line as the logo and the hero copy) and stops short of the
-   stage's right edge, so the last letters read clear of the credentials. */
+/* The word is sized from the stage, not the viewport, so it can never outgrow
+   the column it lives in - which means the handover rescales it for free as the
+   stage narrows, with no second size to keep in step.
+
+   Horizontally it has two homes. During the full-bleed presentation it is
+   centred in the stage, because there is no second column to make room for and
+   a left-hung word would read as a stray edge. Once the composition splits, it
+   moves to the stage's left edge - the page gutter, the same line as the logo
+   and the hero copy. Only `left` and `transform` change; the glyph animation
+   and its own transitions are untouched. */
 .entry__word {
   position: absolute;
-  left: 0;
+  left: 50%;
   top: 47%;
-  transform: translateY(-50%);
+  transform: translate(-50%, -50%);
+  transition: left var(--entry-handover) var(--ease-out-expo),
+    transform var(--entry-handover) var(--ease-out-expo);
   display: flex;
   font-weight: 660;
   /* 5.161em is this string in Inter at 660 with -0.05em tracking, so ~18.7cqw
-     fills the stage width less its right inset. Derived from the stage rather
-     than the viewport: the word can never outgrow the column it lives in. */
+     fills the stage width less its right inset. */
   font-size: clamp(40px, 18.7cqw, 226px);
   letter-spacing: -0.05em;
   line-height: 0.9;
   white-space: nowrap;
+}
+.entry--split .entry__word {
+  left: 0;
+  transform: translateY(-50%);
 }
 
 .entry__letter {
@@ -211,20 +247,17 @@
 .entry--welcome .entry__stage { opacity: 1; transform: none; }
 .entry__stage canvas { display: block; width: 100%; height: 100%; }
 
-/* 6. Falloff. Load-bearing for readability: the lower stops hold the hero copy
-   and the right-hand stops hand the composition over to the credentials. */
+/* 6. Falloff. Load-bearing for readability: the lower stops hold the hero copy.
+   The right-hand hand-over to the credentials is a separate layer for the same
+   reason as the atmosphere counterweight - it must cross-fade with the split
+   rather than exist during the full-bleed presentation, where there is no
+   credentials side to hand over to. */
 .entry__vignette {
   position: absolute;
   inset: 0;
   z-index: var(--z-vignette);
   pointer-events: none;
   background:
-    linear-gradient(
-      90deg,
-      rgba(3, 3, 6, 0) 58%,
-      rgba(3, 3, 6, 0.3) 84%,
-      rgba(3, 3, 6, 0.52) 100%
-    ),
     radial-gradient(
       ellipse 122% 88% at 44% 40%,
       transparent 40%,
@@ -239,6 +272,21 @@
       rgba(5, 5, 7, 0.92) 100%
     );
 }
+.entry__vignette::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--entry-handover) var(--ease-out-expo);
+  background: linear-gradient(
+    90deg,
+    rgba(3, 3, 6, 0) 46%,
+    rgba(3, 3, 6, 0.3) 84%,
+    rgba(3, 3, 6, 0.52) 100%
+  );
+}
+.entry--split .entry__vignette::after { opacity: 1; }
 
 /* Structural rules. Hairlines on the lines the composition is actually built
    on: the page gutter, the stage's internal division, the handover to the
@@ -267,8 +315,11 @@
   height: calc(100% - var(--header-h));
   z-index: 4;
 }
+/* 0.7 is the share of the split composition that belongs to the hero stage:
+   7fr of 7fr + 3fr, measured across the same box the grid lays out, so the
+   rule lands on the actual column boundary rather than near it. */
 .entry__rule--boundary {
-  left: calc((100% - var(--pad-x) * 2 - var(--layout-gap)) * 0.648);
+  left: calc((100% - var(--pad-x) * 2 - var(--layout-gap)) * 0.7);
   top: 0;
   bottom: 0;
 }
@@ -355,7 +406,14 @@
 
 /* The right column. The panel is optically centred in the space above the
    annotation, and sits flush to the stage's right edge - which is the page
-   gutter, and therefore the same line as the navigation's call to action. */
+   gutter, and therefore the same line as the navigation's call to action.
+
+   During the full-bleed presentation this track is zero-width, so the panel is
+   both unfocusable and invisible rather than merely clipped: an off-screen form
+   that still takes tab stops would make the first Tab press land somewhere the
+   user cannot see. `visibility` is what removes it from the tab order, and it
+   is transitioned discretely so it flips at the end of the handover rather than
+   disappearing early. */
 .auth-stage {
   position: relative;
   z-index: var(--z-auth);
@@ -369,6 +427,12 @@
      against a stage that is taller above than below, so it is lifted a little.
      Kept under 2vh so it never reads as a hand-placed offset. */
   transform: translateY(-0.5vh);
+  visibility: hidden;
+  transition: visibility 0s linear var(--entry-handover);
+}
+.entry--split .auth-stage {
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 .entry__panel-slot {
@@ -592,7 +656,8 @@
    frame, so at these widths two columns would leave neither enough room. In
    flow, the page simply grows and scrolls. */
 @media (max-width: 1180px) {
-  .entry__main {
+  .entry__main,
+  .entry--split .entry__main {
     grid-template-columns: minmax(0, 1fr);
     gap: 0;
     padding: var(--header-h) var(--pad-x) clamp(48px, 9vh, 88px);
@@ -621,10 +686,15 @@
   }
   /* The band runs full-bleed, so the word is pulled back onto the gutter to stay
      on the same line as the copy and the logo. Sized from both axes: a wide,
-     short band would otherwise set it by width alone and swallow the sculpture. */
-  .entry__word {
+     short band would otherwise set it by width alone and swallow the sculpture.
+     The stacked layout has no second column, so the split state is already the
+     only state here and the hand-over has nothing to move. */
+  .entry__word,
+  .entry--split .entry__word {
     top: 48%;
     left: var(--pad-x);
+    transform: translateY(-50%);
+    transition: none;
     font-size: min(15cqw, 17vh, 150px);
   }
   .entry__copy {
@@ -668,9 +738,11 @@
 @media (max-width: 767px) {
   .hero-stage { margin-bottom: 24px; }
   .hero-stage__scene { height: 230px; }
-  .entry__word {
+  .entry__word,
+  .entry--split .entry__word {
     left: 50%;
     transform: translate(-50%, -50%);
+    transition: none;
     font-size: min(16cqw, 17vh, 150px);
   }
   .entry__panel-inner { padding: 22px 20px; }
@@ -745,6 +817,17 @@
   .entry__copy > *,
   .entry__panel-inner,
   .entry__panel-slot { transition: opacity 400ms ease; transform: none; }
+
+  /* The hand-over is a large translation of the whole composition, which is
+     exactly what reduced motion exists to suppress. It still happens, so the
+     page reaches the same composed state and nothing is left unreached - it
+     just arrives without the travel. */
+  .entry__main { transition: none; }
+  .entry__word,
+  .entry--split .entry__word { transition: none; }
+  .entry__atmosphere::after,
+  .entry__vignette::after { transition: opacity 300ms ease; }
+
   .entry__greeting { animation: none; }
   .entry__greeting-pulse::after { animation: none; opacity: 0.5; }
 }
