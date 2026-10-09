@@ -1,6 +1,7 @@
 """Missing optional raw artifacts do not disable the independent safety path."""
 import json
 from pathlib import Path
+import shutil
 import pytest
 from mental_health_screening.inference import MentalHealthScreener
 
@@ -11,7 +12,10 @@ ARTIFACTS = Path(__file__).resolve().parents[1]/'Step 12 - Packaging/package/men
 def test_missing_raw_model_preserves_supported_high(tmp_path, missing, status):
     for path in ARTIFACTS.iterdir():
         if path.is_file() and path.name != missing:
-            (tmp_path/path.name).symlink_to(path)
+            try:
+                (tmp_path/path.name).symlink_to(path)
+            except OSError:
+                shutil.copy2(path, tmp_path/path.name)
     result = MentalHealthScreener(artifacts_dir=str(tmp_path)).screen('i wanna jump from 10th floor')
     assert result['safety']['level'] == 'HIGH'
     assert result[status]['status'] == 'unavailable'
