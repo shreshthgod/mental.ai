@@ -1,0 +1,54 @@
+{
+  "recorded_utc": "2026-10-09T08:47:04.221Z",
+  "layer": "actual local app + real public Supabase settings; no authenticated user or database operation",
+  "checks": [
+    {
+      "label": "Actual configured browser exposes enabled Google control",
+      "status": "PASSED"
+    },
+    {
+      "label": "Normal API proxy serves liveness and validated input configuration without authentication bypass",
+      "status": "PASSED"
+    },
+    {
+      "label": "Existing registration form available without submitting account/email",
+      "status": "PASSED"
+    },
+    {
+      "label": "Browser reaches real project public settings with HTTP200",
+      "status": "PASSED"
+    },
+    {
+      "label": "Configured SDK reports actual disabled provider instead of missing configuration",
+      "status": "PASSED"
+    },
+    {
+      "label": "No private/authentication/write requests or uncaught browser errors",
+      "status": "PASSED"
+    }
+  ],
+  "forbidden_requests": [],
+  "errors": [],
+  "local_public_api": {
+    "live_status": 200,
+    "configuration_status": 200,
+    "live": {
+      "alive": true,
+      "service_version": "0.1.0"
+    },
+    "configuration": {
+      "schema_version": "1.0",
+      "max_text_length": 10000,
+      "max_body_bytes": 124096,
+      "urgency_threshold": 0.15,
+      "policy_version": "safety-policy-2026.10.09.6",
+      "semantic_status": "disabled"
+    }
+  },
+  "remote_settings": {
+    "http_status": 200,
+    "email": true,
+    "google": false,
+    "mailer_autoconfirm": false
+  }
+}

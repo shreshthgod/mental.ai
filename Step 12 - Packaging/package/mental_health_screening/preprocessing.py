@@ -62,13 +62,12 @@ def _is_word(tok):
 
 
 def safe_fix(s: str) -> str:
-    """Step 5's safe_fix() -- contractions.fix() can raise on rare edge-case
-    strings (hit once in the pipeline on a Turkish 'İ' character); falls back
-    to the original string rather than raising."""
-    try:
-        return contractions.fix(s)
-    except Exception:
-        return s
+    """Expand contractions; failures reach the screener's availability boundary.
+
+    Historical training retained a raw-string fallback. Serving now reports
+    unavailable processing rather than silently changing the feature workflow.
+    """
+    return contractions.fix(s)
 
 
 def lemmatize_text(cleaned_text: str) -> str:

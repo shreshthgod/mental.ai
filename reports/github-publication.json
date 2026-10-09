@@ -1,0 +1,51 @@
+{
+  "recorded_utc": "2026-10-09T09:23:53.690681+00:00",
+  "status": "IN_PROGRESS",
+  "authorization": "User explicitly authorized owner-only commit/push; deployment not authorized",
+  "repository": "shreshthgod/mental.ai",
+  "remote": "https://github.com/shreshthgod/mental.ai.git",
+  "branch": "main",
+  "base_HEAD": "2053855d51aaa5c9e06bd8c30f1c35d45c64716b",
+  "authenticated_github_login": "shreshthgod",
+  "repository_permissions": {
+    "admin": true,
+    "push": true
+  },
+  "author": {
+    "name": "shreshthgod",
+    "email": "shreshthnmims.it@gmail.com"
+  },
+  "committer": {
+    "name": "shreshthgod",
+    "email": "shreshthnmims.it@gmail.com"
+  },
+  "email_account_association": {
+    "method": "GitHub existing base commit maps both author/committer email to shreshthgod",
+    "verified": true,
+    "private_email_list": "404 missing user scope; no scope expansion"
+  },
+  "identity_environment_overrides_present": false,
+  "active_git_hooks_found": false,
+  "initial_payload_scan": {
+    "files": 216,
+    "bytes": 32709753,
+    "configured_credential_matches": 0,
+    "private_paths": 0,
+    "key_or_authorship_trailer_matches": 0
+  },
+  "excluded": [
+    "ignored env files/credentials",
+    "dependencies/build/cache",
+    "paper/",
+    "research/",
+    "*.tex",
+    ":memory:.ses"
+  ],
+  "source_sha256": "b52803f0293218f830f702032907db5ee7aae49239b0935f6b88896fe6facba7",
+  "implementation_commit": null,
+  "documentation_commit": null,
+  "push_result": null,
+  "deployment_performed": false,
+  "collaborator_or_model_credit_added": false,
+  "next_action": "Refresh allowlist/scan, stage vetted files, commit, later hash-documentation commit, fast-forward push and verify remote headers/SHA"
+}

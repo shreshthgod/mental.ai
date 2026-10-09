@@ -36,7 +36,7 @@
   font-weight: 620;
   letter-spacing: -0.03em;
 }
-.rsection__body { margin-top: 28px; display: grid; gap: 20px; }
+.rsection__body { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; }
 .rsection__body p { color: var(--ink-2); font-size: 16.5px; line-height: 1.75; max-width: 68ch; }
 .rsection__body strong { color: var(--ink); font-weight: 600; }
 

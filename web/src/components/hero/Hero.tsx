@@ -98,8 +98,8 @@ export function Hero({ live, instant }: Props) {
         <p className="label label--accent">AI-assisted mental health screening</p>
         <p className="hero__headline">Inside the pipeline.</p>
         <p className="hero__sub">
-          MENTAL.AI analyses language with a dual-model NLP pipeline - surfacing
-          condition patterns and an independent urgency signal, routed to human review.
+          MENTAL.AI analyses language with a dual-model NLP pipeline - showing
+          raw research signals alongside a separate, limited support assessment.
         </p>
         <div className="hero__ctas">
           <Link to="/screen" className="cta cta--primary">

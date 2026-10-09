@@ -18,9 +18,17 @@ const SESSION_KEY = "mental.ai.auth";
 /**
  * Credentials for QA runs.
  *
+ * Identity lives in Supabase Auth, so there is no configured account to read
+ * from the service any more: the account has to exist in the Supabase project.
  * Real environment variables win; otherwise the repo-root .env is read, because
  * `npm run dev` loads that file and a QA run against the same stack must use the
- * same credentials or it silently tests the wrong configuration.
+ * same project or it silently tests the wrong configuration.
+ *
+ *   MENTAL_AI_QA_EMAIL     account address
+ *   MENTAL_AI_QA_PASSWORD  account password
+ *
+ * Or the conventional names, which the .env template documents:
+ *   SUPABASE_QA_EMAIL / SUPABASE_QA_PASSWORD
  */
 function resolveCredentials() {
   const envPath =
@@ -31,16 +39,41 @@ function resolveCredentials() {
     for (const line of readFileSync(envPath, "utf8").split("\n")) {
       const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line);
       if (!match) continue;
-      fromFile[match[1]] = match[2].replace(/^["'](.*)["']$/, "$1");
+      fromFile[match[1]] = match[2].replace(/^["']|["']$/g, "");
     }
   }
 
+  const email =
+    process.env.MENTAL_AI_QA_EMAIL ??
+    fromFile.MENTAL_AI_QA_EMAIL ??
+    process.env.SUPABASE_QA_EMAIL ??
+    fromFile.SUPABASE_QA_EMAIL;
+  const password =
+    process.env.MENTAL_AI_QA_PASSWORD ??
+    fromFile.MENTAL_AI_QA_PASSWORD ??
+    process.env.SUPABASE_QA_PASSWORD ??
+    fromFile.SUPABASE_QA_PASSWORD;
+
   return {
-    user: process.env.MENTAL_AI_AUTH_USER ?? fromFile.MENTAL_AI_AUTH_USER ?? "admin",
-    password:
-      process.env.MENTAL_AI_AUTH_PASSWORD ?? fromFile.MENTAL_AI_AUTH_PASSWORD ?? "password",
-    name: process.env.MENTAL_AI_AUTH_NAME ?? fromFile.MENTAL_AI_AUTH_NAME ?? "",
+    email: email?.trim() ?? "",
+    password: password ?? "",
+    // Display name is whatever Supabase holds for the account; the greeting
+    // assertions derive it rather than assume it.
+    name: fromFile.MENTAL_AI_QA_NAME ?? "",
   };
+}
+
+/** Fail loudly rather than signing in as nobody and reporting a green run. */
+export function requireCredentials() {
+  if (!DEFAULT_EMAIL || !DEFAULT_PASSWORD) {
+    throw new Error(
+      "QA credentials are not configured. Accounts now live in Supabase Auth, so a run " +
+        "needs a real one.\n" +
+        "Set these, either in the environment or in the repo-root .env:\n" +
+        "  MENTAL_AI_QA_EMAIL=you@example.com\n" +
+        "  MENTAL_AI_QA_PASSWORD=your-password"
+    );
+  }
 }
 
 /**
@@ -51,21 +84,18 @@ function resolveCredentials() {
  * lib/auth.ts does in the browser. Asserting on the real value is what stops a
  * QA run from passing only because both sides happened to say "Admin".
  */
-export function expectedFirstName(user = DEFAULT_USER, name = DEFAULT_NAME) {
-  const source =
-    name.trim() ||
-    (user || "")
-      .trim()
-      .split(/[\s._-]+/)
-      .filter(Boolean)
-      .map((w) => w[0].toUpperCase() + w.slice(1))
-      .join(" ");
-  const word = source.split(/\s+/)[0] ?? "";
-  return word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : "";
+export function expectedFirstName(email = DEFAULT_EMAIL, name = DEFAULT_NAME) {
+  // Supabase supplies the real display name, so the greeting is asserted against
+  // whatever the account actually carries rather than a derived guess.
+  if (name.trim()) {
+    const word = name.trim().split(/\s+/)[0] ?? "";
+    return word ? word[0].toUpperCase() + word.slice(1).toLowerCase() : "";
+  }
+  return "";
 }
 
 const {
-  user: DEFAULT_USER,
+  email: DEFAULT_EMAIL,
   password: DEFAULT_PASSWORD,
   name: DEFAULT_NAME,
 } = resolveCredentials();
@@ -76,6 +106,21 @@ const {
  * Same origin plus /api in the default dev setup, where Vite proxies it.
  * A build configured with VITE_API_URL talks to that host directly instead.
  */
+/**
+ * The configured QA account, or empty strings when unset.
+ *
+ * Exposed so the scripts can fill the real form without each one re-deriving
+ * the environment lookup.
+ */
+export const qaCredentials = {
+  get email() {
+    return DEFAULT_EMAIL;
+  },
+  get password() {
+    return DEFAULT_PASSWORD;
+  },
+};
+
 export function apiOrigin(base) {
   const configured = process.env.MENTAL_AI_API_URL ?? process.env.VITE_API_URL;
   if (configured) return configured.replace(/\/$/, "");
@@ -104,10 +149,11 @@ export function apiPattern(base) {
  * MENTAL_AI_API_URL, because a seeded session with no token would silently
  * validate as anonymous and every assertion after it would be meaningless.
  */
-export async function seedSession(page, base, user = DEFAULT_USER, password = DEFAULT_PASSWORD) {
+export async function seedSession(page, base, email = DEFAULT_EMAIL, password = DEFAULT_PASSWORD) {
+  requireCredentials();
   const apiBase = apiOrigin(base);
   const res = await page.request.post(`${apiBase}/auth/login`, {
-    data: { user_id: user, password },
+    data: { user_id: email, password },
   });
   if (!res.ok()) {
     throw new Error(
@@ -127,8 +173,11 @@ export async function seedSession(page, base, user = DEFAULT_USER, password = DE
     [
       SESSION_KEY,
       JSON.stringify({
+        // The application store mirrors this shape in browser storage.
         token: body.token,
+        refreshToken: body.refresh_token,
         user: body.user,
+        userId: body.user_id,
         name: body.name,
         expiresAt: body.expires_at * 1000,
       }),
@@ -184,16 +233,17 @@ function findCachedChromium() {
 }
 
 /** Fill the sign-in form and submit it through the real UI. */
-export async function signIn(page, { user = DEFAULT_USER, password = DEFAULT_PASSWORD } = {}) {
+export async function signIn(page, { email = DEFAULT_EMAIL, password = DEFAULT_PASSWORD } = {}) {
+  requireCredentials();
   await page.waitForSelector(".signin__input", { timeout: 10000 });
   const fields = page.locator(".signin__input");
-  await fields.nth(0).fill(user);
+  await fields.nth(0).fill(email);
   await fields.nth(1).fill(password);
   await page.click("button[type=submit]");
 }
 
 /**
- * Walk the four screening check-in questions.
+ * Walk the screening check-in questions.
  *
  * These now live behind the gate rather than inside it, so a run either seeds a
  * session first or signs in before calling this.

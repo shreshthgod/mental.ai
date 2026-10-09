@@ -1,0 +1,983 @@
+{
+  "fixture_version": "contract-fixtures-1.0.1",
+  "provenance": "Developer-authored synthetic contract states; not clinical/performance evaluation. Raw base from actual original-case inference.",
+  "pending_persistence": "NOT_APPLICABLE: no durable async mechanism exists.",
+  "success_cases": [
+    {
+      "name": "high",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "immediate",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "IMMEDIATE",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "Please seek urgent help. Contact your local emergency service or go to the nearest emergency department. If there is an immediate hazard, move away from it if you can do so safely. If it is safe to have someone with you, do not be alone. Stay connected with someone you trust and tell them what is happening."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "concerning",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "CONCERNING",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "Thank you for saying this. Some of what you have described sounds heavy to be carrying. Talking to someone you trust, or a doctor or counsellor, would be worth doing soon. If that feels hard, one message to one person is enough to start."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "clarification",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "NEEDS_CLARIFICATION",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": true,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "I want to understand you properly before I say anything else. Are you having thoughts of harming yourself, and is that happening now? Either answer is fine, and both are worth getting support for."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "none_detected",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "NONE_DETECTED",
+          "subject": "self",
+          "temporal_context": "unclear",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": false,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "No relevant concern was detected by the supported checks. This does not confirm anyone's safety. If the result does not reflect what is happening, please reach out to someone you trust or a qualified professional."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "unsupported",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "UNKNOWN",
+          "subject": "self",
+          "temporal_context": "unclear",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": true,
+          "review_recommended": true,
+          "analysis_status": "unsupported",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "unsupported",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "I could not reliably interpret this text, so I am not going to guess at what it means. If you are struggling, please talk to someone you trust or to a local crisis service."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "known_high_with_unsupported_material",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "unsupported",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "unsupported",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "degraded",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "primary_unavailable",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "unavailable",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": null,
+          "class_probabilities": {},
+          "status": "unavailable"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "urgency_unavailable",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "unavailable"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": null,
+          "suicide_probability": null,
+          "decision_threshold_used": 0.15,
+          "flagged": false,
+          "status": "unavailable"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "semantic_unavailable",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "unavailable",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "all_safety_unavailable",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "UNKNOWN",
+          "subject": "self",
+          "temporal_context": "unclear",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": true,
+          "review_recommended": true,
+          "analysis_status": "unavailable",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "unknown",
+          "assessment_scope": "unavailable",
+          "support_action": "I could not reliably interpret this text, so I am not going to guess at what it means. If you are struggling, please talk to someone you trust or to a local crisis service."
+        },
+        "components": {
+          "independent_safety": "unavailable",
+          "semantic": "unavailable",
+          "preprocessing": "unavailable",
+          "primary": "unavailable",
+          "urgency": "unavailable"
+        },
+        "primary": {
+          "predicted_class": null,
+          "class_probabilities": {},
+          "status": "unavailable"
+        },
+        "urgency": {
+          "predicted_class": null,
+          "suicide_probability": null,
+          "decision_threshold_used": 0.15,
+          "flagged": false,
+          "status": "unavailable"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": null,
+        "lemmatized_text": null,
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "another_person",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "another_person",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "The person you described may need urgent support. If they are in immediate danger, contact their local emergency service now. If it is safe for you, stay connected with them and help them reach a trusted person. Do not put yourself in danger. Are they safe right now?"
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "persistence_failure",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "not_saved",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "persistence_unconfirmed",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "unconfirmed",
+          "record_id": null
+        }
+      }
+    },
+    {
+      "name": "saved",
+      "response": {
+        "schema_version": "1.0",
+        "request_id": "contract-fixture",
+        "safety": {
+          "level": "HIGH",
+          "subject": "self",
+          "temporal_context": "current",
+          "immediacy": "not_stated",
+          "evidence_codes": [
+            "SYNTHETIC_CONTRACT_FIXTURE"
+          ],
+          "summary": "Synthetic contract state; not an evaluated disclosure.",
+          "needs_clarification": false,
+          "review_recommended": true,
+          "analysis_status": "degraded",
+          "policy_version": "safety-policy-2026.10.09.6",
+          "language_support": "degraded",
+          "assessment_scope": "recognized_rules_only",
+          "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+        },
+        "components": {
+          "independent_safety": "complete",
+          "semantic": "disabled",
+          "preprocessing": "complete",
+          "primary": "complete",
+          "urgency": "complete"
+        },
+        "primary": {
+          "predicted_class": "Normal",
+          "class_probabilities": {
+            "Anxiety": 0.0026074619963765144,
+            "Bipolar": 0.00152647215873003,
+            "Depression": 0.004962537437677383,
+            "Normal": 0.9502395987510681,
+            "Personality disorder": 0.004316892474889755,
+            "Stress": 0.0016816304996609688,
+            "Suicidal": 0.03466535732150078
+          },
+          "status": "complete"
+        },
+        "urgency": {
+          "predicted_class": "suicide",
+          "suicide_probability": 0.7847130134418575,
+          "decision_threshold_used": 0.15,
+          "flagged": true,
+          "status": "complete"
+        },
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "cleaned_text": "i wanna jump from 10th floor",
+        "lemmatized_text": "i want to jump from 10th floor",
+        "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+        "service_version": "0.1.0",
+        "persistence": {
+          "status": "saved",
+          "record_id": "synthetic-record"
+        }
+      }
+    }
+  ],
+  "error_cases": [
+    {
+      "name": "authentication_failure",
+      "status": 401,
+      "response": {
+        "detail": "Authentication required"
+      }
+    },
+    {
+      "name": "invalid_input",
+      "status": 422,
+      "response": {
+        "detail": [
+          {
+            "loc": [
+              "body",
+              "text"
+            ],
+            "msg": "Invalid input"
+          }
+        ]
+      }
+    },
+    {
+      "name": "rate_limit",
+      "status": 429,
+      "response": {
+        "detail": "Analysis request limit reached; please retry later"
+      },
+      "retry_after": "60"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "started_at": "2026-10-08T20:31:59.612Z",
+  "layer": "Chromium + HTTP + actual API/models; synthetic provider transport; explicit fixture overrides",
+  "checks": [
+    {
+      "label": "Existing login authenticates synthetic identity",
+      "status": "PASSED"
+    },
+    {
+      "label": "Original: safety headline, honest raw Normal, useful support and unknown immediacy",
+      "status": "PASSED",
+      "actual_models": true
+    },
+    {
+      "label": "Account read-back preserves original authoritative snapshot",
+      "status": "PASSED",
+      "provider": "STUB"
+    },
+    {
+      "label": "Reload/recorded history preserves safety and distinguishes recorded state",
+      "status": "PASSED"
+    },
+    {
+      "label": "benign floor",
+      "status": "PASSED",
+      "actual_models": true,
+      "level": "NONE_DETECTED",
+      "subject": "self",
+      "temporal": "unclear"
+    },
+    {
+      "label": "fictional quotation",
+      "status": "PASSED",
+      "actual_models": true,
+      "level": "NONE_DETECTED",
+      "subject": "fictional_or_quoted",
+      "temporal": "hypothetical"
+    },
+    {
+      "label": "historical recovery",
+      "status": "PASSED",
+      "actual_models": true,
+      "level": "CONCERNING",
+      "subject": "self",
+      "temporal": "historical"
+    },
+    {
+      "label": "another person",
+      "status": "PASSED",
+      "actual_models": true,
+      "level": "HIGH",
+      "subject": "another_person",
+      "temporal": "current"
+    },
+    {
+      "label": "unsupported language",
+      "status": "PASSED",
+      "actual_models": true,
+      "level": "UNKNOWN",
+      "subject": "unclear",
+      "temporal": "unclear"
+    },
+    {
+      "label": "Rendered contract fixture: high",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: immediate",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: concerning",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: clarification",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: none_detected",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: unsupported",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: known_high_with_unsupported_material",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: degraded",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: primary_unavailable",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: urgency_unavailable",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: semantic_unavailable",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: all_safety_unavailable",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: another_person",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: persistence_failure",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: persistence_unconfirmed",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Rendered contract fixture: saved",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Returned text renders as text, not markup",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Cancelled/stale response cannot overwrite newer result",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "HTTP error presentation 422",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "HTTP error presentation 429",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "Frontend deadline has explicit no-result support state",
+      "status": "PASSED",
+      "mocked_hanging_fetch": true,
+      "clock_advanced_ms": 80001
+    },
+    {
+      "label": "Configured code-point limit preserves excess text and dangerous tail intact",
+      "status": "PASSED"
+    },
+    {
+      "label": "Account switch hides prior user's history/result/text",
+      "status": "PASSED",
+      "provider": "STUB"
+    },
+    {
+      "label": "Rejected token clears local session and returns to unchanged login",
+      "status": "PASSED",
+      "mocked_response": true
+    },
+    {
+      "label": "No uncaught browser script errors",
+      "status": "PASSED"
+    }
+  ],
+  "original": {
+    "http_status": 200,
+    "raw_primary": {
+      "predicted_class": "Normal",
+      "class_probabilities": {
+        "Anxiety": 0.0026074619963765144,
+        "Bipolar": 0.00152647215873003,
+        "Depression": 0.004962537437677383,
+        "Normal": 0.9502395987510681,
+        "Personality disorder": 0.004316892474889755,
+        "Stress": 0.0016816304996609688,
+        "Suicidal": 0.03466535732150078
+      },
+      "status": "complete"
+    },
+    "raw_urgency": {
+      "predicted_class": "suicide",
+      "suicide_probability": 0.7847130134418575,
+      "decision_threshold_used": 0.15,
+      "flagged": true,
+      "status": "complete"
+    },
+    "safety": {
+      "level": "HIGH",
+      "subject": "self",
+      "temporal_context": "current",
+      "immediacy": "not_stated",
+      "evidence_codes": [
+        "INTENT_VERB",
+        "METHOD_OR_LOCATION",
+        "URGENCY_MODEL_FLAGGED"
+      ],
+      "summary": "Routed HIGH on: i want jump from 10th floor",
+      "needs_clarification": false,
+      "review_recommended": true,
+      "analysis_status": "degraded",
+      "policy_version": "safety-policy-2026.10.09.6",
+      "language_support": "degraded",
+      "assessment_scope": "recognized_rules_only",
+      "support_action": "This disclosure suggests a serious concern that warrants support now. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you or someone else is in immediate danger, move away from hazards if you can do so safely. If you are unsure which local service to use, someone you trust or a healthcare professional may help you find it."
+    },
+    "components": {
+      "independent_safety": "complete",
+      "semantic": "disabled",
+      "preprocessing": "complete",
+      "primary": "complete",
+      "urgency": "complete"
+    },
+    "persistence": {
+      "status": "saved",
+      "record_id": "screening-1"
+    },
+    "displayed_headline": "Urgent support"
+  },
+  "errors": [],
+  "finished_at": "2026-10-08T20:34:52.310Z",
+  "passed": 34
+}

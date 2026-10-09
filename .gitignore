@@ -1,7 +1,13 @@
 __pycache__/
 *.py[cod]
 *.log
+
+# Secrets. .env.example is the committed template and must stay tracked.
 .env
+.env.*
+!.env.example
+web/.env
+web/.env.*
 
 # Large dataset artifacts (stripped from history via filter-branch; kept untracked)
 datasets/
@@ -9,7 +15,9 @@ Step */output/
 *.partial
 
 # Web build & QA artifacts
+node_modules/
 web/node_modules/
 web/dist/
 web/*.tsbuildinfo
 web/shots/
+nltk_data/

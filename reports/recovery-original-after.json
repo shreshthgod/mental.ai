@@ -1,0 +1,93 @@
+{
+  "package": {
+    "primary": {
+      "predicted_class": "Normal",
+      "class_probabilities": {
+        "Anxiety": 0.0026074619963765144,
+        "Bipolar": 0.00152647215873003,
+        "Depression": 0.004962537437677383,
+        "Normal": 0.9502395987510681,
+        "Personality disorder": 0.004316892474889755,
+        "Stress": 0.0016816304996609688,
+        "Suicidal": 0.03466535732150078
+      },
+      "status": "complete"
+    },
+    "safety": {
+      "level": "HIGH",
+      "subject": "self",
+      "temporal_context": "current",
+      "immediacy": "not_stated",
+      "evidence_codes": [
+        "INTENT_VERB",
+        "METHOD_OR_LOCATION",
+        "URGENCY_MODEL_FLAGGED"
+      ],
+      "summary": "Routed HIGH on: i want jump from 10th floor",
+      "needs_clarification": false,
+      "review_recommended": true,
+      "analysis_status": "complete",
+      "policy_version": "safety-policy-2026.10.08.3",
+      "language_support": "complete",
+      "support_action": "It sounds like you may be thinking about harming yourself. You deserve support right now rather than later. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you are in immediate danger, move away from anything you could use to hurt yourself first. If you tell me your country I can point you to the right service."
+    },
+    "urgency": {
+      "predicted_class": "suicide",
+      "suicide_probability": 0.7847130134418575,
+      "decision_threshold_used": 0.15,
+      "flagged": true,
+      "status": "complete"
+    },
+    "cleaned_text": "i wanna jump from 10th floor",
+    "lemmatized_text": "i want to jump from 10th floor",
+    "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56)."
+  },
+  "api_http_status": 200,
+  "api": {
+    "request_id": "54741e37e4f648e0",
+    "safety": {
+      "level": "HIGH",
+      "subject": "self",
+      "temporal_context": "current",
+      "immediacy": "not_stated",
+      "evidence_codes": [
+        "INTENT_VERB",
+        "METHOD_OR_LOCATION",
+        "URGENCY_MODEL_FLAGGED"
+      ],
+      "summary": "Routed HIGH on: i want jump from 10th floor",
+      "needs_clarification": false,
+      "review_recommended": true,
+      "analysis_status": "complete",
+      "policy_version": "safety-policy-2026.10.08.3",
+      "language_support": "complete",
+      "support_action": "It sounds like you may be thinking about harming yourself. You deserve support right now rather than later. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you are in immediate danger, move away from anything you could use to hurt yourself first. If you tell me your country I can point you to the right service."
+    },
+    "primary": {
+      "predicted_class": "Normal",
+      "class_probabilities": {
+        "Anxiety": 0.0026074619963765144,
+        "Bipolar": 0.00152647215873003,
+        "Depression": 0.004962537437677383,
+        "Normal": 0.9502395987510681,
+        "Personality disorder": 0.004316892474889755,
+        "Stress": 0.0016816304996609688,
+        "Suicidal": 0.03466535732150078
+      },
+      "status": "complete"
+    },
+    "urgency": {
+      "predicted_class": "suicide",
+      "suicide_probability": 0.7847130134418575,
+      "decision_threshold_used": 0.15,
+      "flagged": true,
+      "status": "complete"
+    },
+    "cleaned_text": "i wanna jump from 10th floor",
+    "lemmatized_text": "i want to jump from 10th floor",
+    "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56).",
+    "service_version": "0.1.0"
+  },
+  "authentication": "stub GoTrue transport, real route",
+  "frontend_static": "unchanged: headline Normal; urgency Elevated; no safety consumption"
+}

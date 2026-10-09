@@ -1,0 +1,454 @@
+{
+  "candidate": "MiniLM embeddings + LogisticRegression C=1, seed=42, argmax",
+  "enabled_in_production": false,
+  "independent_final_evaluation": false,
+  "clinically_reviewed": false,
+  "training_method": "Frozen published encoder; classifier fitted on developer development rows only",
+  "validation_tuning": false,
+  "policy_version": "safety-policy-2026.10.08.4",
+  "artifact": {
+    "repository": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "10dbd2f06a8baf40ad285b037edda610c1b9a57c",
+    "license": "apache-2.0 (model card)",
+    "hashes": {
+      "config.json": "953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41",
+      "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037",
+      "README.md": "7dfc82496ec33f906b5b0d6750c1e2397da6530c74d1ae3568c55bc2739125e7",
+      "onnx/model.onnx": "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452"
+    },
+    "role": "isolated_unvalidated_evaluation_only"
+  },
+  "data_version": "semantic-devval-2026.10.08.1",
+  "data_sha256": "6ef1825eefd21507476563b86ddb8ab2b1762e3e6fe46e670ec16ae4ef698a5d",
+  "development_count": 36,
+  "validation_count": 18,
+  "development_labels": {
+    "urgent": 12,
+    "concerning": 12,
+    "benign": 12
+  },
+  "exact_existing_corpus_overlaps": [],
+  "exact_split_overlap": [],
+  "near_duplicate_review": "Families share support concepts; this is synthetic engineering data, not independent samples",
+  "metrics": {
+    "baseline": {
+      "total": 18,
+      "correct": 10,
+      "urgent_total": 6,
+      "urgent_detected": 1,
+      "benign_total": 6,
+      "benign_urgent_escalations": 0,
+      "mismatches": [
+        "val-urgent-01",
+        "val-urgent-02",
+        "val-urgent-03",
+        "val-urgent-05",
+        "val-urgent-06",
+        "val-concerning-01",
+        "val-concerning-02",
+        "val-concerning-06"
+      ]
+    },
+    "candidate": {
+      "total": 18,
+      "correct": 13,
+      "urgent_total": 6,
+      "urgent_detected": 5,
+      "benign_total": 6,
+      "benign_urgent_escalations": 1,
+      "mismatches": [
+        "val-urgent-03",
+        "val-concerning-01",
+        "val-concerning-02",
+        "val-benign-02",
+        "val-benign-04"
+      ]
+    }
+  },
+  "results": [
+    {
+      "case_id": "val-urgent-01",
+      "expected": "urgent",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "urgent",
+      "logits": {
+        "benign": -0.23964426555561208,
+        "concerning": 0.02686228541221597,
+        "urgent": 0.21278198014340496
+      },
+      "latency_ms": 9.954478999134153
+    },
+    {
+      "case_id": "val-urgent-02",
+      "expected": "urgent",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "urgent",
+      "logits": {
+        "benign": 0.09716821134534587,
+        "concerning": -0.3996847071897057,
+        "urgent": 0.30251649584436846
+      },
+      "latency_ms": 9.952536998753203
+    },
+    {
+      "case_id": "val-urgent-03",
+      "expected": "urgent",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.07226256607605436,
+        "concerning": 0.05475779243226231,
+        "urgent": -0.12702035850830795
+      },
+      "latency_ms": 10.0643219993799
+    },
+    {
+      "case_id": "val-urgent-04",
+      "expected": "urgent",
+      "baseline": "urgent",
+      "baseline_level": "HIGH",
+      "candidate": "urgent",
+      "logits": {
+        "benign": -0.1281655875001168,
+        "concerning": -0.08720610912275983,
+        "urgent": 0.21537169662288566
+      },
+      "latency_ms": 12.420947001373861
+    },
+    {
+      "case_id": "val-urgent-05",
+      "expected": "urgent",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "urgent",
+      "logits": {
+        "benign": -0.013385608524893844,
+        "concerning": -0.2204298073518414,
+        "urgent": 0.23381541587674384
+      },
+      "latency_ms": 9.070116997463629
+    },
+    {
+      "case_id": "val-urgent-06",
+      "expected": "urgent",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "urgent",
+      "logits": {
+        "benign": 0.02394775894726181,
+        "concerning": -0.40885643416358863,
+        "urgent": 0.38490867521633554
+      },
+      "latency_ms": 10.327448999305489
+    },
+    {
+      "case_id": "val-concerning-01",
+      "expected": "concerning",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.05616558939798544,
+        "concerning": 0.05600772691413003,
+        "urgent": -0.11217331631210675
+      },
+      "latency_ms": 10.325593000743538
+    },
+    {
+      "case_id": "val-concerning-02",
+      "expected": "concerning",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.19000817761928512,
+        "concerning": 0.1283444044570049,
+        "urgent": -0.3183525820762814
+      },
+      "latency_ms": 12.548046001029434
+    },
+    {
+      "case_id": "val-concerning-03",
+      "expected": "concerning",
+      "baseline": "concerning",
+      "baseline_level": "CONCERNING",
+      "candidate": "concerning",
+      "logits": {
+        "benign": -0.09267289149075825,
+        "concerning": 0.35705549761205835,
+        "urgent": -0.26438260612129105
+      },
+      "latency_ms": 11.449650999566074
+    },
+    {
+      "case_id": "val-concerning-04",
+      "expected": "concerning",
+      "baseline": "concerning",
+      "baseline_level": "NEEDS_CLARIFICATION",
+      "candidate": "concerning",
+      "logits": {
+        "benign": -0.21111846863352285,
+        "concerning": 0.38364076130421254,
+        "urgent": -0.17252229267068137
+      },
+      "latency_ms": 14.836540998658165
+    },
+    {
+      "case_id": "val-concerning-05",
+      "expected": "concerning",
+      "baseline": "concerning",
+      "baseline_level": "CONCERNING",
+      "candidate": "concerning",
+      "logits": {
+        "benign": -0.2864784152420305,
+        "concerning": 0.4389786766182864,
+        "urgent": -0.15250026137624745
+      },
+      "latency_ms": 8.190159998775925
+    },
+    {
+      "case_id": "val-concerning-06",
+      "expected": "concerning",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "concerning",
+      "logits": {
+        "benign": -0.22242103320406265,
+        "concerning": 0.5846155296430079,
+        "urgent": -0.36219449643893653
+      },
+      "latency_ms": 12.6996369981498
+    },
+    {
+      "case_id": "val-benign-01",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.4795318187796103,
+        "concerning": -0.521574174171926,
+        "urgent": 0.04204235539232423
+      },
+      "latency_ms": 9.013524002511986
+    },
+    {
+      "case_id": "val-benign-02",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "urgent",
+      "logits": {
+        "benign": 0.08903224773562629,
+        "concerning": -0.3730448462450926,
+        "urgent": 0.2840125985094749
+      },
+      "latency_ms": 10.9556050010724
+    },
+    {
+      "case_id": "val-benign-03",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.33948507913503373,
+        "concerning": -0.18733712872230096,
+        "urgent": -0.15214795041272422
+      },
+      "latency_ms": 8.39856799939298
+    },
+    {
+      "case_id": "val-benign-04",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "concerning",
+      "logits": {
+        "benign": -0.2429121065503424,
+        "concerning": 0.37631597867536126,
+        "urgent": -0.13340387212501045
+      },
+      "latency_ms": 11.094028999650618
+    },
+    {
+      "case_id": "val-benign-05",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.08355182152351304,
+        "concerning": -0.0638218010520992,
+        "urgent": -0.019730020471405152
+      },
+      "latency_ms": 6.059052000637166
+    },
+    {
+      "case_id": "val-benign-06",
+      "expected": "benign",
+      "baseline": "benign",
+      "baseline_level": "NONE_DETECTED",
+      "candidate": "benign",
+      "logits": {
+        "benign": 0.01468301279221862,
+        "concerning": 0.009407787751018082,
+        "urgent": -0.024090800543228014
+      },
+      "latency_ms": 7.065828001941554
+    }
+  ],
+  "runtime": {
+    "python": "3.12.3",
+    "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.39",
+    "packages": {
+      "onnxruntime": "1.30.0",
+      "tokenizers": "0.23.2",
+      "numpy": "2.4.4",
+      "scikit-learn": "1.8.0"
+    }
+  },
+  "measurements": {
+    "concurrency": 1,
+    "provider": "CPUExecutionProvider",
+    "intra_op_threads": 2,
+    "cold_load_ms": 288.31161500056623,
+    "cold_load_samples": 1,
+    "warm_samples": 18,
+    "p50_ms": 10.194957500061719,
+    "p95_ms": 14.836540998658165,
+    "p99_ms": 14.836540998658165,
+    "quantile": "sorted floor(n*q) index, capped; median p50",
+    "max_process_rss_kib": 322512
+  },
+  "source_fingerprint": {
+    "source_sha256": "b3766b5c5d09574640038599d542e4bf733edf3af4ff17333d906a81d01e0eb8",
+    "scope": "source/configuration/corpora; excludes reports, documentation, secrets, raw data",
+    "manifest": {
+      ".env.example": "4da0814cea5511ef1ea1d85832d25ba4687e1b540f5a04ab1406c4f7d8dd3794",
+      "Dockerfile": "e9407c8017173a13121d2d07552561f06e218b66181225aee7ef91ab07d52ca4",
+      "Step 12 - Packaging/package/mental_health_screening/__init__.py": "43ed5b5589e35760b24206461a5df48d7c72817dce7e4cca465a3d135e3c4219",
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/config.json": "0e90561f45eb47079b53647199d5c11369d7dfb66d4d49e42654d925b8b7f64e",
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/curated_urgency_keywords.json": "c7c168043c227b641b6254878851451b646845366562592fd50cb6ac5f5271b4",
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/emotion_lexicon.json": "dc42e67e9cc60e177a8cd08f0766feb08fcb021a8e306ad44bd38f4c01bc05a0",
+      "Step 12 - Packaging/package/mental_health_screening/features.py": "cd93c6b0b0c9f4f093d3bde408055ddf03c67c510869792b538594de0f7129eb",
+      "Step 12 - Packaging/package/mental_health_screening/inference.py": "5b3923e7e8e0a031bd974966b584aea8b1b35348c4668eb8d2887907c0a2a0ad",
+      "Step 12 - Packaging/package/mental_health_screening/preprocessing.py": "0ffd352daf22d29a6f902b09a10c132a943122cb9b7e9d0f68e146edc14c02b6",
+      "Step 12 - Packaging/package/mental_health_screening/safety.py": "f40f093526e2d347246de3408f70abe98d949933959cb4f9d7da8b2e79f200f1",
+      "Step 12 - Packaging/package/mental_health_screening/semantic.py": "acaeae640a975e85c97a9497dc75322f41088c26e482407e482cfe5772b0e011",
+      "Step 12 - Packaging/package/requirements.txt": "f0f91d167f100d98fad112ccaf301795fd48c22e15d1bce8a8743b923bae195c",
+      "api/__init__.py": "12fef91fdcd626f679c2c41be06a4c2bef5e96e239e69e393c377d323241ff2d",
+      "api/api.py": "6fef510dbe9dc5b009fd467b6bf1ba302d7ec14a3fb64e48df3c50febfdb1c7f",
+      "api/auth.py": "e0ac2871ceba0c9b6022315c028d06d50b29601c80a1ea74bc799ad6d376261d",
+      "api/db.py": "f34f597de74e259e4eeedb1632d71d83643620ca7f4f85b240575085de1cbfa4",
+      "api/requirements.txt": "2d145adf4ffba37fe15cd3b66d4a323c96b67033ab5e02af46f6e09c7c007308",
+      "scripts/build_holdout.py": "bb2b220bd4406395f85b32e17bdc4416bf0c16091d1a8d90053626e827fae147",
+      "scripts/build_holdout2.py": "1e9559637e4134d8941317162c0122676bd9b5911a7cb63565416de6881c6e12",
+      "scripts/evaluate_semantic_candidate.py": "e26d00a6447793853df17fe401c80f62969bb3154a22e6fd833933c49fbb4d57",
+      "scripts/fetch_semantic_candidate.py": "a89578e79e0651c60697a84878de098d03ac5d12f6da8ae367be93805a4aa7c7",
+      "scripts/generate_corpus_expansion.py": "ca95ba38defaa5dab213b02620f26b6f4bc190cc4c4b88c186491fa3d5799e43",
+      "scripts/run_safety_corpus.py": "b42b1939893b1bfd5490dfc14f687b69ee0870cd0f3aa84c757ca060ea3f116d",
+      "scripts/source_fingerprint.py": "9617aebbce45d16ccf22d6fc20926090f91414afa4f8ae8c2fe29b23d398b0f8",
+      "scripts/verify_project.py": "bed4897dc64dbc87508bcc85e909da97db20b51d2c2768be30cfaec47e4f42f4",
+      "supabase/schema.sql": "2a575b19eefb9bd999b7b0f27dd30e6a2b73f0c5879ee498c700f126332423ae",
+      "tests/_supabase_stub.py": "7112db3e050de97296b4e5e82262b457e7788b6d9da20f763fa9a30b4b2d4c6f",
+      "tests/safety_corpus/cases.json": "11b5504fdd68d5a7f35d0e545e3f11da9c5c919e1d2b818afdee8ee634f4169d",
+      "tests/safety_corpus/expansion.json": "bb47f8da91167431c0ec2f50b5b2af162586fe14a8e972a60bcc21fca8d31164",
+      "tests/safety_corpus/holdout.json": "e4879c63c90186419385b6cf344e27e897fdb180fa3a89ec0c47daa40dbc95c7",
+      "tests/safety_corpus/holdout2.json": "32730d268ea378caff9e932132ec6b9b76b4def63f76a1f7eb3de9076af7237c",
+      "tests/safety_corpus/temporal-seeds-v1.json": "a1f01927e0b65bd80f9cc803e2a4be9728454cb8b188dee873d1eb9613e6866c",
+      "tests/test_api_contract.py": "68de18de7fb3ed4f0e761840ddca12756b9d41c01e524424630d203eb92fbe45",
+      "tests/test_context_attribution.py": "bcb2fe09bd7341f2c2fb15d62b1ed6560a8b78db0177c2ec9b0ea544fbf30bf6",
+      "tests/test_corpus_runner.py": "57e0993c6b899208108c020b8a0e44338fe3850ec73a23e09fe7a58679eac65f",
+      "tests/test_metamorphic.py": "cfb47d3789b603266abbe068d412ab05dd0cb33e2d6c93a737dc7eee35d1838c",
+      "tests/test_recovery_failures.py": "ab64c06be61198ba53f275ac3d19e83aaa2cac0b9079ddb9642d87180a10a43e",
+      "tests/test_safety.py": "b11618734e169e76f2d10f5f28eda8d3b5e59f5ecd2b229ca18462a700834728",
+      "tests/test_safety_contract.py": "17fc584437c65da9f6f156d89e61c141d1e0bfcf2cfcfeb2613191c537aded83",
+      "tests/test_semantic_adapter.py": "f63e979be9833d01d9c7a01141e7df7b907f2f06a50cc1444c1925e8be16d78f",
+      "tests/test_service.py": "b78fc32bd180652b0e202af46751b9e711c1155d5f6920d8ff75b18b67c68cf4",
+      "tests/test_temporal_recovery.py": "d71aeb0fd2a6efa13cbfc155d9dcab7757f33ad51b6d358e93f27617323cbf8b",
+      "vercel.json": "559489ab5052f2c1eb61ae99154930adda16caa9f31e5a685adbe3ac765f0ae7",
+      "web/package-lock.json": "e65310c41ca8a7c95d18d53778588bc96cfa5e581a072e7978d81ee03a4e0cb3",
+      "web/package.json": "470e95f6e8173b72edce39507f3edf4555c297d092a5b5bddf6cc1603b28259f",
+      "web/scripts/auth.mjs": "8d3e0ec5f2cac0807f1981529d195241f5aaf2682b9186d0b6e634538517e200",
+      "web/scripts/authflow.mjs": "39dadc81ace77c29fe5e99912656228470f4178e772b42bb8e6f97bcf278daf4",
+      "web/scripts/entryqa.mjs": "89673c89bfb1d3727e5068630d12125d738545abeb5ae6542344c07f40998820",
+      "web/scripts/failure.mjs": "b1b9b104acb93ddba4d72c6aef7e54e003a71210005e477ac835240aaaee93ad",
+      "web/scripts/interaction.mjs": "d8bcc011b55519c2263e08f5c5a35e9db33bae75e76c61ac146a2695fd506640",
+      "web/scripts/screenshots.mjs": "56508c529c344d7a728993228d897ef711930ed5f0cb12d31f809ba64f74a2e7",
+      "web/src/App.tsx": "9ba8b4078715c687de0ca2f95003c74cfe97b1bd993f60d3e4b98200afa7b315",
+      "web/src/components/GradientWaves/GradientWaves.css": "4a3a19cd7977d5ddd128658750a007be8632c6fd9a66fa0c280eec2187927d65",
+      "web/src/components/GradientWaves/GradientWaves.tsx": "5c6cdb06982439aaa2dc3e978a2ae27a9b3f8eabb48d56642e4f4b8aa09beadb",
+      "web/src/components/Grainient/Grainient.css": "1a130b171efdb369b4249cdb5ad60773aa2f978b8538aed6a60769eacd0b15e8",
+      "web/src/components/Grainient/Grainient.tsx": "8828d367254dee5d9d3aa5a1f4eeb9eb0c98d270c0bd0ee049e7e44e438d6833",
+      "web/src/components/chrome/AccountMenu.tsx": "52c46f9e41a0e88db6c2f4da17adc12948c3f270ba04469e7719407bf3301c62",
+      "web/src/components/chrome/Footer.tsx": "553007c1bb95b3255ec111117ff5dd8f177251622c430cedd468188e90d0e429",
+      "web/src/components/chrome/GridOverlay.tsx": "d38d228ed61aeafdbea188ad9d3479c9b64944c7e28645a12e394af74972d28c",
+      "web/src/components/chrome/Navigation.tsx": "254352bd2fad96b884ae8ce90266c29f7f769d4a4cbf30c32cccbd60dcf6b9a1",
+      "web/src/components/chrome/SystemStatus.tsx": "3cf60bd655f1c8617178eb879d520a30b387756aa31aec84218f126f4a1b0ac5",
+      "web/src/components/entry/LoginPanel.tsx": "9380159eb15b6689cab99cde674a4144064350b0c57450d05259063e67a26ab5",
+      "web/src/components/entry/NeuralStage.tsx": "3c8c7b2ab17a80c3a4afa3eb4727b7c36ff14ad65491172c3a53fad68c07d741",
+      "web/src/components/entry/Wordmark.tsx": "33dce7fdd273714ebaadeabebaa1b61bb88aa46c00a5a632ca3ecb08eb827ef3",
+      "web/src/components/hero/Hero.tsx": "01d4f5a55a4f0344e787d51d7c9027b303ce2d2d0945dee11334e5a56c5ba049",
+      "web/src/components/hero/Stage.tsx": "e28f5079e4cc21f50bae5c17cb05320ebb80a5dd6448c54487d6e39e097109b1",
+      "web/src/components/hero/engine.ts": "d4699c2e5761dcf47fccededfc4bb0600b52491abd1a4c88b7bd35d4bc76a7bf",
+      "web/src/components/hero/neural.ts": "f162fec33cfdcebdcc5e043085cf260902486cce12e596db0975fe88b3237aff",
+      "web/src/components/hero/sculpture.ts": "33eaf0947fb98d42ea0251ad69ad2f194dc22b3e67c1fa35629fcd317199708b",
+      "web/src/components/hero/studioEnv.ts": "9fbbb938acb05566a60526edb76b909c880aaa2a740f05b4359c9e005be8368f",
+      "web/src/components/landing/DualSignal.tsx": "841eeaad90ecdaec6d6990c21d75c2412441cc65087b25e726de0adbe373d153",
+      "web/src/components/landing/Limitations.tsx": "a11e7a970a98b9e01c871a329835475d1a38411036b1178e3e8c6737c5afb5fa",
+      "web/src/components/landing/Metrics.tsx": "84072bb4d6ef00b65527482e5c7be591ee5cd7da3085429cbb5dd9cc25431f39",
+      "web/src/components/landing/Pipeline.tsx": "7e9fedf006e762fc2ce98f654b3e1ae2ee306a32c52079cbd7685b3cdb438eed",
+      "web/src/components/landing/Statement.tsx": "6905e5c009c699137138a64af885b5673d89b6b4d236f8e4eaef3c3eba510338",
+      "web/src/components/login/LoginForm.tsx": "456978e4954c78cf6f2d4224d0972712b06ef2545ce8e3542c52c8e74d69768a",
+      "web/src/components/motion/Reveal.tsx": "759af87874a8785e2ac16e36e4c8f25b4113a0280da92976116867d797bc02b3",
+      "web/src/components/screen/CheckInFlow.tsx": "dc54a57b92df18e926403d725041454cdf9553735ff975c9c021b886f2640bfc",
+      "web/src/lib/api.ts": "98c949c4eb5d98e41d87fb1ac86981fd546b73333735502906c31dfecd0acaac",
+      "web/src/lib/auth.ts": "c5ea7f2d8731a44578d78a6765ee3a7158c1e5e7f8276b34ed8d6dbe6233dc52",
+      "web/src/lib/authContext.ts": "c6798c702fe61a997faaea4d72484d9cc0a5b257e41012f1280324a771d3cb6e",
+      "web/src/lib/checkin.ts": "79ccab678da1b45c723fa8afd6f78200c949cb149459da01c50e52a9d503326c",
+      "web/src/lib/history.ts": "064df306103357ba7fcf37546a749f48be08cdc33984b9859ee930863850c512",
+      "web/src/lib/motion.ts": "aad43517b3a91a034439df260f0837c90ab3986902c70d8455c3ba7cc9ee8501",
+      "web/src/lib/status.ts": "8eaa8b1dbf10494acf700c1e8e300fd655755be5b4bbf956daf83fbf4780b30f",
+      "web/src/lib/supabase.ts": "153d704f653289bf4f63385a60131a9cd0118990652308046992b561fe133c8f",
+      "web/src/main.tsx": "9ca2476acc92d27e4f0a207165b2890b6c6b0c098fa9243889646f55e85b88a3",
+      "web/src/pages/Landing.tsx": "f636f04105cb46b890303f2276618191f9b60694ca9bbe2d7d5a55959fef1a95",
+      "web/src/pages/Research.tsx": "3c4f6294467a183a530a43350f7cbfc1a5a6802bfbafb0b460d3cc7bb221593c",
+      "web/src/pages/Screen.tsx": "51060f5ba3fdc9ec5efd9d901efcb4760b8cfed211e191fe0a73fec901071976",
+      "web/src/pages/Start.tsx": "3046f0799248c3491d56bbdd0036f6d90694c0fe5813bed4fa09b8e52010b19f",
+      "web/src/styles/base.css": "9a42d6558a9c6b44c2d2027dfea663bba9ce4dd03aa2543a8da57aab78f1e001",
+      "web/src/styles/entry.css": "6cb8cef57e9f6ccd3272cb2fa90a422b331f6b02b823f4fcd3efea757337dd9d",
+      "web/src/styles/footer.css": "254d78c641c9d1e8cbd68bc6477e91ab3f6c895242a1ad6db2e88f08acc7f66b",
+      "web/src/styles/grid.css": "ba36e0a206a5bbc595edd8cd78127a1db53b7b51e945d13e46e7f56666591567",
+      "web/src/styles/hero.css": "25c07a506cf2dbb769cca912c8d7bf7270436567e2c84fe7027fc62b747ba87c",
+      "web/src/styles/login.css": "da823da7d53fdf936445dbc4c0b98ae700a72a86ae0cf6ecc00f8e9b40ebf259",
+      "web/src/styles/nav.css": "274531da629b2f8880bfd1dbae1e38bbc3eaafeb30591f20c380c4fb03737150",
+      "web/src/styles/research.css": "b664e3be0aa0654cc1e589ca866b90419ef69a95f0795aecf43e47c96e522ee4",
+      "web/src/styles/screen.css": "7d4903a982009b388cc7b042a7ff83118934286f076bfbc8cce7df3939300749",
+      "web/src/styles/sections.css": "4f15bc49126406bb49d48f9f0bd19c3e9cf131b3393ee45b7e8842af6149f6fb",
+      "web/src/styles/tokens.css": "5f51fb188a87943593ce37d3063c2e5bcb990f8375d860ec1ce1e1892398236f",
+      "web/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+      "web/vite.config.ts": "64c99b1b5a20800c74fe0b60f1da4d462bfadc73d402a80f0fda45dbcc16d71c"
+    },
+    "artifacts": {
+      "config.json": "0e90561f45eb47079b53647199d5c11369d7dfb66d4d49e42654d925b8b7f64e",
+      "curated_urgency_keywords.json": "c7c168043c227b641b6254878851451b646845366562592fd50cb6ac5f5271b4",
+      "emotion_lexicon.json": "dc42e67e9cc60e177a8cd08f0766feb08fcb021a8e306ad44bd38f4c01bc05a0",
+      "primary_chi2_selector.pkl": "58e17570b99117b4edbe8b7d872c9068883699e2ca778ddf6d318f08555c398e",
+      "primary_tfidf_vectorizer.pkl": "29b00aaa4186642134818bbb4d7590097ee82b9dead4f58c394a805364140f1d",
+      "primary_xgboost.pkl": "4c9d64d1aae41aced3dce83db3325c6d7f7952446edf8836412417b6842b6fdd",
+      "urgency_logreg.pkl": "1c9536d756320a86fec3c7818f654d68af27e1c82fd3dad140e207f5ef503b15",
+      "urgency_tfidf_vectorizer.pkl": "8a0e2f35067c8b867c7b771ebcfe9672332e9c5afc9060e2353bdcd985d03509"
+    }
+  },
+  "limitations": [
+    "No validated subject/time/capability assessment",
+    "No calibration, clinical probability or generalization claim",
+    "No final evaluation or external review",
+    "English short inputs only; >256 wordpieces rejected",
+    "Model-card training-data licensing not independently established"
+  ]
+}

@@ -1,0 +1,55 @@
+# Recovery handoff, 2026-10-09
+
+## 1. Current Phase
+
+Phase H final local reconciliation after development Phase F integration and Phase G diagnostics. ENGINEERING partial; INTEGRATION partial; RELEASE_VALIDATION blocked. Local scoped repairs complete; broader semantic/current diagnostic and external verification remain incomplete. No release/deployment claim.
+
+## 2. Work Completed
+
+D046–D097 recover verified dirty implementation, trustworthy runner, raw-before-optional safety/failure scopes, context/subject/time/capability/fusion, real local semantic comparison (disabled), schema1.0/immutable snapshots/owner isolation/bounded persistence, security/config/deadline/readiness and local runtime/resource/hosting preparation. D086 gates narrow frontend integration; D087–D094 connect existing types/view/support/history/check-in/config/error/cancel/account/session states without redesign and correct new provider-key headers/generic HIGH copy. D095 reconciles actual docs/history/full defect fields/evidence. D096 separate frozen current-.6 semantic reproducibility preserves earlier scores; no tuning or production enabling. D097 fixes expired browser mirror restoration with one same-candidate refresh; actual provider expiry remains blocked. See reports/recovery-final-report.md for WHAT/WHY/HOW/WHEN and actual results.
+
+## 3. Files Changed
+
+Full source manifest in reports/recovery-final-checkpoint.json (tracked/untracked dirty paths, runtime/artifact hashes). Package __init__/inference/preprocessing/features/safety/fusion/semantic; api contracts/db/auth/api/execution/limits/body_limit/runtime requirements; migration/fresh schema; scripts runner/fingerprint/candidate/types/fixtures/resources/runtime/isolated verification; focused tests; Dockerfile/main.py/requirements/vercel config. PhaseF existing web api/auth/checkin/history/Screen/package script plus analysisView/contract/privateStore/contractqa/screenqa. Current README/policy/API/Supabase/coverage/matrix/defect/flow/handoff and final reports. Existing unrelated frontend changes preserved. No staged paths.
+
+## 4. Current Architecture / State
+
+Existing login -> server-verified generation-guarded session -> owner-qualified private storage -> explicit check-in/editor submission -> configured code-point cap -> authenticated/bounded-byte API -> owner rate/admission -> independent raw safety -> optional guarded legacy NLP/models -> fuse (semantic defaults disabled; adapter not executed in production) -> schema1.0 -> bounded one-attempt acknowledged core snapshot save -> validated analysisView/Screen support and nullable research details -> owner-filtered core history/common recorded-state adapter. HIGH survives optional faults; UNKNOWN is not lower danger/NONE; no raw-normal safety conclusion. Current policy .6 generic HIGH avoids invented harm kind/location conversation; .5 stored history remains recorded truth. Saving saved/not_saved/unconfirmed. No memory/notification/durable async queue.
+
+## 5. Decisions Made
+
+D046–D097 appended, all uncommitted. D061 narrowly supersedes D001 for unresolved learned concern clarification, never emergency alone. D065 supersedes overbroad D019 recovery cap. D068 supersedes D007 unrestricted polling with fresh bounded capability probe. D086 supersedes D042 only for gated behavioral integration; all visual/layout/ownership protections persist. D039/D040 consumed/leakage warnings and D045 historical late-documentation gap preserved. Current .6 copy D094, header D093, final docs D095.
+
+## 6. Requirements and Constraints
+
+Preserve layout/colors/fonts/branding/assets/animations/navigation/login and unrelated work, honest raw probabilities, original cases/reports/consumed evaluations, auth/owner scoping and valid data. No paid/new disclosure provider, real-user testing/account email/invitation/collaborator action, automatic commit/push/deploy or excluded staging. Synthetic labels not expert-reviewed; no clinical/generalization guarantee. Schema frozen1.0; future changes additive/versioned. Semantic candidate disabled until real validation. No unstated balcony/access/immediacy/diagnosis/notification/region inferred.
+
+## 7. Testing and Verification
+
+`timeout 60s env PYTHONPATH="Step 12 - Packaging/package:." python3 -m pytest tests -q` approved outside sandbox:481 pass19.17s,one existing TestClient warning. Inside sandbox TestClient/thread work hangs; do not misread sandbox timeout as model failure. Default corpus exit1 engine259/321,pipeline214/321 in reports/safety-run-20261008T203220Z.json. Separate --temporal-review exit1 engine321/321,pipeline252/321 in reports/safety-run-20261008T203518Z.json. Both urgent98/98,urgentFP0/73,subject0/238 asserted with83 opt-outs; default62 temporal conflicts; pipeline37/73 benign clarification and22/73 abstention.55 actual-module checks/16 shared response states;35 final-policy browser checks, provider STUB and explicit response/fetch/SDK overrides. Original pre-integration browser assertion reproducedNormal vsHIGH failure; finalUrgent support, rawNormal .9502395987510681/urgency .7847130134418575 unchanged; core saved history read-back preserved. Typecheck/lint/build/drift pass. Candidate36dev/18val actual local CPU, disabled; earlier13/18 labels,5/6urgent,1/6benignurgentFP. Actual one-process concurrency4/n24 ASGI:model latency report retained; not deployed/multi-worker/provider proof. Real resource install/read/inference verified128 files. Isolated real-provider configuration check exit2/BLOCKED no network, remote workflow unexecuted. Docker/platform/real-provider/clinical/licensing independent review unrun.
+
+## 8. Known Issues / Risks
+
+Validated semantic capability absent; supported assessment degraded, arbitrary no-match uncertainty and unnecessary benign clarification remain. Default temporal annotation disputes and69 proposed-time routing disagreements preserved, not relabeled. No independent clinical/language/final review. Model/data/lexicon licenses/provenance not independently completed. Same-host SQLite limits only, login perprocess; sync work can occupy finite slots after cancel/deadline. No actual Docker/platform/deployed/multi-worker measurement. Real migration/schema/grants/RLS/auth/SDK/network not tested; existing config does not establish isolation. Unowned old browser data preserved hidden because ownership unknown. Cloud history does not return original input. Browser storage not encryption. Current generic guidance not clinically reviewed.
+
+## 9. Unfinished Work
+
+Default engine failing ids: S021 S025 S033 S056 X026 X027 X028 X029 X030 X031 X032 X033 X034 X035 X036 X037 X039 X041 X043 X052 X053 X054 X055 X091 X092 X093 X094 X099 X102 X112 X113 X114 X115 X118 X119 X120 X121 X153 X158 X160 X163 X176 X178 X179 X181 X184 X187 X190 X193 X198 X199 X200 X201 X203 X204 X208 X223 X224 X225 X226 X228 X229
+
+Default pipeline failing ids: S021 S025 S026 S033 S038 S039 S040 S041 S042 S043 S056 S058 S072 X026 X027 X028 X029 X030 X031 X032 X033 X034 X035 X036 X037 X039 X041 X042 X043 X052 X053 X054 X055 X070 X072 X073 X074 X075 X076 X077 X078 X079 X080 X081 X082 X083 X084 X085 X086 X087 X088 X089 X090 X091 X092 X093 X094 X099 X102 X112 X113 X114 X115 X118 X119 X120 X121 X139 X140 X141 X153 X158 X160 X163 X176 X178 X179 X181 X184 X187 X190 X193 X194 X198 X199 X200 X201 X203 X204 X208 X215 X216 X217 X218 X223 X224 X225 X226 X228 X229 X230 X231 X236 X238 X240 X241 X243
+
+Separate proposed-temporal pipeline failing ids: S026 S038 S039 S040 S041 S042 S043 S056 S058 S072 X042 X052 X053 X054 X055 X070 X072 X073 X074 X075 X076 X077 X078 X079 X080 X081 X082 X083 X084 X085 X086 X087 X088 X089 X090 X091 X092 X093 X112 X113 X114 X115 X119 X120 X121 X139 X140 X141 X153 X163 X178 X179 X194 X208 X215 X216 X217 X218 X223 X224 X225 X226 X230 X231 X236 X238 X240 X241 X243
+
+No proposed-temporal engine failures. Original annotations remain default, proposal review is developer-only. External blockers: isolated project/two pre-provisioned identities and expectedids/secureconfig/expired token/fault+SDK setup; reviewed semantic/policy/language and independently sourced final evaluation/qualified reviewer; licensing/provenance records; Docker/hosting project/tooling/shared ingress access. Real harness is prepared, not verified remotely. Do not add phrases or label every input UNKNOWN merely to manufacture a passing corpus.
+
+## 10. Next Subphase
+
+Real isolated integration and independent policy/candidate validation. Next exact safe external-gate command: `python3 scripts/verify_supabase_isolated.py --check-config` (currently exits2/BLOCKED, no network). After explicitly isolated config/pre-provisioned identity inputs and reviewed migration setup, run opt-in real harness. Local reproducibility command: `timeout 60s env PYTHONPATH="Step 12 - Packaging/package:." python3 -m pytest tests -q` outside sandbox; frontend drift/module/browser commands in README. Do not deploy automatically. Read current matrix/coverage and actual code before resuming.
+
+## 11. Critical Context
+
+Remote https://github.com/shreshthgod/mental.ai.git; branchmain; HEAD2053855d51aaa5c9e06bd8c30f1c35d45c64716b. Dirty source/config/corpus fingerprint `2166c77fa855349e1e117f5bbe5c8ede55625432925fe81c9884e35ecd7175b2`. ConfigSHA256 `0e90561f45eb47079b53647199d5c11369d7dfb66d4d49e42654d925b8b7f64e`; policy safety-policy-2026.10.09.6; schema1.0. Full unchanged model hashes/runtime/source/failedids in final checkpoint.39 design/component/app/Vite paths compared:0 changed from PhaseF checkpoint. No staged/commit/push/deploy; authorized publishing identity/account email not verified and no publication attempted. No .env printed/archived, configured private strings not found in built browser scan. Existing unrelated :memory:.ses/untracked work not reset/cleaned/deleted. Historical handoff/README/flow/contract/Supabase/matrix snapshots and .5 browser results preserved. Older HEAD-only claims do not identify dirty source. Corpus/model reports identify their own earlier hashes; current final fingerprint is not retroactively assigned to old runs.
+
+## 12. Agent Instructions
+
+Read applicable instructions, AUDIT-SPEC/current user scope, decisions/flow/handoff/matrix/coverage and actual reports/source. Do not reconstruct continuity from prose, reset/clean/overwrite unrelated changes or rewrite old decisions/reports. Keep source fingerprint consistent after any meaningful edit; docs/reports excluded to avoid self-reference. Preserve consumed A/B/proposals and distinguish independent D. Inspect actual artifacts/config/resources before new semantics/dependencies. Keep production semantic disabled; no new provider/real disclosure uploads. Real and mocked checks must stay distinct. Complete locally fixable work, but do not fabricate reviewed data, provider/container/deployed/clinical success. Update decisions/connected flow alongside each focused batch; maintain exact statuses and final handoff. Only authorized future publication may verify/apply shreshthgod identity; no bot/model credits, collaborators, forced history or excluded staging.

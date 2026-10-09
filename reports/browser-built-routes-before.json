@@ -1,0 +1,122 @@
+{
+  "layer": "built frontend Chromium/loopback public routes; isolated backend, no user data",
+  "checks": [
+    {
+      "route": "/",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/about",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/research",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/screen protected redirect",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/api/live preview proxy",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "status": "PASSED"
+    },
+    {
+      "route": "/login",
+      "width": 390,
+      "status": "PASSED"
+    },
+    {
+      "route": "/about",
+      "width": 390,
+      "status": "PASSED"
+    },
+    {
+      "route": "/research",
+      "width": 390,
+      "status": "FAILED",
+      "error_type": "AssertionError"
+    }
+  ],
+  "errors": [],
+  "failure": {
+    "type": "AssertionError"
+  },
+  "overflow": {
+    "viewport": 390,
+    "document": 529,
+    "elements": [
+      {
+        "tag": "DIV",
+        "class": "reveal  ",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      },
+      {
+        "tag": "P",
+        "class": "",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      },
+      {
+        "tag": "DIV",
+        "class": "reveal  ",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      },
+      {
+        "tag": "DIV",
+        "class": "code-block",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 503
+      },
+      {
+        "tag": "DIV",
+        "class": "reveal  ",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      },
+      {
+        "tag": "P",
+        "class": "research__note",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 503
+      },
+      {
+        "tag": "DIV",
+        "class": "reveal  ",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      },
+      {
+        "tag": "DIV",
+        "class": "",
+        "right": 529.078125,
+        "width": 505.078125,
+        "scroll": 505
+      }
+    ]
+  }
+}

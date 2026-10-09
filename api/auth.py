@@ -1,55 +1,46 @@
 """
 Session authentication for the mental.ai screening service.
 
-Design constraints:
+Identity is owned by Supabase Auth. This module is the adapter: it speaks the
+supabase-js contract the browser already uses (an access token plus a refresh
+token), and it decides what the rest of the service is allowed to trust.
+
+What this service does NOT do
+-----------------------------
+- It never sees a password except in transit to Supabase.
+- It never hashes, stores or compares a password. Supabase does that.
+- It never accepts a user id from a request body. The only user id that reaches
+  business logic came from `get_user`, i.e. from a token Supabase verified.
+- It does no local token crypto. Signature and expiry are Supabase's call.
+
+Design constraints preserved from the previous implementation:
     - Standard library only. No new runtime dependency.
-    - Stateless HMAC-SHA256 signed bearer tokens, so the API stays
-      horizontally scalable with no server-side session store.
-    - Credential comparison is constant time (secrets.compare_digest).
+    - Constant-time behaviour where a comparison exists at all.
     - Neither credentials nor tokens are ever logged.
 
-Token format (opaque to the client, self-describing to us):
+The browser flow (unchanged from the client's point of view):
+    POST /auth/login      -> Supabase sign_in_with_password -> session
+    POST /auth/refresh    -> Supabase refresh_token         -> session
+    GET  /auth/session    -> Supabase get_user              -> claims
+    any authenticated call -> Supabase get_user             -> claims
 
-    v1.<base64url(payload_json)>.<base64url(hmac_sha256(payload))>
-
-The payload carries {sub, iat, exp, jti}. Expiry is enforced server side;
-the client mirror is a convenience only and is never trusted.
-
-Configuration (environment):
-    MENTAL_AI_AUTH_USER      expected user id       (default "admin")
-    MENTAL_AI_AUTH_PASSWORD  expected password       (default "password")
-    MENTAL_AI_AUTH_NAME      display name           (default: derived from the user id)
-    MENTAL_AI_TOKEN_SECRET   HMAC signing key        (default: random per process)
-    MENTAL_AI_SESSION_TTL    token lifetime seconds  (default 43200 = 12h)
-
-The defaults exist so `npm run dev` works out of the box on a research
-checkout. Any real deployment must set all three explicitly: when the
-secret is unset it is generated per process, which invalidates every
-issued token on restart and is logged as a warning.
+Throttling stays here: Supabase rate-limits by IP too, but the counter is
+per-deployment and an in-process window is what the previous behaviour promised.
 """
 from __future__ import annotations
 
-import base64
-import hashlib
-import hmac
-import json
 import logging
 import os
-import re
-import secrets
 import threading
 import time
+from dataclasses import dataclass
+from typing import Optional
+
+from . import db
 
 logger = logging.getLogger("screening-api.auth")
 
-TOKEN_VERSION = "v1"
-ALGORITHM = "hs256"
-
-DEFAULT_USER = "admin"
-DEFAULT_PASSWORD = "password"  # noqa: S105 - documented research demo default
-DEFAULT_TTL_SECONDS = 43_200  # 12 hours
-MIN_TTL_SECONDS = 300
-MAX_TTL_SECONDS = 604_800  # 7 days
+SESSION_HEADER_GRACE_SECONDS = 60
 
 
 class AuthError(Exception):
@@ -57,191 +48,156 @@ class AuthError(Exception):
 
 
 class InvalidCredentials(AuthError):
-    """Supplied user id or password did not match configuration."""
+    """Supplied email or password was rejected by Supabase Auth."""
 
 
 class InvalidToken(AuthError):
     """Bearer token was missing, malformed, tampered with, or expired."""
 
 
+@dataclass(frozen=True)
+class Claims:
+    """
+    The verified identity behind a request.
+
+    `user_id` is the Supabase Auth user id and is the only identity used for
+    ownership decisions. `email` is present for display and must never be used
+    as a key: addresses change, ids do not.
+    """
+
+    user_id: str
+    email: Optional[str]
+    name: str
+    issued_at: int
+    expires_at: int
+
+
 # ------------------------------------------------------------------
 # Configuration
 # ------------------------------------------------------------------
-def _signing_secret() -> bytes:
-    """Resolve the HMAC key, generating an ephemeral one if unset."""
-    raw = os.environ.get("MENTAL_AI_TOKEN_SECRET", "").strip()
-    if raw:
-        return raw.encode("utf-8")
-    secret = secrets.token_bytes(32)
-    logger.warning(
-        "MENTAL_AI_TOKEN_SECRET is not set. Using an ephemeral signing key: "
-        "existing sessions will be invalidated on restart. Set it explicitly "
-        "before any non-local deployment."
-    )
-    return secret
-
-
-# Resolved once at import. Regenerating this per request would make every
-# previously issued token unverifiable.
-_SECRET = _signing_secret()
-
-
-def configured_user() -> str:
-    return os.environ.get("MENTAL_AI_AUTH_USER", DEFAULT_USER).strip()
-
-
-def display_name_for(user_id: str) -> str:
-    """
-    Turn a user id into a human-readable name.
-
-    Used when no explicit display name is configured, so the interface can greet
-    the person rather than print an account slug. Separators the id convention
-    already uses (space, dot, dash, underscore) become word boundaries, and each
-    word keeps the capitalisation it was given apart from its first letter, so
-    "kArTiK" is not flattened to "Kartik".
-    """
-    words = [w for w in re.split(r"[\s._\-]+", (user_id or "").strip()) if w]
-    if not words:
-        return DEFAULT_USER
-    return " ".join(w[:1].upper() + w[1:] for w in words)
-
-
-def configured_name() -> str:
-    """
-    The name shown in greetings and the account menu.
-
-    Read per request rather than at import so it can be changed without a
-    restart, matching configured_user(). Falls back to a name derived from the
-    user id when unset, so the greeting is never a hardcoded placeholder.
-    """
-    explicit = os.environ.get("MENTAL_AI_AUTH_NAME", "").strip()
-    return explicit or display_name_for(configured_user())
-
-
 def session_ttl_seconds() -> int:
+    """
+    Advisory lifetime reported to the browser.
+
+    Supabase decides the real expiry; this only mirrors it so a client can tell
+    a fresh session from a stale one without decoding anything.
+    """
     raw = os.environ.get("MENTAL_AI_SESSION_TTL", "").strip()
     try:
         ttl = int(raw)
     except ValueError:
-        ttl = DEFAULT_TTL_SECONDS
-    return max(MIN_TTL_SECONDS, min(ttl, MAX_TTL_SECONDS))
+        ttl = 3600
+    return max(300, min(ttl, 604_800))
 
 
-def using_demo_credentials() -> bool:
-    """True when the service is running on the documented demo defaults."""
-    return (
-        configured_user() == DEFAULT_USER
-        and os.environ.get("MENTAL_AI_AUTH_PASSWORD", DEFAULT_PASSWORD) == DEFAULT_PASSWORD
-    )
+def auth_provider() -> str:
+    """Which identity providers this deployment is expected to offer."""
+    return "supabase"
+
+
+def display_name_for(user_id: str) -> str:
+    """
+    Turn an email or user id into a human-readable name.
+
+    Kept for the case where Supabase supplies no name at all, so the interface
+    can greet the person rather than print an address. Separators the id
+    convention already uses (dot, dash, underscore) become word boundaries, and
+    each word keeps the capitalisation it was given apart from its first letter,
+    so "kArTiK" is not flattened to "Kartik".
+    """
+    import re
+
+    local = (user_id or "").split("@")[0].strip()
+    words = [w for w in re.split(r"[\s._\-]+", local) if w]
+    if not words:
+        return "there"
+    return " ".join(w[:1].upper() + w[1:] for w in words)
+
+
+def configured_name() -> Optional[str]:
+    """
+    An operator-set display name, applied to every account.
+
+    Optional. Set it when the deployment greets one shared identity regardless
+    of which account signed in; leave it unset and each account is greeted by
+    its own Supabase name.
+    """
+    return os.environ.get("MENTAL_AI_AUTH_NAME", "").strip() or None
+
+
+def resolve_display_name(supabase_name: Optional[str], email: Optional[str]) -> str:
+    """Operator override, then Supabase's name, then something derived."""
+    override = configured_name()
+    if override:
+        return override
+    if supabase_name and supabase_name.strip():
+        return supabase_name.strip()
+    return display_name_for(email or "")
 
 
 # ------------------------------------------------------------------
 # Credential verification
 # ------------------------------------------------------------------
-def verify_credentials(user_id: str, password: str) -> None:
+def _client() -> db.SupabaseClient:
+    try:
+        return db.get_client()
+    except db.SupabaseError as exc:
+        # Configuration, not a bad password: surfaced as 503 by the caller so the
+        # interface reports "service unavailable" rather than blaming the user.
+        raise AuthUnavailable(str(exc)) from exc
+
+
+class AuthUnavailable(AuthError):
+    """Supabase is unconfigured or unreachable. Never the visitor's fault."""
+
+
+def verify_credentials(email: str, password: str) -> db.AuthSession:
     """
-    Raise InvalidCredentials unless the pair matches configuration.
+    Exchange credentials for a session through Supabase Auth.
 
-    Both halves are compared with secrets.compare_digest, and the user id is
-    compared before the password is even read, so a wrong user id and a wrong
-    password cost the same work. The submitted password is hashed to a fixed
-    width first so compare_digest never sees differing input lengths, which
-    would otherwise leak the configured length through timing.
+    Any rejection - unknown account, wrong password, disabled account - raises
+    InvalidCredentials with the same message, so the response cannot be used to
+    enumerate accounts. Supabase does the password work; nothing is compared
+    here.
     """
-    expected_user = configured_user()
-    expected_password = os.environ.get("MENTAL_AI_AUTH_PASSWORD", DEFAULT_PASSWORD)
-
-    user_ok = hmac.compare_digest(
-        (user_id or "").strip().encode("utf-8"), expected_user.encode("utf-8")
-    )
-    password_ok = hmac.compare_digest(
-        hashlib.sha256((password or "").encode("utf-8")).digest(),
-        hashlib.sha256(expected_password.encode("utf-8")).digest(),
-    )
-
-    if not (user_ok and password_ok):
-        raise InvalidCredentials("Invalid user id or password")
+    try:
+        return _client().sign_in_with_password((email or "").strip(), password)
+    except db.InvalidLogin as exc:
+        raise InvalidCredentials("Invalid email or password") from exc
 
 
-# ------------------------------------------------------------------
-# Token encode / decode
-# ------------------------------------------------------------------
-def _b64encode(raw: bytes) -> str:
-    return base64.urlsafe_b64encode(raw).rstrip(b"=").decode("ascii")
+def refresh(refresh_token: str) -> db.AuthSession:
+    """Trade a refresh token for a fresh session."""
+    if not refresh_token or not isinstance(refresh_token, str):
+        raise InvalidToken("Refresh token missing")
+    try:
+        return _client().refresh_session(refresh_token)
+    except db.InvalidLogin as exc:
+        raise InvalidToken("Refresh token is no longer valid") from exc
 
 
-def _b64decode(value: str) -> bytes:
-    padding = "=" * (-len(value) % 4)
-    return base64.urlsafe_b64decode(value + padding)
-
-
-def _sign(payload_b64: str) -> str:
-    digest = hmac.new(_SECRET, payload_b64.encode("ascii"), hashlib.sha256).digest()
-    return _b64encode(digest)
-
-
-def issue_token(user_id: str, ttl_seconds: int | None = None) -> tuple[str, int]:
-    """Return (token, expires_in_seconds) for the given user id."""
-    ttl = ttl_seconds if ttl_seconds is not None else session_ttl_seconds()
-    now = int(time.time())
-    exp = now + ttl
-    payload = {
-        "sub": user_id,
-        "iat": now,
-        "exp": exp,
-        "jti": secrets.token_hex(8),
-        "alg": ALGORITHM,
-    }
-    payload_b64 = _b64encode(
-        json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")
-    )
-    return f"{TOKEN_VERSION}.{payload_b64}.{_sign(payload_b64)}", ttl
-
-
-def decode_token(token: str) -> dict:
+def decode_token(token: str) -> Claims:
     """
-    Verify a bearer token and return its claims.
+    Verify a bearer token and return the identity behind it.
 
-    Raises InvalidToken on any failure. The caller never receives partial or
-    unverified claims, because the signature is checked before the payload is
-    parsed.
+    The token is checked by Supabase, never by this service. Raises InvalidToken
+    on any failure, so a caller never receives unverified claims.
     """
     if not token or not isinstance(token, str):
         raise InvalidToken("Missing bearer token")
 
-    parts = token.split(".")
-    if len(parts) != 3:
-        raise InvalidToken("Malformed bearer token")
-
-    version, payload_b64, signature = parts
-    if version != TOKEN_VERSION:
-        raise InvalidToken(f"Unsupported token version: {version}")
-
-    expected_signature = _sign(payload_b64)
-    if not hmac.compare_digest(signature.encode("ascii"), expected_signature.encode("ascii")):
-        raise InvalidToken("Token signature mismatch")
-
     try:
-        claims = json.loads(_b64decode(payload_b64))
-    except Exception as exc:
-        raise InvalidToken("Token payload is not readable") from exc
+        user = _client().get_user(token)
+    except db.InvalidSession as exc:
+        raise InvalidToken("Session is not valid") from exc
 
-    if not isinstance(claims, dict):
-        raise InvalidToken("Token payload is not an object")
-
-    exp = claims.get("exp")
-    if not isinstance(exp, int) or exp <= int(time.time()):
-        raise InvalidToken("Token expired")
-
-    sub = claims.get("sub")
-    if not isinstance(sub, str) or not sub:
-        raise InvalidToken("Token subject missing")
-
-    # A token issued before a credential change must not outlive that change.
-    if not hmac.compare_digest(sub.encode("utf-8"), configured_user().encode("utf-8")):
-        raise InvalidToken("Token subject is no longer valid")
-
-    return claims
+    return Claims(
+        user_id=user.user_id,
+        email=user.email,
+        name=resolve_display_name(user.display_name, user.email),
+        issued_at=user.created_at,
+        expires_at=int(time.time()) + session_ttl_seconds(),
+    )
 
 
 def bearer_token(authorization_header: str | None) -> str:
@@ -258,8 +214,9 @@ def bearer_token(authorization_header: str | None) -> str:
 # Login throttling
 # ------------------------------------------------------------------
 # Fixed-window counter, keyed by client IP. Deliberately in-memory and
-# single-process: this exists to blunt credential stuffing against the demo
-# account, not to be a distributed rate limiter.
+# single-process: this exists to blunt credential stuffing against a real
+# account, not to be a distributed rate limiter. Supabase rate-limits
+# independently; this is the per-deployment layer.
 _ATTEMPT_WINDOW_SECONDS = 300
 _MAX_ATTEMPTS_PER_WINDOW = 10
 _attempts: dict[str, list[float]] = {}

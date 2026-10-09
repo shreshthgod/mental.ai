@@ -7,7 +7,7 @@
 // be reached by typing its URL, a reload keeps the session, and signing out
 // closes it again.
 import { mkdirSync } from "node:fs";
-import { expectedFirstName, launchChromium, seedSession, signIn } from "./auth.mjs";
+import { expectedFirstName, launchChromium, qaCredentials as CREDS, seedSession, signIn } from "./auth.mjs";
 
 const BASE = process.argv[2] ?? "http://localhost:5173";
 const GREETING = expectedFirstName();
@@ -51,10 +51,10 @@ check("/screen redirects to the gate", new URL(page.url()).pathname, "/login");
 // 3. Empty submit is caught in the browser, with no request made.
 await page.click(".signin__submit");
 check("empty user id error", await page.locator(".signin__msg--error").first().innerText(),
-  "Enter your email or username.");
+  "Enter your email address.");
 
 // 4. Wrong password fails cleanly and stays on the gate.
-await page.fill(".signin__input >> nth=0", "admin");
+await page.fill(".signin__input >> nth=0", CREDS.email);
 await page.fill(".signin__input >> nth=1", "definitely-wrong");
 await page.click(".signin__submit");
 await page.waitForSelector(".signin__msg--request", { timeout: 15000 });
@@ -88,7 +88,7 @@ await page.evaluate(() => {
     subtree: true,
   });
 });
-await page.fill(".signin__input >> nth=1", "password");
+await page.fill(".signin__input >> nth=1", CREDS.password);
 await page.click(".signin__submit");
 
 // The greeting is captured from the observer rather than read off the live
@@ -141,7 +141,7 @@ for (const path of ["/", "/login"]) {
 
 // 11. Signing out closes the session, and back cannot reopen the workspace.
 await page.locator(".account__trigger").click();
-await page.click("text=Log out");
+await page.locator(".account__menu .account__item", { hasText: "Log out" }).click();
 await page.waitForSelector(".signin__input", { timeout: 10000 });
 check("logout returns to /login", new URL(page.url()).pathname, "/login");
 check("nav shows Login again", await page.locator(".nav__cta").innerText(), "LOGIN");
@@ -158,7 +158,7 @@ check("back shows the sign-in form", await page.locator(".signin__input").count(
 
 // 12. Remember me off keeps the session out of localStorage; on puts it back.
 await page.uncheck(".signin__check input");
-await signIn(page, { password: "password" });
+await signIn(page, { password: CREDS.password });
 await page.waitForSelector(".entry__greeting", { timeout: 15000 });
 check("unchecked keeps token out of localStorage",
   await page.evaluate(() => window.localStorage.getItem("mental.ai.auth") === null), true);
@@ -183,11 +183,11 @@ check("reloading with the token gone signs the user out", await (async () => {
 await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
 check("user field takes focus on arrival",
   await page.evaluate(() => document.activeElement?.getAttribute("name")), "username");
-await page.keyboard.type("admin");
+await page.keyboard.type(CREDS.email);
 await page.keyboard.press("Tab");
 check("tab from user field reaches the password field",
   await page.evaluate(() => document.activeElement?.getAttribute("name")), "password");
-await page.keyboard.type("password");
+await page.keyboard.type(CREDS.password);
 await page.keyboard.press("Enter");
 // The greeting holds for about a second before the workspace is entered, so
 // wait for the check-in rather than sampling immediately.
@@ -229,14 +229,17 @@ const seeded = await browser.newPage({ viewport: { width: 1440, height: 900 } })
 await seedSession(seeded, BASE);
 const seededResponses = [];
 seeded.on("response", (r) => {
-  if (r.url().includes("/auth/")) seededResponses.push(`${r.status()} ${r.url().split("/").pop()}`);
+  if (r.url().includes("/auth/")) seededResponses.push(`${r.status()} ${new URL(r.url()).pathname}`);
 });
 await seedSession(seeded, BASE);
 await seeded.goto(`${BASE}/login`, { waitUntil: "networkidle" });
 const gateInputs = await seeded.locator(".signin__input").count();
 if (gateInputs !== 0) {
-  console.log("  diag:", seededResponses.join(", "), "| url:", seeded.url(),
-    "| stored:", (await seeded.evaluate(() => localStorage.getItem("mental.ai.auth") ?? "none")).slice(0, 40));
+  console.log("  diag:", seededResponses.join(", "), "| path:", new URL(seeded.url()).pathname,
+    "| mirror present:", await seeded.evaluate(() => ({
+      persistent: localStorage.getItem("mental.ai.auth") !== null,
+      tab: sessionStorage.getItem("mental.ai.auth") !== null,
+    })));
 }
 check("seeded session skips the gate", gateInputs, 0);
 await seeded.close();

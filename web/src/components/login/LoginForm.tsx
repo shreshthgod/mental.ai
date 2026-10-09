@@ -18,6 +18,9 @@ export interface Credentials {
   remember: boolean;
 }
 
+/** Which task the fields are being used for. Wording only; same two inputs. */
+export type AuthMode = "signIn" | "register";
+
 interface Props {
   /** True from the moment the request starts until it settles. */
   busy: boolean;
@@ -25,6 +28,10 @@ interface Props {
   error: string | null;
   /** True while the page is showing the greeting instead of the form. */
   hidden: boolean;
+  /** Sign-in or account creation. Only the wording changes. */
+  mode?: AuthMode;
+  /** Non-error confirmation, e.g. "check your inbox to confirm". */
+  notice?: string | null;
   /**
    * Increment to move focus to the user field. The hero's call to action uses
    * this; going through the form rather than querying the DOM keeps ownership
@@ -33,21 +40,28 @@ interface Props {
    */
   focusSignal?: number;
   onSubmit: (credentials: Credentials) => void;
+  onRememberChange?: (remember: boolean) => void;
 }
 
 /**
- * Accept a username, or an email that has to look like one.
+ * An email address that has to look like one.
  *
- * The service is configured with a single account whose id may be either, so
- * only reject an address that is clearly malformed, and never reject a bare
- * username for failing to be an address.
+ * Accounts now live in Supabase Auth, where the identifier is the email address
+ * itself, so a bare username is no longer something that can sign in. Rejected
+ * locally rather than at the provider, so the visitor is told before a request
+ * is made. The message is the form's existing wording.
  */
-function validateUserId(value: string): string | null {
+function validateEmail(value: string): string | null {
   const trimmed = value.trim();
-  if (!trimmed) return "Enter your email or username.";
-  if (!trimmed.includes("@")) return null;
-  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed);
-  return emailOk ? null : "That does not look like an email address.";
+  if (!trimmed) return "Enter your email address.";
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed) ? null : "That does not look like an email address.";
+}
+
+/** Password rules the service's provider enforces, checked here to be kind. */
+function validatePassword(value: string, mode: AuthMode): string | null {
+  if (!value) return "Enter your password.";
+  if (mode === "register" && value.length < 8) return "Use at least 8 characters.";
+  return null;
 }
 
 /** Eye glyphs, drawn inline: the project ships no icon library. */
@@ -73,7 +87,16 @@ function EyeIcon({ off }: { off: boolean }) {
   );
 }
 
-export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Props) {
+export function LoginForm({
+  busy,
+  error,
+  hidden,
+  notice = null,
+  mode = "signIn",
+  focusSignal = 0,
+  onSubmit,
+  onRememberChange,
+}: Props) {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -126,8 +149,8 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (busy) return;
-    const nextUserError = validateUserId(userId);
-    const nextPasswordError = password ? null : "Enter your password.";
+    const nextUserError = validateEmail(userId);
+    const nextPasswordError = validatePassword(password, mode);
     setUserError(nextUserError);
     setPasswordError(nextPasswordError);
     if (nextUserError || nextPasswordError) {
@@ -140,9 +163,15 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
 
   return (
     <form className="signin" onSubmit={submit} noValidate aria-hidden={hidden}>
+      {notice && (
+        <p className="signin__notice" role="status">
+          {notice}
+        </p>
+      )}
+
       <div className="signin__field">
         <label htmlFor={uid} className="label">
-          Email / username
+          Email
         </label>
         <input
           id={uid}
@@ -158,7 +187,7 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
           value={userId}
           onChange={(e) => {
             setUserId(e.target.value);
-            if (userError) setUserError(validateUserId(e.target.value));
+            if (userError) setUserError(validateEmail(e.target.value));
           }}
           aria-invalid={userError ? true : undefined}
           aria-describedby={userError ? uidErrId : undefined}
@@ -181,12 +210,12 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
             className={`signin__input ${passwordError ? "signin__input--invalid" : ""}`}
             type={revealed ? "text" : "password"}
             name="password"
-            autoComplete="current-password"
-            placeholder="Enter your password"
+            autoComplete={mode === "register" ? "new-password" : "current-password"}
+            placeholder={mode === "register" ? "At least 8 characters" : "Enter your password"}
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              if (passwordError) setPasswordError(e.target.value ? null : "Enter your password.");
+              if (passwordError) setPasswordError(validatePassword(e.target.value, mode));
             }}
             aria-invalid={passwordError ? true : undefined}
             aria-describedby={passwordError ? pidErrId : undefined}
@@ -215,7 +244,7 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
           <input
             type="checkbox"
             checked={remember}
-            onChange={(e) => setRemember(e.target.checked)}
+            onChange={(e) => { setRemember(e.target.checked); onRememberChange?.(e.target.checked); }}
             disabled={busy || hidden}
           />
           <span>Remember me</span>
@@ -270,7 +299,7 @@ export function LoginForm({ busy, error, hidden, focusSignal = 0, onSubmit }: Pr
           </>
         ) : (
           <>
-            Login
+            {mode === "register" ? "Create account" : "Login"}
             <span className="signin__arrow" aria-hidden="true">
               →
             </span>

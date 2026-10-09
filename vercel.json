@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "root": "web",
+      "framework": "vite",
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist",
+      "installCommand": "npm install"
+    },
+    "api": {
+      "root": ".",
+      "framework": "fastapi",
+      "entrypoint": "main:app",
+      "buildCommand": "python scripts/prepare_runtime_resources.py --output nltk_data",
+      "functions": {
+        "main.py": {
+          "includeFiles": "{api/**,Step 12 - Packaging/package/**,nltk_data/**}",
+          "excludeFiles": "{web/**,tests/**,reports/**,paper/**,research/**,**/.env*,**/__pycache__/**}"
+        }
+      }
+    }
+  },
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": { "service": "api" } },
+    { "source": "/((?!api/).*)", "destination": { "service": "web" } }
+  ]
+}

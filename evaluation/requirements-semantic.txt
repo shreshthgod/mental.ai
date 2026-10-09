@@ -1,0 +1,5 @@
+# Isolated evaluation only. Not an API runtime dependency.
+onnxruntime==1.30.0
+tokenizers==0.23.2
+numpy==2.4.4
+scikit-learn==1.8.0

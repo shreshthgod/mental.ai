@@ -1,0 +1,3 @@
+# Existing Vercel backend service uses repository root to include packaged models.
+-r api/requirements-runtime.txt
+-r "Step 12 - Packaging/package/requirements.txt"

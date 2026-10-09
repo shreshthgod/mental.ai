@@ -7,8 +7,8 @@ const LIMITS = [
     p: "Both models are trained on subreddit-of-origin labels from public datasets (Kaggle / Pushshift). No label was verified by a clinician.",
   },
   {
-    h: "Human review is the design, not a caveat",
-    p: "The urgency layer routes text to people. It contacts no emergency service, triggers no automated intervention, and decides nothing alone.",
+    h: "Limited assessment and support",
+    p: "The app returns support guidance and may recommend review. Nobody is notified; no reviewer or emergency service is contacted.",
   },
   {
     h: "Text only, English-skewed",
@@ -16,7 +16,7 @@ const LIMITS = [
   },
   {
     h: "Point estimates",
-    p: "Reported metrics come from a single run on a held-out split, without confidence intervals or significance testing.",
+    p: "Historical metrics are point estimates without confidence intervals. The urgency threshold was selected using the test split; independent release validation is unavailable.",
   },
 ];
 
@@ -36,7 +36,7 @@ export function Limitations() {
         <Reveal delayMs={160}>
           <p className="statement__big" style={{ marginTop: 26 }}>
             MENTAL.AI is a <strong>research system</strong> for screening
-            language-derived signals and supporting human review.
+            language-derived signals and presenting limited support guidance.
           </p>
         </Reveal>
 

@@ -1,0 +1,11 @@
+{
+  "recorded_utc": "2026-10-09T09:01:55.544210+00:00",
+  "layer": "real public JWKS endpoint only; no user token/key/auth header/database request",
+  "status": "PASSED",
+  "http_status": 200,
+  "key_count": 1,
+  "algorithms": [
+    "ES256"
+  ],
+  "authenticated_identity_verified": false
+}

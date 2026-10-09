@@ -235,3 +235,84 @@
 @media (prefers-reduced-motion: reduce) {
   .auth-splash__dot { animation: none; opacity: 0.7; }
 }
+/* --------------------------- AUTH METHODS -------------------------------- */
+
+/* Divider between the email form and social sign-in. Drawn as a rule rather
+   than a box so it inherits the panel's hairline language. */
+.signin__or {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 22px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.signin__or::before,
+.signin__or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* The social control is the same shape and weight as every other button in the
+   panel: same radius, same border, same type. Only the fill differs, so it
+   reads as a peer rather than a promotion. */
+.signin__social {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 52px;
+  margin-top: 14px;
+  padding: 0 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line-2);
+  border-radius: 3px;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: border-color 200ms ease, background 200ms ease, transform 200ms var(--ease-out-expo);
+}
+.signin__social:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+.signin__social:active:not(:disabled) { transform: translateY(0); }
+.signin__social:disabled { opacity: 0.6; cursor: not-allowed; }
+.signin__social svg { flex: 0 0 auto; }
+
+/* Switch between signing in and creating an account. Uses the form's own quiet
+   link style so it sits under the panel rather than competing with it. */
+.signin__switch {
+  margin-top: 18px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.signin__switch-prompt { margin-right: 6px; }
+
+/* Confirmation that is not an error: "check your inbox to confirm". */
+.signin__notice {
+  margin-top: 22px;
+  padding: 11px 13px;
+  border: 1px solid rgba(183, 166, 255, 0.28);
+  border-left-width: 2px;
+  border-radius: 2px;
+  background: rgba(123, 92, 255, 0.06);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--signal);
+}

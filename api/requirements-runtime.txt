@@ -1,0 +1,7 @@
+# Direct service transport versions verified by the local regression suite.
+# ML/artifact dependencies remain separately pinned in package/requirements.txt.
+fastapi==0.142.2
+starlette==1.7.0
+uvicorn==0.54.0
+pydantic==2.13.5
+python-dotenv==1.2.4

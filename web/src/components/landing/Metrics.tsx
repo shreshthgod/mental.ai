@@ -12,8 +12,8 @@ interface MetricDef {
 const METRICS: MetricDef[] = [
   { value: 53043, decimals: 0, label: "Primary records", note: "Combined Data.csv - 7-class condition dataset" },
   { value: 232074, decimals: 0, label: "Urgency records", note: "Suicide_Detection.csv - binary safety-net dataset" },
-  { value: 0.6926, decimals: 4, label: "Primary macro-F1", note: "XGBoost, held-out test split" },
-  { value: 0.987, decimals: 3, label: "Suicide recall", note: "At the deployed 0.15 urgency threshold" },
+  { value: 0.6926, decimals: 4, label: "Primary macro-F1", note: "XGBoost, historical test split" },
+  { value: 0.987, decimals: 3, label: "Suicide-class recall", note: "Historical urgency sweep at 0.15" },
 ];
 
 function Metric({ m, active, delay }: { m: MetricDef; active: boolean; delay: number }) {
@@ -36,7 +36,7 @@ export function Metrics() {
         <div className="section__head">
           <div>
             <Reveal>
-              <p className="label label--accent">Verified results</p>
+              <p className="label label--accent">Historical results</p>
             </Reveal>
             <Reveal delayMs={80}>
               <h2 id="metrics-h" className="section__title">
@@ -45,7 +45,7 @@ export function Metrics() {
             </Reveal>
           </div>
           <Reveal delayMs={160}>
-            <p className="label">Held-out test evaluation</p>
+            <p className="label">Historical test evaluation</p>
           </Reveal>
         </div>
 
@@ -57,14 +57,14 @@ export function Metrics() {
 
         <div className="metrics__explain">
           <Reveal>
-            <span className="label label--accent">The 0.15 threshold, honestly</span>
+            <span className="label label--accent">The historical 0.15 sweep</span>
             <p>
-              The urgency model scores <strong>0.9431 macro-F1</strong> at the default
-              0.5 threshold. MENTAL.AI deploys it at <strong>0.15</strong> - macro-F1
+              The historical urgency model scored <strong>0.9431 macro-F1</strong> at
+              0.5. At <strong>0.15</strong>, macro-F1
               drops to <strong>0.8981</strong> and precision falls from 0.952 to
-              0.840 - because a safety net exists to catch: suicide-class recall
-              rises from 0.934 to <strong>0.987</strong>. The trade is deliberate and
-              documented; a human absorbs the false positives.
+              0.840 while suicide-class recall rises from 0.934 to <strong>0.987</strong>.
+              The threshold was selected on the test split, so these consumed results
+              are diagnostic history, not independent release validation.
             </p>
           </Reveal>
           <Reveal delayMs={120}>

@@ -8,7 +8,7 @@
 // collide with the copy, that the sculpture is actually mounted and painting,
 // and that the login form survives a machine with no WebGL at all.
 import { mkdirSync } from "node:fs";
-import { expectedFirstName, launchChromium, seedSession } from "./auth.mjs";
+import { expectedFirstName, launchChromium, qaCredentials as CREDS, seedSession } from "./auth.mjs";
 
 const BASE = process.argv[2] ?? "http://localhost:5173";
 const GREETING = expectedFirstName();
@@ -116,8 +116,13 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   if (m.sideBySide) {
     check(`${tag} copy left of the auth stage`, m.copy.right < m.auth.x, true);
     check(`${tag} panel right on the nav edge`, near(m.panel.right, m.navCta.right, 1.5), true);
-    check(`${tag} foot right on the panel edge`, near(m.foot.right, m.panel.right, 1.5), true);
-    check(`${tag} foot clear of the panel`, m.foot.y > m.panel.bottom - 1, true);
+    // The annotation is dropped on windows too short to give it a row without
+    // pushing the form off screen. When it is present it must sit on the panel's
+    // right edge and clear of it.
+    if (m.foot.w > 0) {
+      check(`${tag} foot right on the panel edge`, near(m.foot.right, m.panel.right, 1.5), true);
+      check(`${tag} foot clear of the panel`, m.foot.y > m.panel.bottom - 1, true);
+    }
   }
   // The wordmark's box carries descender space below the baseline; the copy
   // has to clear the painted letters, not the box.
@@ -166,8 +171,8 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   });
   await page.goto(`${BASE}/`, { waitUntil: "networkidle" });
   await page.waitForSelector(".signin__input", { timeout: 15000 });
-  await page.fill(".signin__input >> nth=0", "admin");
-  await page.fill(".signin__input >> nth=1", "password");
+  await page.fill(".signin__input >> nth=0", CREDS.email);
+  await page.fill(".signin__input >> nth=1", CREDS.password);
   await page.click(".signin__submit");
   await page.waitForSelector(".entry__greeting", { timeout: 15000 });
   await page.waitForTimeout(900);
@@ -218,8 +223,8 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   // what must be absent is an uncaught exception taking the page down.
   check("no WebGL: no uncaught errors", errors, []);
 
-  await page.fill(".signin__input >> nth=0", "admin");
-  await page.fill(".signin__input >> nth=1", "password");
+  await page.fill(".signin__input >> nth=0", CREDS.email);
+  await page.fill(".signin__input >> nth=1", CREDS.password);
   await page.click(".signin__submit");
   await page.waitForSelector(".entry__greeting", { timeout: 20000 });
   check("no WebGL: sign-in still completes", true, true);

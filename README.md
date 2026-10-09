@@ -1,267 +1,82 @@
 # MENTAL.AI
 
-**See the signal.** AI-assisted mental health screening research system.
+Existing research application with authenticated text screening, limited support routing, raw classifier details and account/device history. This system is not a diagnosis or confirmation of safety. The local engineering and existing-app integration have been repaired; independent release validation and real-provider/deployment verification remain incomplete. See `reports/recovery-final-report.md`, `reports/requirements-evidence.md` and `handoff.md` for measured evidence and blockers. Historical README claims are preserved in `reports/readme-before-final-reconciliation.md`, not treated as rerun results.
 
-Research pipeline + packaged inference + authenticated API + React frontend + Docker deployment.
+## Current connected behavior
 
-> Not a clinical diagnostic system. Produces screening signals routed to human review.
+The existing login/navigation/layout lead to a four-question check-in. Its ordered original answers prefill one editable text field; nothing is analyzed automatically and there is no conversation memory. Authenticated submissions run independent raw-text safety before optional NLP/raw models, then fuse evidence under declared limited capability. Schema1.0 validates the result before bounded account saving. The existing Screen headline and guidance use safety; raw primary and urgency remain unchanged research details. Device history/check-in are scoped to the adopted account. Server history preserves the authoritative snapshot; old rows without snapshots are legacy/unassessed. Save failures remain visible and do not erase support.
 
-## Quick Start
+For `i wanna jump from 10th floor`, actual primary remains Normal at0.9502395987510681 and urgency0.7847130134418575; final HIGH/self/current with immediacy not_stated. The main browser headline is Urgent support. No balcony, access, timing, diagnosis or notification is inferred. Semantic assessment is disabled; most supported results are degraded and no-match inputs may require clarification or return UNKNOWN. Regional resources are not guessed from language.
 
-```bash
-npm install       # installs web dependencies too
-npm run dev       # starts backend :8000 and frontend :5173
-```
+## Local setup
 
-Then open **http://localhost:5173**. You land on `/`, the entry experience: a
-WebGL composition that doubles as the sign-in page. Sign in with the demo
-credentials `admin` / `password` (the greeting uses `MENTAL_AI_AUTH_NAME`, or a
-name derived from the user id). Then:
-
-- `/about` long-form product page with the dual-signal architecture
-- `/screen` screening workspace, which opens on a four-step check-in
-  ("How are you today?") and prefills the editor from it
-- `/research` full methodology, metrics, and limitations
-
-Set your own credentials before sharing the service anywhere:
+Python3.12 was exercised locally. Install the existing ML/runtime requirements and prepare NLTK resources before serving:
 
 ```bash
-cp .env.example .env    # then edit MENTAL_AI_AUTH_USER / _PASSWORD / _TOKEN_SECRET
+python3 -m pip install -r 'Step 12 - Packaging/package/requirements.txt' -r api/requirements-runtime.txt
+python3 scripts/prepare_runtime_resources.py --output nltk_data
+npm install
 ```
 
-`.env` is loaded automatically (`python-dotenv`). Real environment variables always
-win, so container and CI config is never overridden by the file.
-
-| Script | Does |
-|---|---|
-| `npm run dev` | backend + frontend together, health-gated, cleans up on exit |
-| `npm run dev:api` | backend only, with reload |
-| `npm run dev:web` | frontend only (expects the backend already up) |
-| `npm run build` | production frontend build |
-| `npm test` | pytest suite: inference, auth, and API contract |
-| `npm run verify` | project verification script |
-
-## Architecture
-
-```
-Raw datasets (datasets/)
-  ↓
-pipeline.py → Step 2..12  (27 stages: prepare / train / report)
-  ↓
-Packaged artifacts (Step 12/package/mental_health_screening/artifacts/)
-  ↓
-MentalHealthScreener.screen()
-  ↓
-FastAPI (/auth/login → /auth/session → /predict)
-  ↓
-React frontend (Vite, / → /screen → /research, /about)
-```
-
-## Authentication
-
-`POST /predict` requires a bearer token. `GET /health`, `/ready`, `/metrics` and
-`/research` stay public so the status indicator works before sign-in.
-
-| Endpoint | Purpose |
-|---|---|
-| `POST /auth/login` | exchange credentials for a signed token |
-| `GET /auth/session` | validate a stored token on page load |
-| `POST /predict` | screen text (**authenticated**) |
-
-Tokens are HMAC-SHA256 signed, stateless, and expire (`MENTAL_AI_SESSION_TTL`,
-default 12h). Credentials are compared in constant time and login attempts are
-throttled per IP. The session is re-validated against the server on every page
-load, so a revoked token cannot survive a reload.
-
-## What This Project Is
-
-A text-based mental-health screening research project with two independent prediction tracks:
-
-- **Primary (7-class)**: Normal, Depression, Suicidal, Anxiety, Bipolar, Stress, Personality disorder
-- **Urgency (binary)**: suicide / non-suicide (tuned threshold 0.15, NOT clinical diagnosis)
-
-Both are trained on public proxy-label datasets (Kaggle / Pushshift subreddit origins). This is a screening/research signal, NOT a clinical diagnostic system. The urgency layer is designed for human review routing, not autonomous intervention.
-
-## Verified Current State (Based on Actual Code)
-
-### Working
-- Pipeline orchestration (`pipeline.py`) with 12 stages (prepare / train / report)
-- Dataset sourcing and cleaning (`datasets/`, `Step 2-4`)
-- Unified dataset construction (`Step 3` - primary from `Combined Data.csv`, urgency from `Suicide_Detection.csv`)
-- Text preprocessing (`Step 5`) - encoding crash (`\u0130`) fixed; defensive error handling added; full urgency run times out at 300s (232k rows)
-- Feature engineering (`Step 7`) - handcrafted features + TF-IDF (primary `.npz` regenerated; urgency `.npz` partial: `train` present, `val`/`test` missing due to timeout)
-- Model artifacts (`primary_xgboost.pkl`, `urgency_logreg.pkl`, `primary_chi2_selector.pkl`, vectorizers, lexicons)
-- SHAP explainability (`Step 11`) - global importance and bar plots verified
-- Packaged inference (`Step 12/package/mental_health_screening/`) - `MentalHealthScreener.screen()` produces predictions
-- API (`api/api.py`) - `/auth/login`, `/auth/session`, `/predict`, `/health`, `/ready`, `/metrics`
-- Session auth (`api/auth.py`) - stdlib HMAC tokens, constant-time credential check, per-IP throttling, `/predict` gated
-- Frontend (`web/`) - Vite + React + TypeScript, 5 routes, cinematic WebGL entry page doubling as the sign-in gate, reduced-motion and accessibility passes
-- Docker (`Dockerfile`, `.dockerignore`) - container builds with dependencies + NLTK resources
-
-### Fixed During Hardening
-- Dependency installation (`ftfy`, `emoji`, `contractions`, `textstat`, `NRCLex`, `nltk` data) verified
-- `Step 5 - Text Preprocessing/code/preprocess_text.py`: `encoding="utf-8"` added to `to_csv()`; `try/except` around tokenization/lemmatization
-- `Step 12 - Packaging/package/mental_health_screening/inference.py`: artifact verification, input validation, defensive prediction error handling
-- `REPRODUCIBILITY.md` created
-- `MODEL_CARD.md` (`docs/MODEL_CARD.md`) created
-- `.env.example`, `Dockerfile`, `.dockerignore` added
-- `tests/test_service.py` (34 tests: inference, auth primitives, API contract via `TestClient`)
-- `scripts/verify_project.py` added (verification: 6 PASS, 2 FAIL, 1 SKIPPED)
-- `/metrics` `uptime_seconds` replaced the no-op placeholder (`time.time() - (time.time() - time.time())`) with a real `START_TIME` delta
-- Prediction failures no longer echo exception text to the client
-- `tsconfig.*.tsbuildinfo` removed from version control and gitignored
-- `.env` is now actually loaded (`python-dotenv`, real env vars take precedence)
-- `start-dev.sh` no longer hardcodes `SERVICE_VERSION`/`ARTIFACTS_DIR`, which had been shadowing `.env`
-- Route-level code splitting for `/screen` and `/research` (design spec 14)
-- Dead `.page-veil` CSS removed
-
-### Not Completed / Verified Incomplete
-- **Urgency TF-IDF `.npz` matrices** (`urgency_dataset_tfidf_val.npz`, `.test.npz`) - missing; urgency preprocessing timed out at 300s; `train.npz` verified present. Does NOT block inference (`.pkl` vectorizer sufficient for predictions).
-- **Statistical significance tests** - not added; only point estimates preserved from `config.json` (primary macro F1 ≈ 0.6926; urgency 0.8981 @ threshold 0.15)
-- **Full urgency preprocessing cycle** - requires >10 minutes; not completed within environment timeout constraints
-- **Transformer fine-tuning script** (`Step 9/code/train_transformer_finetune.py`) - exists but NOT integrated into `pipeline.py` STAGES; NOT included in packaged artifacts
-- **Distributed rate limiting** - login throttling is per-process and in-memory, so it does not hold across replicas
-
-## Manual Setup
-
-### Dependencies
+The resource installer uses private home staging because NLTK rejects untrusted writable download ancestors. No request downloads resources/packages. Configure backend variable names from `.env.example` securely; never publish env files. Backend Supabase requires URL, publishable and server-only secret key. Browser configuration uses only VITE_SUPABASE_URL/VITE_SUPABASE_PUBLISHABLE_KEY and optional VITE_API_URL. Read `docs/SUPABASE.md` before applying any schema/migration. Existing valid data must be preserved.
 
 ```bash
-pip install -r "Step 12 - Packaging/package/requirements.txt" -r api/requirements.txt
-python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('punkt_tab'); nltk.download('averaged_perceptron_tagger_eng'); nltk.download('wordnet')"
+npm run dev
 ```
 
-### Inference (Local)
+The existing development arrangement serves Vite5173 and API8000; Vite proxies `/api` to unprefixed local routes. The prepared hosting wrapper `main:app` mounts the same API at `/api`. Docker/Vercel/deployed builds have not been verified here and no deployment occurred.
+
+The launcher validates ports and waits for `/ready` with `ready=true`; `/health` HTTP200 alone is insufficient. `API_PORT` and `WEB_PORT` overrides connect the same proxy, and an occupied web port fails instead of silently moving. `DEV_STARTUP_TIMEOUT_SECONDS` defaults60 (1..300); `DEV_BACKEND_LOG` optionally selects the local log. Exiting stops the launcher-owned backend.
+
+For actual local app/model checks with synthetic identities and in-memory provider only:
 
 ```bash
-PYTHONPATH=Step\ 12\ -\ Packaging/package:$PYTHONPATH python -c "
-from mental_health_screening.inference import MentalHealthScreener
-s = MentalHealthScreener()
-print(s.screen('test input'))
-"
+npm run dev:isolated
 ```
 
-### API (Local)
+This explicitly selects the loopback-only synthetic server and blanks browser SDK configuration. Regular `npm run dev` retains configured real authentication. No real-provider/RLS verification is implied.
+
+## Verification
 
 ```bash
-PYTHONPATH="Step 12 - Packaging/package:." python -m uvicorn api.api:app --port 8000
+PYTHONPATH='Step 12 - Packaging/package:.' python3 -m pytest tests -q
+PYTHONPATH='Step 12 - Packaging/package:.' python3 scripts/run_safety_corpus.py --layer both
+PYTHONPATH='Step 12 - Packaging/package:.' python3 scripts/run_safety_corpus.py --layer both --temporal-review
+python3 scripts/generate_contract_types.py --check
+npm --prefix web run qa:contract
+npm run typecheck
+npm run lint
+npm run build
+python3 scripts/verify_project.py --report reports/program-offline-verification.json
 ```
 
-`/predict` is authenticated, so a session token comes first:
+The unchanged default corpus still exits1: temporal annotation conflicts and conservative uncertainty/routing disagreements remain. The separate proposed temporal review is diagnostic developer annotation, not an independently reviewed evaluation. Do not tune from consumed holdouts or relabel correct expectations to get a passing score. See `docs/EVALUATION-COVERAGE.md`.
+
+For isolated browser acceptance, in separate local terminals:
 
 ```bash
-curl http://localhost:8000/health
-
-TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"user_id":"admin","password":"password"}' | python -c "import sys,json;print(json.load(sys.stdin)['token'])")
-
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $TOKEN" \
-  -d '{"text":"I have not slept in three days."}'
-```
-
-### Docker
-
-```bash
-docker build -t mental-ai .
-docker run -p 8000:8000 \
-  -e MENTAL_AI_AUTH_USER=you \
-  -e MENTAL_AI_AUTH_PASSWORD='a-real-password' \
-  -e MENTAL_AI_TOKEN_SECRET="$(python -c 'import secrets;print(secrets.token_urlsafe(48))')" \
-  mental-ai
-```
-
-## Architecture
-
-```
-Raw datasets (datasets/)
-  ↓
-Pipeline (pipeline.py) → Step 2..12
-  ↓
-Packaged artifacts (Step 12/package/mental_health_screening/artifacts/)
-  ↓
-MentalHealthScreener.screen()
-  ↓
-FastAPI (/auth/login → /auth/session → /predict)
-  ↓
-React frontend (Vite, / → /screen → /research, /about)
-```
-
-## Important Safety Note
-
-This system produces **research/screening signals**, not clinical diagnoses. The urgency layer uses a 0.15 threshold to prioritize recall (suicide recall 0.987 vs default 0.934, precision 0.840 vs 0.952). It is designed for routing to human review, NOT for autonomous crisis intervention. No emergency services are contacted automatically.
-
-## Project Structure (Post-Hardening)
-
-```
-.
-├── pipeline.py                  # Orchestrator (27 stages: prepare / train / report)
-├── start-dev.sh                 # Backend + frontend boot, health-gated
-├── package.json                 # npm run dev / test / build
-├── datasets/                    # Raw data (gitignored)
-├── Step 2 ... Step 12/          # Research pipeline stages
-├── api/
-│   ├── api.py                   # FastAPI service
-│   ├── auth.py                  # HMAC session tokens, throttling
-│   └── requirements.txt         # Transport-layer dependencies
-├── web/                         # Vite + React + TypeScript frontend
-│   ├── src/lib/                 # api client, session store, check-in
-│   ├── src/pages/               # Landing, Login, Screen, Research
-│   └── src/components/          # Hero WebGL, chrome, landing sections
-├── docs/
-│   ├── MODEL_CARD.md            # Model documentation
-│   └── frontend-design-spec.md  # Design specification
-├── scripts/verify_project.py    # Verification (PASS/FAIL/SKIPPED)
-├── tests/test_service.py        # Inference, auth, and API contract tests
-├── REPRODUCIBILITY.md           # Verified reproduction steps
-├── Dockerfile                   # Production container
-├── .dockerignore                # Clean build exclusions
-├── .env.example                 # Environment variables
-└── Step 12 - Packaging/package/ # Inference package (hardened)
-```
-
-## What Was Not Changed
-
-- Existing ML architecture (two independent tracks, separate feature spaces, separate thresholds)
-- Existing label definitions (proxy labels documented in `MODEL_CARD.md`)
-- Existing metrics (preserved from `config.json` and `Step 10` outputs)
-- Existing research artifacts (SHAP outputs, confusion matrices, error analysis CSVs preserved)
-- No new models introduced; no retraining performed unless required for regeneration (primary `.npz` regenerated from existing `.pkl` and preprocessed data; urgency `.npz` partial due to timeout)
-
-## Verification Command
-
-```bash
-python scripts/verify_project.py
-```
-
-Current verified result: 6 PASS | 2 FAIL | 1 SKIPPED
-- PASS: Dependencies, artifacts, inference, health check, primary `.npz`, preprocessing fix
-- FAIL: NLTK resource path discrepancy (package works; verification script searches different path) - does NOT block inference; urgency `.npz` incomplete (`val`, `test` missing)
-- SKIPPED: API not running locally (expected unless `uvicorn` started manually)
-
-## Tests
-
-```bash
-npm test
-```
-
-35 tests covering artifact loading, inference output shape, input validation,
-token issue/verify/tamper/expiry, credential rejection, login throttling,
-`/predict` gating, and the public operational endpoints.
-
-`npm test` needs `pytest` and `httpx` (see `api/requirements.txt`). Frontend QA
-scripts live in `web/scripts/` and drive a real browser against a running stack:
-
-```bash
+PYTHONPATH='Step 12 - Packaging/package:.' python3 tests/serve_synthetic_api.py --isolated-development
 cd web
-node scripts/interaction.mjs http://localhost:5173   # check-in, sign-in, screening
-node scripts/failure.mjs http://localhost:5173       # oversize, offline, reduced motion
-node scripts/screenshots.mjs http://localhost:5173   # 5 viewports to web/shots/
+VITE_SUPABASE_URL='' VITE_SUPABASE_PUBLISHABLE_KEY='' VITE_API_URL='/api' npm run dev -- --host 127.0.0.1 --strictPort
+node scripts/screenqa.mjs
 ```
 
-## Git Safety Note
+This helper serves actual routes/models on loopback with an in-memory provider STUB and synthetic identities, never real accounts. Failure responses are explicitly shared-fixture overrides. Chromium is required; the installed helper can use an existing compatible cache. Reports identify mocked versus actual layers. Avoid running other QA scripts against real accounts without an explicitly isolated environment.
 
-This repository was initialized with `git init` at the start of hardening. The original state is preserved in the initial commit. All modifications are tracked.
-# mental.ai
+`npm run verify` performs offline dependency/resource/configured-artifact and actual original-case observations, returns nonzero for required failures, and reports independent validation BLOCKED. It does not retrain historical experiments, authenticate, download or write to a provider. Opt-in `--api-url http://127.0.0.1:8000` also checks public liveness/readiness.
+
+Broader isolated browser checks executed in the latest program audit include authflow47/47, entryqa310/310 and screenqa35/35, plus manual interaction/failure screenshot journeys (exit0, not counted as assertion suites). See reports/program-audit-report.md for exact synthetic environment and scope. Built public-route QA uses `web/scripts/publicqa.mjs` against an isolated Vite preview; SDK config must be blank during that build too. Existing visual design is preserved; the precise containment/copy corrections are recorded below.
+
+The public-route audit additionally corrected mobile research intrinsic-width containment while preserving its one-column arrangement, plus misleading public reviewer/threshold copy. Colors/fonts/assets/animations/navigation/login and SVG geometry are unchanged. One research CSS minimum and five public content files intentionally changed; see D101/D102 instead of interpreting preservation as zero content changes. Built-route result12/12 is scoped engineering evidence.
+
+## Authentication, storage and operations
+
+FastAPI delegates bearer verification to Supabase GoTrue on every private request; it does not sign application HMAC tokens. Login/refresh/session/history/deletion keep trusted identity and explicit owner filters. Secret keys bypass RLS, so application scoping remains required. New non-JWT application keys travel in apikey; actual user JWTs identify the account separately. Real RLS/grants/network behavior is not established by stubs.
+
+Prediction and saving each have a serial worker with8 admitted jobs, caller deadlines30s and12s. Late synchronous work retains capacity until completion; cancellation does not forcibly stop it. Provider network timeout defaults10s, validated up to30s. Same-host SQLite prediction limits are30 requests/60s per verified owner; separate replicas require shared ingress limits. Login's existing IP limiter is per process. Character cap defaults10000 (validated1000..100000), HTTP bytes12*cap+4096; `/configuration` is the consumer source. `/live` is cheap; `/ready` uses a bounded ten-second freshness probe and publishes degradation. `/health` also reports artifact state. No promised reviewer workflow or durable asynchronous saving exists.
+
+The additive snapshot migration is prepared, not remotely applied. Bounded synchronous saving reports saved only with returned row id, not_saved on rejection/unadmitted work, unconfirmed on uncertain writes/deadlines. No automatic write retry. Historical research scripts, artifacts, original corpus identities and execution reports are preserved. Model probabilities are proxy-label classifier values, not calibrated clinical probabilities. True multi-turn memory, reliable unrestricted language comprehension, clinical generalization, deployed performance and independent release validation are unsupported/unverified.
+
+Supabase/login continuation: Google preference/callback/provider errors and QA diagnostic privacy corrected under D104–D107, with24 module,13 dev/13 compiled SDK,47 email and35 screen browser checks. D108–D109 now install supplied project locally and verify public settings/health/configured UI; intended email/confirmation and Google provider setup remain blocked. Normal preview http://127.0.0.1:5199/login; no hosted deployment change. See reports/supabase-live-config-report.md for current evidence. See [setup and boundaries](docs/SUPABASE.md) and [actual results](reports/auth-integration-report.md).
+
+D110–D112 install the requested root `@supabase/server`1.9.1 and backend-only JWKS variable. Run `npm run verify:supabase-sdk` after configuring ignored `.env`; it validates actual SDK imports/environment resolution without logging values or making network/account requests. Python authentication remains GoTrue verification. Latest isolated backend486/486, contract55 checks/16states and OAuth24 groups pass; public JWKS200 is metadata, not authenticated integration. See [SDK verification](reports/supabase-server-sdk-report.md) and [owner publication checkpoint](reports/github-publication.json). Credentials must be configured separately in the hosting environment and remain excluded from Git.

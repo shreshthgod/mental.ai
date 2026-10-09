@@ -1,0 +1,30 @@
+{
+  "layer": "built frontend Chromium/loopback public routes; isolated backend, no user data",
+  "checks": [
+    {
+      "route": "/",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/login",
+      "width": 1440,
+      "status": "PASSED"
+    },
+    {
+      "route": "/about",
+      "width": 1440,
+      "status": "FAILED",
+      "error_type": "AssertionError"
+    }
+  ],
+  "errors": [],
+  "failure": {
+    "type": "AssertionError"
+  },
+  "overflow": {
+    "viewport": 1440,
+    "document": 1440,
+    "elements": []
+  }
+}

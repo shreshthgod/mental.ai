@@ -13,7 +13,7 @@ const METHOD_STAGES = [
   { n: "07", name: "Feature extraction", d: "38 handcrafted features (VADER, NRC emotion lexicon, readability, pronoun/absolutist ratios, urgency keywords) + TF-IDF unigram/bigram (min_df=5, max_df=0.9, 30,000 terms)." },
   { n: "08", name: "Class imbalance", d: "13.6:1 ratio on the primary track (Normal 30.8% → Personality disorder 2.3%) - handled with class weights, no resampling." },
   { n: "09", name: "Model training", d: "Primary: XGBoost over 38 handcrafted + chi²-selected 1,500 TF-IDF terms (1,538 dims). Urgency: logistic regression over the full 30,000-term space." },
-  { n: "10", name: "Evaluation", d: "Held-out test evaluation + threshold sweep. Urgency deployed at 0.15: recall 0.934 → 0.987, precision 0.952 → 0.840." },
+  { n: "10", name: "Evaluation", d: "Historical test evaluation and threshold selection on that same split. At 0.15: recall 0.934 → 0.987, precision 0.952 → 0.840. Consumed diagnostic results." },
   { n: "11", name: "Explainability & errors", d: "Global SHAP importance for both models; misclassification and confusion-pair analysis; false-negative review at the deployed threshold." },
   { n: "12", name: "Packaging", d: "Frozen artifacts (models, vectorizers, chi² selector, lexicons, config) behind the MentalHealthScreener inference API." },
 ];
@@ -72,15 +72,15 @@ export function Research() {
                 a clinic. The research question: can a reproducible classical-NLP
                 pipeline surface <strong>condition patterns</strong> and an
                 <strong> independent urgency signal</strong> from raw text - honestly
-                enough to route human review, without ever posing as a diagnosis?
+                enough to support further assessment, without ever posing as a diagnosis?
               </p>
             </Reveal>
             <Reveal delayMs={80}>
               <p>
                 The two tracks are deliberately independent. The condition
                 classifier answers "what pattern does this language resemble?"; the
-                urgency model answers "should a human look at this soon?". Merging
-                them would conflate two different decisions.
+                urgency model estimates a binary proxy class. Current support routing
+                uses separate text evidence and uncertainty; a recommendation notifies nobody.
               </p>
             </Reveal>
           </Section>
@@ -142,7 +142,7 @@ export function Research() {
               </Reveal>
               <Reveal className="rfact" delayMs={80}>
                 <p className="rfact__k">Urgency - Logistic regression</p>
-                <p className="rfact__v">Binary safety net over the full 30,000-term TF-IDF space. Deployed threshold 0.15 (default 0.5) - chosen for recall, documented as a trade.</p>
+                <p className="rfact__v">Binary proxy classifier over the full 30,000-term TF-IDF space. Historical packaged threshold 0.15 (default 0.5); effective configuration is reported with each analysis.</p>
               </Reveal>
             </div>
           </Section>
@@ -152,7 +152,7 @@ export function Research() {
               <Reveal className="rmetric">
                 <p className="rmetric__v num">0.6926</p>
                 <p className="rmetric__l">Primary macro-F1</p>
-                <p className="rmetric__n">7-class XGBoost, held-out test split</p>
+                <p className="rmetric__n">7-class XGBoost, historical test split</p>
               </Reveal>
               <Reveal className="rmetric" delayMs={80}>
                 <p className="rmetric__v num">0.9431</p>
@@ -162,7 +162,7 @@ export function Research() {
               <Reveal className="rmetric" delayMs={160}>
                 <p className="rmetric__v num">0.8981</p>
                 <p className="rmetric__l">Urgency macro-F1 @ 0.15</p>
-                <p className="rmetric__n">Deployed threshold - lower by design, in exchange for 0.987 suicide recall</p>
+                <p className="rmetric__n">Historical test-selected threshold, 0.987 suicide-class recall</p>
               </Reveal>
             </div>
             <Reveal delayMs={120}>

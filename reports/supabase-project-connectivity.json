@@ -1,0 +1,29 @@
+{
+  "recorded_utc": "2026-10-09T08:08:38.355642+00:00",
+  "project_host": "omvjzcpcmkqgmgrzeesh.supabase.co",
+  "layer": "real read-only GoTrue public settings/health; no user/account/disclosure/database request",
+  "checks": [
+    {
+      "check": "public_settings",
+      "route": "/auth/v1/settings",
+      "key_type": "SUPABASE_PUBLISHABLE_KEY",
+      "status": "PASSED",
+      "http_status": 200,
+      "settings": {
+        "disable_signup": false,
+        "mailer_autoconfirm": false
+      },
+      "providers": {
+        "email": true,
+        "google": false
+      }
+    },
+    {
+      "check": "backend_secret_gateway_health",
+      "route": "/auth/v1/health",
+      "key_type": "SUPABASE_SECRET_KEY",
+      "status": "PASSED",
+      "http_status": 200
+    }
+  ]
+}

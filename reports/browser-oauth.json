@@ -1,0 +1,59 @@
+{
+  "layer": "Chromium + actual app + installed SDK; provider/API INTERCEPTED; no account creation",
+  "checks": [
+    {
+      "label": "Rendered Google control preserves destination and remember=true",
+      "status": "PASSED"
+    },
+    {
+      "label": "Installed SDK callback verifies owner, restores hash, honors scope=true",
+      "status": "PASSED"
+    },
+    {
+      "label": "Reload verifies the Google session with scope=true",
+      "status": "PASSED"
+    },
+    {
+      "label": "Existing sign-out control clears Google session with scope=true",
+      "status": "PASSED"
+    },
+    {
+      "label": "Rendered Google control preserves destination and remember=false",
+      "status": "PASSED"
+    },
+    {
+      "label": "Installed SDK callback verifies owner, restores hash, honors scope=false",
+      "status": "PASSED"
+    },
+    {
+      "label": "Reload verifies the Google session with scope=false",
+      "status": "PASSED"
+    },
+    {
+      "label": "Existing sign-out control clears Google session with scope=false",
+      "status": "PASSED"
+    },
+    {
+      "label": "Rendered disabled provider error keeps login usable",
+      "status": "PASSED"
+    },
+    {
+      "label": "Rendered unavailable provider error keeps login usable",
+      "status": "PASSED"
+    },
+    {
+      "label": "Actual SDK provider_cancelled callback fails anonymously without provider details",
+      "status": "PASSED"
+    },
+    {
+      "label": "Actual SDK server_rejected callback fails anonymously without provider details",
+      "status": "PASSED"
+    },
+    {
+      "label": "No uncaught browser script errors",
+      "status": "PASSED"
+    }
+  ],
+  "errors": [],
+  "owned_vite_stopped": true
+}

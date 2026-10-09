@@ -1,0 +1,71 @@
+{
+  "started_at": "2026-10-08T20:14:06.735Z",
+  "layer": "Chromium + HTTP + actual API/models; synthetic provider transport; explicit fixture overrides",
+  "checks": [
+    {
+      "label": "Existing login authenticates synthetic identity",
+      "status": "PASSED"
+    }
+  ],
+  "original": {
+    "http_status": 200,
+    "raw_primary": {
+      "predicted_class": "Normal",
+      "class_probabilities": {
+        "Anxiety": 0.0026074619963765144,
+        "Bipolar": 0.00152647215873003,
+        "Depression": 0.004962537437677383,
+        "Normal": 0.9502395987510681,
+        "Personality disorder": 0.004316892474889755,
+        "Stress": 0.0016816304996609688,
+        "Suicidal": 0.03466535732150078
+      },
+      "status": "complete"
+    },
+    "raw_urgency": {
+      "predicted_class": "suicide",
+      "suicide_probability": 0.7847130134418575,
+      "decision_threshold_used": 0.15,
+      "flagged": true,
+      "status": "complete"
+    },
+    "safety": {
+      "level": "HIGH",
+      "subject": "self",
+      "temporal_context": "current",
+      "immediacy": "not_stated",
+      "evidence_codes": [
+        "INTENT_VERB",
+        "METHOD_OR_LOCATION",
+        "URGENCY_MODEL_FLAGGED"
+      ],
+      "summary": "Routed HIGH on: i want jump from 10th floor",
+      "needs_clarification": false,
+      "review_recommended": true,
+      "analysis_status": "degraded",
+      "policy_version": "safety-policy-2026.10.08.5",
+      "language_support": "degraded",
+      "assessment_scope": "recognized_rules_only",
+      "support_action": "It sounds like you may be thinking about harming yourself. You deserve support right now rather than later. Please reach out to someone you trust today, and consider contacting a crisis line or your local emergency service. If you are in immediate danger, move away from anything you could use to hurt yourself first. If you tell me your country I can point you to the right service."
+    },
+    "components": {
+      "independent_safety": "complete",
+      "semantic": "disabled",
+      "preprocessing": "complete",
+      "primary": "complete",
+      "urgency": "complete"
+    },
+    "persistence": {
+      "status": "saved",
+      "record_id": "screening-8"
+    },
+    "displayed_headline": "Normal"
+  },
+  "errors": [],
+  "failure": {
+    "name": "AssertionError",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'Normal'\n- 'Urgent support'\n"
+  },
+  "finished_at": "2026-10-08T20:14:37.891Z",
+  "passed": 1
+}

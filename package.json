@@ -6,12 +6,17 @@
   "scripts": {
     "postinstall": "npm --prefix web install",
     "dev": "bash start-dev.sh",
+    "dev:isolated": "bash start-dev.sh --isolated-development",
     "dev:web": "npm --prefix web run dev",
     "dev:api": "bash -c 'PYTHONPATH=\"Step 12 - Packaging/package:.\" python3 -m uvicorn api.api:app --host 127.0.0.1 --port 8000 --reload'",
     "build": "npm --prefix web run build",
     "typecheck": "npm --prefix web run typecheck",
     "lint": "npm --prefix web run lint",
     "test": "PYTHONPATH=\"Step 12 - Packaging/package:.\" python3 -m pytest tests -q",
-    "verify": "PYTHONPATH=\"Step 12 - Packaging/package:.\" python3 scripts/verify_project.py"
+    "verify": "PYTHONPATH=\"Step 12 - Packaging/package:.\" python3 scripts/verify_project.py",
+    "verify:supabase-sdk": "node --env-file=.env scripts/check_supabase_server.mjs"
+  },
+  "dependencies": {
+    "@supabase/server": "1.9.1"
   }
 }

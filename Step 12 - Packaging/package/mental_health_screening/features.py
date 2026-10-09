@@ -11,6 +11,7 @@ import re
 import os
 import pkgutil
 import importlib.resources as ires
+from functools import lru_cache
 
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import textstat
@@ -23,13 +24,13 @@ _NRC_CATEGORIES = ["fear", "anger", "anticipation", "trust", "surprise",
 
 _ARTIFACTS_DIR = os.path.join(os.path.dirname(__file__), "artifacts")
 
-with open(os.path.join(_ARTIFACTS_DIR, "curated_urgency_keywords.json")) as f:
-    _URGENCY_KEYWORDS = set(json.load(f)["curated_urgency_keywords"])
-
-with open(os.path.join(_ARTIFACTS_DIR, "emotion_lexicon.json")) as f:
-    _emo = json.load(f)
-    _EMO_CLASSES = _emo["classes"]
-    _EMO_LEXICON = _emo["lexicon"]
+@lru_cache(maxsize=8)
+def _load_lexicons(urgency_path, emotion_path):
+    with open(urgency_path, encoding="utf-8") as f:
+        urgency = set(json.load(f)["curated_urgency_keywords"])
+    with open(emotion_path, encoding="utf-8") as f:
+        emotion = json.load(f)
+    return urgency, emotion["classes"], emotion["lexicon"]
 
 _PRONOUNS = {"i", "me", "my", "mine", "myself"}
 _NEGATIONS = {"not", "no", "never", "none", "nobody", "nothing", "neither", "nor", "n't", "cannot"}
@@ -66,16 +67,13 @@ def _vader_features(text):
 
 
 def _readability_features(text):
-    try:
-        return {
-            "flesch_reading_ease": textstat.flesch_reading_ease(text),
-            "flesch_kincaid_grade": textstat.flesch_kincaid_grade(text),
-        }
-    except Exception:
-        return {"flesch_reading_ease": 0.0, "flesch_kincaid_grade": 0.0}
+    return {
+        "flesch_reading_ease": textstat.flesch_reading_ease(text),
+        "flesch_kincaid_grade": textstat.flesch_kincaid_grade(text),
+    }
 
 
-def _token_features(tokens):
+def _token_features(tokens, urgency_keywords, emotion_classes, emotion_lexicon):
     n = len(tokens) or 1
     pronoun_n = sum(1 for t in tokens if t in _PRONOUNS)
     negation_n = sum(1 for t in tokens if t in _NEGATIONS)
@@ -91,17 +89,17 @@ def _token_features(tokens):
         nrc_counts[c] += 1
     nrc_feats = {f"nrc_{c}": nrc_counts[c] / nrc_total for c in _NRC_CATEGORIES}
 
-    emo_sums = {c: 0.0 for c in _EMO_CLASSES}
+    emo_sums = {c: 0.0 for c in emotion_classes}
     emo_matched = 0
     for t in tokens:
-        if t in _EMO_LEXICON:
+        if t in emotion_lexicon:
             emo_matched += 1
-            for c in _EMO_CLASSES:
-                emo_sums[c] += _EMO_LEXICON[t][c]
+            for c in emotion_classes:
+                emo_sums[c] += emotion_lexicon[t][c]
     emo_denom = emo_matched or 1
-    emo_feats = {f"emo_lex_{c}": emo_sums[c] / emo_denom for c in _EMO_CLASSES}
+    emo_feats = {f"emo_lex_{c}": emo_sums[c] / emo_denom for c in emotion_classes}
 
-    urgency_hits = sum(1 for t in tokens if t in _URGENCY_KEYWORDS)
+    urgency_hits = sum(1 for t in tokens if t in urgency_keywords)
 
     out = {
         "pronoun_ratio": pronoun_n / n,
@@ -115,14 +113,17 @@ def _token_features(tokens):
     return out
 
 
-def extract_handcrafted_features(cleaned_text: str, lemmatized_text: str) -> dict:
+def extract_handcrafted_features(cleaned_text: str, lemmatized_text: str, *, urgency_lexicon=None, emotion_lexicon=None) -> dict:
     """Same feature dict Step 7's extract_all() produced -- one dict, keyed
     by feature name. Caller (inference.py) reorders via config.json's
     handcrafted_feature_order before handing to the model."""
     tokens = str(lemmatized_text).split()
+    lexicons = _load_lexicons(
+        urgency_lexicon or os.path.join(_ARTIFACTS_DIR, "curated_urgency_keywords.json"),
+        emotion_lexicon or os.path.join(_ARTIFACTS_DIR, "emotion_lexicon.json"))
     row = {}
     row.update(_stylistic_features(str(cleaned_text)))
     row.update(_vader_features(str(cleaned_text)))
     row.update(_readability_features(str(cleaned_text)))
-    row.update(_token_features(tokens))
+    row.update(_token_features(tokens, *lexicons))
     return row

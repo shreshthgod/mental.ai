@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -11,24 +11,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy and install Python dependencies
 COPY Step\ 12\ -\ Packaging/package/requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r /app/requirements.txt
+COPY api/requirements-runtime.txt /app/api-requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt -r /app/api-requirements.txt
 
 # Install/download required NLTK resources deterministically during build
-RUN python -c "
-import nltk
-nltk.download('vader_lexicon', quiet=True)
-nltk.download('punkt', quiet=True)
-nltk.download('punkt_tab', quiet=True)
-nltk.download('averaged_perceptron_tagger', quiet=True)
-nltk.download('averaged_perceptron_tagger_eng', quiet=True)
-nltk.download('wordnet', quiet=True)
-print('NLTK resources installed')
-"
+RUN python -c "import nltk; resources = ['vader_lexicon', 'punkt', 'punkt_tab', 'averaged_perceptron_tagger', 'averaged_perceptron_tagger_eng', 'wordnet']; assert all(nltk.download(resource, quiet=True, raise_on_error=True) for resource in resources), 'NLTK resource installation failed'"
 
 # Copy application code and package
 COPY api/ /app/api/
 COPY Step\ 12\ -\ Packaging/package/ /app/package/
-COPY .env.example /app/.env
 
 # Ensure package is importable
 ENV PYTHONPATH=/app/package:$PYTHONPATH
@@ -38,27 +29,23 @@ ENV PORT=8000
 ENV HOST=0.0.0.0
 ENV LOG_LEVEL=INFO
 
-# Session auth. These carry the documented research demo values so the image
-# runs as-is; override MENTAL_AI_AUTH_USER, MENTAL_AI_AUTH_PASSWORD and
-# MENTAL_AI_TOKEN_SECRET at run time for any real deployment.
-ENV MENTAL_AI_AUTH_USER=admin
-ENV MENTAL_AI_AUTH_PASSWORD=password
-ENV MENTAL_AI_SESSION_TTL=43200
+# Identity and storage. Authentication is Supabase Auth and screening history is
+# Supabase Postgres, so there are no credentials baked into this image: the three
+# SUPABASE_* values must be supplied at run time. The image starts and reports its
+# configuration state through /health and /ready, and rejects authentication with
+# 503 while they are missing, rather than pretending to be signed in.
+#
+#   SUPABASE_URL               https://<project>.supabase.co
+#   SUPABASE_SECRET_KEY        secret / service_role key   (server only)
+#   SUPABASE_PUBLISHABLE_KEY   publishable / anon key      (GoTrue requires it)
+ENV MENTAL_AI_SESSION_TTL=3600
 
 # Expose the service port
 EXPOSE 8000
 
-# Health check using API endpoint
+# Required capability check; bounded/freshness-aware, optional degradation visible.
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-  CMD python -c "
-import urllib.request, os
-try:
-    resp = urllib.request.urlopen('http://localhost:8000/health', timeout=5)
-    print(resp.status)
-except Exception as e:
-    print('HEALTHCHECK FAIL:', e)
-    exit(1)
-" || exit 1
+  CMD python -c "import json, urllib.request; response = urllib.request.urlopen('http://localhost:8000/ready', timeout=5); assert json.load(response)['ready'] is True" || exit 1
 
 # Start the API
 CMD ["python", "-m", "uvicorn", "api.api:app", "--host", "0.0.0.0", "--port", "8000"]

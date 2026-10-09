@@ -3,26 +3,41 @@
  * No component performs fetch() directly.
  */
 
-export interface PrimaryResult {
-  predicted_class: string;
-  class_probabilities: Record<string, number>;
+import type { AnalysisResult, ConfigurationResponse, PredictResponse } from "./contract";
+import { parseConfiguration, parsePrediction } from "./analysisView";
+export type { AnalysisResult, ConfigurationResponse, PredictResponse, PrimaryResult, UrgencyResult } from "./contract";
+
+/**
+ * A session as the service returns it.
+ *
+ * `token` is the Supabase access token FastAPI verifies on every call.
+ * `refresh_token` is exchanged for a new access token without asking the
+ * visitor to sign in again. `user_id` is the authoritative Supabase Auth UUID;
+ * `user` is the human-facing id the interface already displays.
+ */
+export interface SessionPayload {
+  token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  expires_at: number;
+  user: string;
+  user_id: string;
+  name: string;
 }
 
-export interface UrgencyResult {
-  predicted_class: string;
-  suicide_probability: number;
-  decision_threshold_used: number;
-  flagged: boolean;
-}
-
-export interface PredictResponse {
-  request_id: string;
-  primary: PrimaryResult;
-  urgency: UrgencyResult;
-  cleaned_text?: string | null;
-  lemmatized_text?: string | null;
+/** One stored screening, as returned by GET /screenings. */
+export interface ScreeningSummary {
+  id: string;
+  created_at: string;
+  condition_label?: string | null;
+  condition_probabilities?: Record<string, number>;
+  urgency_label?: string | null;
+  urgency_probability?: number | null;
+  urgency_flagged?: boolean;
   provenance_caveat?: string | null;
-  service_version: string;
+  analysis_result: AnalysisResult | null;
+  assessment_kind: "authoritative" | "legacy_unassessed";
 }
 
 export interface HealthResponse {
@@ -33,17 +48,18 @@ export interface HealthResponse {
   screener_available: boolean;
 }
 
-export interface LoginResponse {
-  token: string;
-  token_type: string;
-  expires_in: number;
-  expires_at: number;
-  user: string;
-  name: string;
-}
+/**
+ * Sign-in returns the same shape as a refresh.
+ *
+ * Kept as a name so the sign-in call site reads as sign-in; there is exactly one
+ * payload shape in the system.
+ */
+export type LoginResponse = SessionPayload;
 
 export interface SessionResponse {
   user: string;
+  /** Authoritative Supabase Auth user id. Never displayed. */
+  user_id: string;
   name: string;
   issued_at: number;
   expires_at: number;
@@ -62,21 +78,24 @@ export class ApiError extends Error {
   kind: ApiErrorKind;
   status?: number;
   requestId?: string;
+  retryAfterSeconds?: number;
 
-  constructor(kind: ApiErrorKind, message: string, status?: number, requestId?: string) {
+  constructor(kind: ApiErrorKind, message: string, status?: number, requestId?: string, retryAfterSeconds?: number) {
     super(message);
     this.name = "ApiError";
     this.kind = kind;
     this.status = status;
     this.requestId = requestId;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 
 const BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "/api";
 
 const HEALTH_TIMEOUT_MS = 8_000;
-const PREDICT_TIMEOUT_MS = 30_000;
-const AUTH_TIMEOUT_MS = 10_000;
+// Covers maximum provider wait30s + inference30s + save12s, with delivery margin.
+const PREDICT_TIMEOUT_MS = 80_000;
+const AUTH_TIMEOUT_MS = 35_000;
 
 /**
  * Bearer token for authenticated calls.
@@ -95,12 +114,18 @@ export function getAuthToken(): string | null {
   return authToken;
 }
 
-function combineSignals(a: AbortSignal, b: AbortSignal): AbortSignal {
+function combineSignals(a: AbortSignal, b: AbortSignal): { signal: AbortSignal; cleanup: () => void } {
   const ctrl = new AbortController();
   const onAbort = () => ctrl.abort(a.aborted ? a.reason : b.reason);
-  a.addEventListener("abort", onAbort, { once: true });
-  b.addEventListener("abort", onAbort, { once: true });
-  return ctrl.signal;
+  if (a.aborted || b.aborted) onAbort();
+  else {
+    a.addEventListener("abort", onAbort, { once: true });
+    b.addEventListener("abort", onAbort, { once: true });
+  }
+  return { signal: ctrl.signal, cleanup: () => {
+    a.removeEventListener("abort", onAbort);
+    b.removeEventListener("abort", onAbort);
+  } };
 }
 
 async function doRequest<T>(
@@ -111,56 +136,64 @@ async function doRequest<T>(
 ): Promise<T> {
   const timeoutCtrl = new AbortController();
   const timer = setTimeout(() => timeoutCtrl.abort("timeout"), timeoutMs);
-  const signal = callerSignal ? combineSignals(callerSignal, timeoutCtrl.signal) : timeoutCtrl.signal;
-
-  let res: Response;
+  const combined = callerSignal ? combineSignals(callerSignal, timeoutCtrl.signal) : { signal: timeoutCtrl.signal, cleanup: () => {} };
+  const signal = combined.signal;
   try {
+    if (callerSignal?.aborted) throw new DOMException("Request cancelled", "AbortError");
     const headers = new Headers(init.headers);
-    if (authToken) headers.set("Authorization", `Bearer ${authToken}`);
-    res = await fetch(`${BASE}${path}`, { ...init, headers, signal });
+    if (authToken && !headers.has("Authorization")) headers.set("Authorization", `Bearer ${authToken}`);
+    const res = await fetch(`${BASE}${path}`, { ...init, headers, signal });
+    const requestId = res.headers.get("X-Request-ID") ?? undefined;
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`;
+      try {
+        const body = await res.json();
+        if (typeof body?.detail === "string") detail = body.detail;
+        else if (Array.isArray(body?.detail)) detail = "Request validation failed.";
+      } catch { /* non-JSON body; abort is checked below */ }
+      if (signal.aborted) throw new DOMException("Request aborted", "AbortError");
+      const retry = res.headers.get("Retry-After");
+      const retrySeconds = retry && /^\d{1,6}$/.test(retry) ? Number(retry) : undefined;
+      if (res.status === 401) throw new ApiError("unauthorized", detail, res.status, requestId);
+      if (res.status === 429) throw new ApiError("throttled", detail, res.status, requestId, retrySeconds);
+      if (res.status === 422 || res.status === 413) throw new ApiError("validation", detail, res.status, requestId);
+      if (res.status === 503) throw new ApiError("unavailable", detail, res.status, requestId);
+      throw new ApiError("server", detail, res.status, requestId);
+    }
+    const value = await res.json();
+    if (signal.aborted) throw new DOMException("Request aborted", "AbortError");
+    return value as T;
   } catch (err) {
+    if (callerSignal?.aborted) throw new DOMException("Request cancelled", "AbortError");
+    if (timeoutCtrl.signal.aborted) throw new ApiError("timeout", `Request timed out after ${Math.round(timeoutMs / 1000)}s`);
+    if (err instanceof ApiError) throw err;
+    throw new ApiError("unavailable", "The assessment service could not be reached or returned an unusable response.");
+  } finally {
     clearTimeout(timer);
-    if (err instanceof DOMException && err.name === "AbortError") {
-      if (callerSignal?.aborted) throw err;
-      throw new ApiError("timeout", `Request timed out after ${Math.round(timeoutMs / 1000)}s`);
-    }
-    throw new ApiError("unavailable", "The screening service could not be reached.");
+    combined.cleanup();
   }
-  clearTimeout(timer);
+}
 
-  const requestId = res.headers.get("X-Request-ID") ?? undefined;
-
-  if (!res.ok) {
-    let detail = `HTTP ${res.status}`;
-    try {
-      const body = await res.json();
-      if (typeof body?.detail === "string") detail = body.detail;
-      else if (Array.isArray(body?.detail)) detail = "Request validation failed.";
-    } catch {
-      /* non-JSON error body */
-    }
-    if (res.status === 401) throw new ApiError("unauthorized", detail, res.status, requestId);
-    if (res.status === 429) throw new ApiError("throttled", detail, res.status, requestId);
-    if (res.status === 422) throw new ApiError("validation", detail, res.status, requestId);
-    if (res.status === 503) throw new ApiError("unavailable", detail, res.status, requestId);
-    throw new ApiError("server", detail, res.status, requestId);
+async function prediction(text: string, signal?: AbortSignal): Promise<PredictResponse> {
+  const value = await doRequest<unknown>("/predict", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }),
+  }, PREDICT_TIMEOUT_MS, signal);
+  try {
+    return parsePrediction(value);
+  } catch {
+    throw new ApiError("unavailable", "The service returned an unsupported analysis response.");
   }
-
-  return (await res.json()) as T;
 }
 
 export const api = {
-  predict(text: string, signal?: AbortSignal): Promise<PredictResponse> {
-    return doRequest<PredictResponse>(
-      "/predict",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      },
-      PREDICT_TIMEOUT_MS,
-      signal
-    );
+  predict: prediction,
+  async configuration(signal?: AbortSignal): Promise<ConfigurationResponse> {
+    const value = await doRequest<unknown>("/configuration", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
+    try {
+      return parseConfiguration(value);
+    } catch {
+      throw new ApiError("unavailable", "The service input configuration is unavailable.");
+    }
   },
   health(signal?: AbortSignal): Promise<HealthResponse> {
     return doRequest<HealthResponse>("/health", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
@@ -187,9 +220,46 @@ export const api = {
     );
   },
   /** Validate the stored token. Used on boot to confirm a session is still live. */
-  session(signal?: AbortSignal): Promise<SessionResponse> {
-    return doRequest<SessionResponse>("/auth/session", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
+  session(signal?: AbortSignal, candidateToken?: string): Promise<SessionResponse> {
+    return doRequest<SessionResponse>("/auth/session", { method: "GET", headers: candidateToken === undefined ? undefined : { Authorization: `Bearer ${candidateToken}` } }, AUTH_TIMEOUT_MS, signal);
+  },
+  /**
+   * Exchange a refresh token for a new access token.
+   *
+   * Sent with an explicitly empty Authorization header for the same reason as
+   * sign-in: a stale access token must not be attached to a renewal.
+   */
+  refresh(refreshToken: string, signal?: AbortSignal): Promise<SessionPayload> {
+    return doRequest<SessionPayload>(
+      "/auth/refresh",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: "" },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      },
+      AUTH_TIMEOUT_MS,
+      signal
+    );
+  },
+  /** Which sign-in methods this deployment offers. */
+  providers(signal?: AbortSignal): Promise<{ email_password: boolean; google: boolean }> {
+    return doRequest("/auth/providers", { method: "GET" }, HEALTH_TIMEOUT_MS, signal);
+  },
+  /**
+   * The signed-in account's screening history from Supabase.
+   *
+   * Scoped server-side to the verified token subject.
+   */
+  screenings(limit = 25, signal?: AbortSignal): Promise<{ screenings: ScreeningSummary[]; count: number }> {
+    return doRequest(
+      `/screenings?limit=${limit}`,
+      { method: "GET" },
+      AUTH_TIMEOUT_MS,
+      signal
+    );
+  },
+  /** Remove the signed-in account's screening history. */
+  deleteScreenings(signal?: AbortSignal): Promise<{ deleted: number }> {
+    return doRequest("/screenings", { method: "DELETE" }, AUTH_TIMEOUT_MS, signal);
   },
 };
-
-export const MAX_TEXT_LENGTH = 10_000;

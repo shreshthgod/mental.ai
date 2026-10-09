@@ -1,0 +1,684 @@
+{
+  "head": "2053855d51aaa5c9e06bd8c30f1c35d45c64716b",
+  "source_sha256": "d0c4dc873dd5e064ab0defa981a22203a76695d7759a6adb53be10cc3ddd14ad",
+  "files": [
+    [
+      ".env.example",
+      "4da0814cea5511ef1ea1d85832d25ba4687e1b540f5a04ab1406c4f7d8dd3794"
+    ],
+    [
+      ".gitignore",
+      "1d7cf82293313152dbeb0f9b298ade50ac662db65e14a4d5d26bf2e02fcaf8e9"
+    ],
+    [
+      "AUDIT-SPEC.md",
+      "903c9e2b8d633fdff8e17740c936fff40424a8f9c9e48bd00f0eb4f7b6f76930"
+    ],
+    [
+      "Dockerfile",
+      "e9407c8017173a13121d2d07552561f06e218b66181225aee7ef91ab07d52ca4"
+    ],
+    [
+      "FINAL_DELIVERABLE.md",
+      "172419d998dbdd82e523bb2590ba0cced7435def76ef290a88d3b15e47b9e41a"
+    ],
+    [
+      "README.md",
+      "cf2c961924347bedf954ff9e86a825d474d8cc946e499d685d39dba716f760a6"
+    ],
+    [
+      "REPRODUCIBILITY.md",
+      "697ec958a715ab2d7916ec1cd36976746f505fc21d3e52f5501ddb592e46ca30"
+    ],
+    [
+      "Reproducibility/requirements.txt",
+      "ae2b253a5f4f5fc2b70ba46a1ef7b5bd32d7ffaf064b427e7daf0a38b1ad3bd4"
+    ],
+    [
+      "Step 10 - Evaluation/code/evaluate_test.py",
+      "d8874c4b27d2bb86b6b322883455565bc339dc838dc6eb3b9911aacccfd241dc"
+    ],
+    [
+      "Step 10 - Evaluation/code/plot_confusion_matrices.py",
+      "1e7878999e583d00fc88b3fe7aefe2d37af60e7a6f8fcfb8a262b66598dc4bc3"
+    ],
+    [
+      "Step 11 - Explainability and Error Analysis/SHAP_corrected_reliable_findings.md",
+      "ce250818c06aeb5532443f16678f97a51013f2b19f5c6446f72fd3a3213ba272"
+    ],
+    [
+      "Step 11 - Explainability and Error Analysis/code/error_analysis.py",
+      "001b55d0f3280b748a65f84089a76f1dfa28e28ecf6bbb22e9070a63c901b4dc"
+    ],
+    [
+      "Step 11 - Explainability and Error Analysis/code/explainability_shap.py",
+      "7e1b0e88851326c0e2b5dfb2342143cb32c4b735d4db1f251def604d246e5885"
+    ],
+    [
+      "Step 11 - Explainability and Error Analysis/code/plot_shap_summary.py",
+      "bafda10a63cc1c437aabe6636024e82e5baf83e536416dcf5bcdab032997db71"
+    ],
+    [
+      "Step 12 - Packaging/code/run_example.py",
+      "e1c2c7e0ab0cdb76410706f85790b3d675c7fc1a5c9a75f8f2deb1617504fc0e"
+    ],
+    [
+      "Step 12 - Packaging/code/verify_parity.py",
+      "a9517ea8399ef7393c485424c4ea1fc6e1ba7012a5885da770b47443a6e322fe"
+    ],
+    [
+      "Step 12 - Packaging/code/write_config.py",
+      "6d0a6f642a9456f32237c096c0d3cc933638c01dd004b10ec18d0ef6cba430c0"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/__init__.py",
+      "ed5718439e516f407af117f644bc473defad660f8e5d358fb3b4ef5f522509f4"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/config.json",
+      "0e90561f45eb47079b53647199d5c11369d7dfb66d4d49e42654d925b8b7f64e"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/curated_urgency_keywords.json",
+      "c7c168043c227b641b6254878851451b646845366562592fd50cb6ac5f5271b4"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/artifacts/emotion_lexicon.json",
+      "dc42e67e9cc60e177a8cd08f0766feb08fcb021a8e306ad44bd38f4c01bc05a0"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/features.py",
+      "cd93c6b0b0c9f4f093d3bde408055ddf03c67c510869792b538594de0f7129eb"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/inference.py",
+      "9c8c3cbb266a2d10687efa0d902049a48768838ba708f013f1d60a31aad29b09"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/preprocessing.py",
+      "0ffd352daf22d29a6f902b09a10c132a943122cb9b7e9d0f68e146edc14c02b6"
+    ],
+    [
+      "Step 12 - Packaging/package/mental_health_screening/safety.py",
+      "a1d8f61df7ee493282e03daeedaf56a0806823fa947efa79c039fece86080303"
+    ],
+    [
+      "Step 12 - Packaging/package/requirements.txt",
+      "f0f91d167f100d98fad112ccaf301795fd48c22e15d1bce8a8743b923bae195c"
+    ],
+    [
+      "Step 12 - Packaging/verify_parity_output.txt",
+      "322b06193eb54f6bcab3f0adbe53bce2cf79840bfd79ddd3f87e84fdc1af203a"
+    ],
+    [
+      "Step 2 - Raw Data EDA/code/check_cross_dataset_overlap.py",
+      "e4acfb73cff6ee6c06dabd8b316ba4c82bd0877c44e4335c597690bc9264e1ff"
+    ],
+    [
+      "Step 2 - Raw Data EDA/code/eda_raw_datasets.py",
+      "d1d55ff9f8195852314eed3b13a3caf27eaa308ad16ed81b2b90f704076d7571"
+    ],
+    [
+      "Step 2 - Raw Data EDA/findings/EDA_FINDINGS.md",
+      "68c049516e829898f9d8906b3dc137d7d99951f2592878fd09756275fb440860"
+    ],
+    [
+      "Step 2 - Raw Data EDA/findings/cross_dataset_overlap_log.txt",
+      "88db7e7c5342a51df7b4160e2c5d2a21986b2ed18a068daf71cb19f4d013ca2d"
+    ],
+    [
+      "Step 2 - Raw Data EDA/findings/eda_output_log.txt",
+      "403521765069605866b8aa6d4e4a33e15cc400e033d240b4b104ffeec2d483a3"
+    ],
+    [
+      "Step 3 - Unified Dataset/code/build_unified_dataset.py",
+      "07c40f39c5267687fc2dfa2425cfb49cf99dcf6c9069c8eb139840a96df22ea5"
+    ],
+    [
+      "Step 4 - Cleaning/code/clean_datasets.py",
+      "2ca0fe25978972b318d0b34c0517aa856d69b8be39dc54135cfaaddc98d207b0"
+    ],
+    [
+      "Step 5 - Text Preprocessing/code/preprocess_text.py",
+      "00402b138f2d0411e53f219f10b6097fbda97b3ab68fbc3a26aed572bcb7f506"
+    ],
+    [
+      "Step 6 - EDA on Cleaned Data/code/eda_cleaned_data.py",
+      "94e2896ab64c753cca05f9829ce96a45faaaa1a5869af5139c58ded9d33c65fd"
+    ],
+    [
+      "Step 6 - EDA on Cleaned Data/findings/eda_cleaned_report.txt",
+      "63d84e53e25d1024884b8f9c7714c7163a7941b1273ff7467b4a151304fe4ff5"
+    ],
+    [
+      "Step 6 - EDA on Cleaned Data/findings/likely_non_english_sample.txt",
+      "2e0d740c09b383cadfd55abd0b3c4a098694a787fd474f83a031cacc7a2d2a55"
+    ],
+    [
+      "Step 6 - EDA on Cleaned Data/findings/urgency_keyword_candidates.json",
+      "ee5562a2a031b684026878595ec257d460aea0b36ca1d12a575de18d5319cd5d"
+    ],
+    [
+      "Step 7 - Feature Extraction/code/build_emotion_lexicon.py",
+      "9cee9dc20a0c96c003750f01e0a36cde10c587a58b0a8e6641aa8e0737931d7a"
+    ],
+    [
+      "Step 7 - Feature Extraction/code/feature_engineering.py",
+      "54a69dc9a3a3ffdd6dfd44d18340423c57dfbc66793145e4c1c25d8d0f741b85"
+    ],
+    [
+      "Step 7 - Feature Extraction/code/tfidf_vectorize.py",
+      "da9e013b45a3c2a7f97e8c6f27386ac1685a74871aa53da5b705296ddf536a30"
+    ],
+    [
+      "Step 8 - Class Imbalance Handling/code/compute_class_weights.py",
+      "ebd214eff3898ac8f3b90afb7b50445284ed3462cc66eabb2111ca87da12e792"
+    ],
+    [
+      "Step 8 - Class Imbalance Handling/code/make_oversampled_train.py",
+      "2115638ba708648a3bfe471fe3db6cee47f3ae12369622e31a57ee3bf6661993"
+    ],
+    [
+      "Step 9 - Model Training/code/data_utils.py",
+      "9d6ce3a0f7deb868b7b2fa3eb9140db8f5463889c2605ac694bbaa1fd821ab6c"
+    ],
+    [
+      "Step 9 - Model Training/code/train_baselines.py",
+      "748bf861d9cc1a7003d826dc6279980a24ea2d9b134e3de5a4b768842a099445"
+    ],
+    [
+      "Step 9 - Model Training/code/train_midtier.py",
+      "89a6325e2f03827cd7f78c7df652fc55ffcd65462d22f2f517a5f272e41d826e"
+    ],
+    [
+      "Step 9 - Model Training/code/train_transformer_finetune.py",
+      "0c88e2d2b8ea632c2ac76635c9d832fd2a8a377a288538441a235a1d6fdbe20f"
+    ],
+    [
+      "api/__init__.py",
+      "12fef91fdcd626f679c2c41be06a4c2bef5e96e239e69e393c377d323241ff2d"
+    ],
+    [
+      "api/api.py",
+      "8693dfb9430eafea0c4b3bf0b05cad3b6f1dff174dd7290037831f8285d09aab"
+    ],
+    [
+      "api/auth.py",
+      "e0ac2871ceba0c9b6022315c028d06d50b29601c80a1ea74bc799ad6d376261d"
+    ],
+    [
+      "api/db.py",
+      "f34f597de74e259e4eeedb1632d71d83643620ca7f4f85b240575085de1cbfa4"
+    ],
+    [
+      "api/requirements.txt",
+      "2d145adf4ffba37fe15cd3b66d4a323c96b67033ab5e02af46f6e09c7c007308"
+    ],
+    [
+      "decisions.md",
+      "c722dcee2aa66e12bed22d65cee08e711fce32398d476e49509a259f582a0470"
+    ],
+    [
+      "docs/MODEL_CARD.md",
+      "26c469ee6dc901ab8a15bb2b9961c6978dddcf8c0a1e3688f83c552442e69696"
+    ],
+    [
+      "docs/SUPABASE.md",
+      "0e2c3d1eb0b162ac3c226f41f78d6e5af612dd17ccb5202889828460802645ca"
+    ],
+    [
+      "docs/frontend-design-spec.md",
+      "bdedf17ca762f554e933d4cfc6d2cf8cab27c01e6e57fc2597e7f888bcf9c46c"
+    ],
+    [
+      "flow.md",
+      "49eac638678132301823151a577fcfa19911de646e0bcd225fc69eedc82b4e0f"
+    ],
+    [
+      "handoff.md",
+      "d908e4cc14357db98c8c4af994cadeecd8e8b948a5b157e96b1404c6af9e6053"
+    ],
+    [
+      "package.json",
+      "1353fcad5d0eefec854cc42e9b961f6788cef4e207ef54224e68dc5a78b3a41c"
+    ],
+    [
+      "pipeline.py",
+      "63fe018425af6491bedd250735c0f1cae86ab000d56f795b5e2707d430474d5c"
+    ],
+    [
+      "reports/RUN-01-corpus-78-false-positives-exposed.json",
+      "c52dcb0e96d3116fa11d1448d08bea3e4059654c08d838ba168d1974c9e94d31"
+    ],
+    [
+      "reports/RUN-02-holdout1-baseline-pre-fix.json",
+      "3564b14d4137ef4a0b1d8cc792acee5bbdef260fe231715a2c6b6e1ff4cea01b"
+    ],
+    [
+      "reports/RUN-03-post-fix-regression-321.json",
+      "019566402feacdf1fc08ca076edc3b5c227ef38e25ffd8ab918ca2d4d5d5afde"
+    ],
+    [
+      "reports/RUN-04-holdout2-final-evaluation.json",
+      "fec45f72c1c7ef488a293addbeabd270338bd22ff82fdd5b3ab8b8e193128487"
+    ],
+    [
+      "reports/RUN-05-pipeline-seeds-78.json",
+      "d2e9504027fab8fc6c0c9db927ccf23095c8c3bef654abc00e0cf825181773e0"
+    ],
+    [
+      "reports/defect-register.md",
+      "aff2a6cda05f65be574bfcc77c28d95e16596467d3bca0143d06126954d16c70"
+    ],
+    [
+      "scripts/build_holdout.py",
+      "bb2b220bd4406395f85b32e17bdc4416bf0c16091d1a8d90053626e827fae147"
+    ],
+    [
+      "scripts/build_holdout2.py",
+      "1e9559637e4134d8941317162c0122676bd9b5911a7cb63565416de6881c6e12"
+    ],
+    [
+      "scripts/generate_corpus_expansion.py",
+      "ca95ba38defaa5dab213b02620f26b6f4bc190cc4c4b88c186491fa3d5799e43"
+    ],
+    [
+      "scripts/run_safety_corpus.py",
+      "f5a70647db068c81f5a9bebc08d70c22d1f55d99bcb3544f46f8c2a9c88b8493"
+    ],
+    [
+      "scripts/verify_project.py",
+      "bed4897dc64dbc87508bcc85e909da97db20b51d2c2768be30cfaec47e4f42f4"
+    ],
+    [
+      "supabase/schema.sql",
+      "2a575b19eefb9bd999b7b0f27dd30e6a2b73f0c5879ee498c700f126332423ae"
+    ],
+    [
+      "temp/PIPELINE_README_1_1.md",
+      "0633fe544505e0c61206a750b0318f2d4b8df7edb5cdbf6fe048eba2b06d994b"
+    ],
+    [
+      "temp/PIPELINE_README_2.md",
+      "c5f01bac9bbb3e0c6b92950e876670c917f90ab65ca5c4175bc5af88a5e32854"
+    ],
+    [
+      "temp/README_1.txt",
+      "24b2c1a1673e7c3920b679481c9561294b026c35eb670b8e80a1e75b8c455ce2"
+    ],
+    [
+      "temp/Reproducibility - README_1.md",
+      "205e3388c4c6e48cec743334c1e632aee7344dbd872439b0ec534e0c57a50608"
+    ],
+    [
+      "temp/Step 1 - Data Sourcing - README_1.md",
+      "c5c056905a916ce66f76393c08fa13d11532f502976ad3a17b31c48750b62aa5"
+    ],
+    [
+      "temp/Step 10 - Evaluation - README_1.md",
+      "604b1804df1e0442597844d30c073b14b22f95840b9088d17845b05e60dbed2a"
+    ],
+    [
+      "temp/Step 11 - Explainability and Error Analysis - README_1.md",
+      "6f6e778b99350cece8b20cfcf90f06c6a498642bbf7a908f15f83f2384baebdd"
+    ],
+    [
+      "temp/Step 12 - Packaging - README_1.md",
+      "6b13a7bb1e044cf6ea7a43d49f97dde5b11e83b4a68ef312744bc39dd385ae7d"
+    ],
+    [
+      "temp/Step 12 - Packaging - package - README_1.md",
+      "65ebc06d88864caeaafd4826fd56a621bb61a7f8cad752359716dd9579b488be"
+    ],
+    [
+      "temp/Step 3 - Unified Dataset - README_1.md",
+      "afb8db36a9d1a2d748ec9f4fe19c5b25416aa88e94932c2c762aaac28dfbab33"
+    ],
+    [
+      "temp/Step 4 - Cleaning - README_1.md",
+      "97b0cb9e8c1b7e0b7bf4a8cc1adc077808143d0330175cbf9eaba198f536dad6"
+    ],
+    [
+      "temp/Step 5 - Text Preprocessing - README_1.md",
+      "d1614aef3592a09c265287d20f24db518beea3e6106100d9b6ca06e0a3bead42"
+    ],
+    [
+      "temp/Step 6 - EDA on Cleaned Data - README_1.md",
+      "0724476e371f3f535386a80c091b5a46da2fd6b00cc2ef3e5f0271f04a035bcf"
+    ],
+    [
+      "temp/Step 7 - Feature Extraction - README_1.md",
+      "890df8e54a510403cc3f758251ae59292a9d81ec6321fbce26aa4f96edca31e9"
+    ],
+    [
+      "temp/Step 8 - Class Imbalance Handling - README_1.md",
+      "03434995d2ce197482b553ebcdb425cffecf304556cf877cb4e45b80d09a6b5c"
+    ],
+    [
+      "temp/Step 9 - Model Training - README_1.md",
+      "6d535ed9cd220f49346422e07a67f91616a689bd78f374c526428b30a97f28dd"
+    ],
+    [
+      "tests/_supabase_stub.py",
+      "7112db3e050de97296b4e5e82262b457e7788b6d9da20f763fa9a30b4b2d4c6f"
+    ],
+    [
+      "tests/safety_corpus/cases.json",
+      "11b5504fdd68d5a7f35d0e545e3f11da9c5c919e1d2b818afdee8ee634f4169d"
+    ],
+    [
+      "tests/safety_corpus/expansion.json",
+      "bb47f8da91167431c0ec2f50b5b2af162586fe14a8e972a60bcc21fca8d31164"
+    ],
+    [
+      "tests/safety_corpus/holdout.json",
+      "e4879c63c90186419385b6cf344e27e897fdb180fa3a89ec0c47daa40dbc95c7"
+    ],
+    [
+      "tests/safety_corpus/holdout2.json",
+      "32730d268ea378caff9e932132ec6b9b76b4def63f76a1f7eb3de9076af7237c"
+    ],
+    [
+      "tests/test_api_contract.py",
+      "68de18de7fb3ed4f0e761840ddca12756b9d41c01e524424630d203eb92fbe45"
+    ],
+    [
+      "tests/test_metamorphic.py",
+      "cfb47d3789b603266abbe068d412ab05dd0cb33e2d6c93a737dc7eee35d1838c"
+    ],
+    [
+      "tests/test_safety.py",
+      "b11618734e169e76f2d10f5f28eda8d3b5e59f5ecd2b229ca18462a700834728"
+    ],
+    [
+      "tests/test_safety_contract.py",
+      "17fc584437c65da9f6f156d89e61c141d1e0bfcf2cfcfeb2613191c537aded83"
+    ],
+    [
+      "tests/test_service.py",
+      "b78fc32bd180652b0e202af46751b9e711c1155d5f6920d8ff75b18b67c68cf4"
+    ],
+    [
+      "vercel.json",
+      "559489ab5052f2c1eb61ae99154930adda16caa9f31e5a685adbe3ac765f0ae7"
+    ],
+    [
+      "web/package-lock.json",
+      "e65310c41ca8a7c95d18d53778588bc96cfa5e581a072e7978d81ee03a4e0cb3"
+    ],
+    [
+      "web/package.json",
+      "470e95f6e8173b72edce39507f3edf4555c297d092a5b5bddf6cc1603b28259f"
+    ],
+    [
+      "web/scripts/auth.mjs",
+      "8d3e0ec5f2cac0807f1981529d195241f5aaf2682b9186d0b6e634538517e200"
+    ],
+    [
+      "web/scripts/authflow.mjs",
+      "39dadc81ace77c29fe5e99912656228470f4178e772b42bb8e6f97bcf278daf4"
+    ],
+    [
+      "web/scripts/entryqa.mjs",
+      "89673c89bfb1d3727e5068630d12125d738545abeb5ae6542344c07f40998820"
+    ],
+    [
+      "web/scripts/failure.mjs",
+      "b1b9b104acb93ddba4d72c6aef7e54e003a71210005e477ac835240aaaee93ad"
+    ],
+    [
+      "web/scripts/interaction.mjs",
+      "d8bcc011b55519c2263e08f5c5a35e9db33bae75e76c61ac146a2695fd506640"
+    ],
+    [
+      "web/scripts/screenshots.mjs",
+      "56508c529c344d7a728993228d897ef711930ed5f0cb12d31f809ba64f74a2e7"
+    ],
+    [
+      "web/src/App.tsx",
+      "9ba8b4078715c687de0ca2f95003c74cfe97b1bd993f60d3e4b98200afa7b315"
+    ],
+    [
+      "web/src/components/GradientWaves/GradientWaves.css",
+      "4a3a19cd7977d5ddd128658750a007be8632c6fd9a66fa0c280eec2187927d65"
+    ],
+    [
+      "web/src/components/GradientWaves/GradientWaves.tsx",
+      "5c6cdb06982439aaa2dc3e978a2ae27a9b3f8eabb48d56642e4f4b8aa09beadb"
+    ],
+    [
+      "web/src/components/Grainient/Grainient.css",
+      "1a130b171efdb369b4249cdb5ad60773aa2f978b8538aed6a60769eacd0b15e8"
+    ],
+    [
+      "web/src/components/Grainient/Grainient.tsx",
+      "8828d367254dee5d9d3aa5a1f4eeb9eb0c98d270c0bd0ee049e7e44e438d6833"
+    ],
+    [
+      "web/src/components/chrome/AccountMenu.tsx",
+      "52c46f9e41a0e88db6c2f4da17adc12948c3f270ba04469e7719407bf3301c62"
+    ],
+    [
+      "web/src/components/chrome/Footer.tsx",
+      "553007c1bb95b3255ec111117ff5dd8f177251622c430cedd468188e90d0e429"
+    ],
+    [
+      "web/src/components/chrome/GridOverlay.tsx",
+      "d38d228ed61aeafdbea188ad9d3479c9b64944c7e28645a12e394af74972d28c"
+    ],
+    [
+      "web/src/components/chrome/Navigation.tsx",
+      "254352bd2fad96b884ae8ce90266c29f7f769d4a4cbf30c32cccbd60dcf6b9a1"
+    ],
+    [
+      "web/src/components/chrome/SystemStatus.tsx",
+      "3cf60bd655f1c8617178eb879d520a30b387756aa31aec84218f126f4a1b0ac5"
+    ],
+    [
+      "web/src/components/entry/LoginPanel.tsx",
+      "9380159eb15b6689cab99cde674a4144064350b0c57450d05259063e67a26ab5"
+    ],
+    [
+      "web/src/components/entry/NeuralStage.tsx",
+      "3c8c7b2ab17a80c3a4afa3eb4727b7c36ff14ad65491172c3a53fad68c07d741"
+    ],
+    [
+      "web/src/components/entry/Wordmark.tsx",
+      "33dce7fdd273714ebaadeabebaa1b61bb88aa46c00a5a632ca3ecb08eb827ef3"
+    ],
+    [
+      "web/src/components/hero/Hero.tsx",
+      "01d4f5a55a4f0344e787d51d7c9027b303ce2d2d0945dee11334e5a56c5ba049"
+    ],
+    [
+      "web/src/components/hero/Stage.tsx",
+      "e28f5079e4cc21f50bae5c17cb05320ebb80a5dd6448c54487d6e39e097109b1"
+    ],
+    [
+      "web/src/components/hero/engine.ts",
+      "d4699c2e5761dcf47fccededfc4bb0600b52491abd1a4c88b7bd35d4bc76a7bf"
+    ],
+    [
+      "web/src/components/hero/neural.ts",
+      "f162fec33cfdcebdcc5e043085cf260902486cce12e596db0975fe88b3237aff"
+    ],
+    [
+      "web/src/components/hero/sculpture.ts",
+      "33eaf0947fb98d42ea0251ad69ad2f194dc22b3e67c1fa35629fcd317199708b"
+    ],
+    [
+      "web/src/components/hero/studioEnv.ts",
+      "9fbbb938acb05566a60526edb76b909c880aaa2a740f05b4359c9e005be8368f"
+    ],
+    [
+      "web/src/components/landing/DualSignal.tsx",
+      "841eeaad90ecdaec6d6990c21d75c2412441cc65087b25e726de0adbe373d153"
+    ],
+    [
+      "web/src/components/landing/Limitations.tsx",
+      "a11e7a970a98b9e01c871a329835475d1a38411036b1178e3e8c6737c5afb5fa"
+    ],
+    [
+      "web/src/components/landing/Metrics.tsx",
+      "84072bb4d6ef00b65527482e5c7be591ee5cd7da3085429cbb5dd9cc25431f39"
+    ],
+    [
+      "web/src/components/landing/Pipeline.tsx",
+      "7e9fedf006e762fc2ce98f654b3e1ae2ee306a32c52079cbd7685b3cdb438eed"
+    ],
+    [
+      "web/src/components/landing/Statement.tsx",
+      "6905e5c009c699137138a64af885b5673d89b6b4d236f8e4eaef3c3eba510338"
+    ],
+    [
+      "web/src/components/login/LoginForm.tsx",
+      "456978e4954c78cf6f2d4224d0972712b06ef2545ce8e3542c52c8e74d69768a"
+    ],
+    [
+      "web/src/components/motion/Reveal.tsx",
+      "759af87874a8785e2ac16e36e4c8f25b4113a0280da92976116867d797bc02b3"
+    ],
+    [
+      "web/src/components/screen/CheckInFlow.tsx",
+      "dc54a57b92df18e926403d725041454cdf9553735ff975c9c021b886f2640bfc"
+    ],
+    [
+      "web/src/lib/api.ts",
+      "98c949c4eb5d98e41d87fb1ac86981fd546b73333735502906c31dfecd0acaac"
+    ],
+    [
+      "web/src/lib/auth.ts",
+      "c5ea7f2d8731a44578d78a6765ee3a7158c1e5e7f8276b34ed8d6dbe6233dc52"
+    ],
+    [
+      "web/src/lib/authContext.ts",
+      "c6798c702fe61a997faaea4d72484d9cc0a5b257e41012f1280324a771d3cb6e"
+    ],
+    [
+      "web/src/lib/checkin.ts",
+      "79ccab678da1b45c723fa8afd6f78200c949cb149459da01c50e52a9d503326c"
+    ],
+    [
+      "web/src/lib/history.ts",
+      "064df306103357ba7fcf37546a749f48be08cdc33984b9859ee930863850c512"
+    ],
+    [
+      "web/src/lib/motion.ts",
+      "aad43517b3a91a034439df260f0837c90ab3986902c70d8455c3ba7cc9ee8501"
+    ],
+    [
+      "web/src/lib/status.ts",
+      "8eaa8b1dbf10494acf700c1e8e300fd655755be5b4bbf956daf83fbf4780b30f"
+    ],
+    [
+      "web/src/lib/supabase.ts",
+      "153d704f653289bf4f63385a60131a9cd0118990652308046992b561fe133c8f"
+    ],
+    [
+      "web/src/main.tsx",
+      "9ca2476acc92d27e4f0a207165b2890b6c6b0c098fa9243889646f55e85b88a3"
+    ],
+    [
+      "web/src/pages/Landing.tsx",
+      "f636f04105cb46b890303f2276618191f9b60694ca9bbe2d7d5a55959fef1a95"
+    ],
+    [
+      "web/src/pages/Research.tsx",
+      "3c4f6294467a183a530a43350f7cbfc1a5a6802bfbafb0b460d3cc7bb221593c"
+    ],
+    [
+      "web/src/pages/Screen.tsx",
+      "51060f5ba3fdc9ec5efd9d901efcb4760b8cfed211e191fe0a73fec901071976"
+    ],
+    [
+      "web/src/pages/Start.tsx",
+      "3046f0799248c3491d56bbdd0036f6d90694c0fe5813bed4fa09b8e52010b19f"
+    ],
+    [
+      "web/src/styles/base.css",
+      "9a42d6558a9c6b44c2d2027dfea663bba9ce4dd03aa2543a8da57aab78f1e001"
+    ],
+    [
+      "web/src/styles/entry.css",
+      "6cb8cef57e9f6ccd3272cb2fa90a422b331f6b02b823f4fcd3efea757337dd9d"
+    ],
+    [
+      "web/src/styles/footer.css",
+      "254d78c641c9d1e8cbd68bc6477e91ab3f6c895242a1ad6db2e88f08acc7f66b"
+    ],
+    [
+      "web/src/styles/grid.css",
+      "ba36e0a206a5bbc595edd8cd78127a1db53b7b51e945d13e46e7f56666591567"
+    ],
+    [
+      "web/src/styles/hero.css",
+      "25c07a506cf2dbb769cca912c8d7bf7270436567e2c84fe7027fc62b747ba87c"
+    ],
+    [
+      "web/src/styles/login.css",
+      "da823da7d53fdf936445dbc4c0b98ae700a72a86ae0cf6ecc00f8e9b40ebf259"
+    ],
+    [
+      "web/src/styles/nav.css",
+      "274531da629b2f8880bfd1dbae1e38bbc3eaafeb30591f20c380c4fb03737150"
+    ],
+    [
+      "web/src/styles/research.css",
+      "b664e3be0aa0654cc1e589ca866b90419ef69a95f0795aecf43e47c96e522ee4"
+    ],
+    [
+      "web/src/styles/screen.css",
+      "7d4903a982009b388cc7b042a7ff83118934286f076bfbc8cce7df3939300749"
+    ],
+    [
+      "web/src/styles/sections.css",
+      "4f15bc49126406bb49d48f9f0bd19c3e9cf131b3393ee45b7e8842af6149f6fb"
+    ],
+    [
+      "web/src/styles/tokens.css",
+      "5f51fb188a87943593ce37d3063c2e5bcb990f8375d860ec1ce1e1892398236f"
+    ],
+    [
+      "web/src/vite-env.d.ts",
+      "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5"
+    ],
+    [
+      "web/tsconfig.app.json",
+      "e807ecb53244818d62d86b582cb4f9f407d2e6d0cd11e314e8d0ad12b2b7c79e"
+    ],
+    [
+      "web/tsconfig.json",
+      "e8d6f7b50828db3953e21c7e92584f9206b3cd2551b4012507372afbb7fe9ce3"
+    ],
+    [
+      "web/tsconfig.node.json",
+      "3ced5d22ba9e246c839a695526296a8d067fbe9db838d728516d2eac9215b333"
+    ],
+    [
+      "web/vite.config.ts",
+      "64c99b1b5a20800c74fe0b60f1da4d462bfadc73d402a80f0fda45dbcc16d71c"
+    ]
+  ],
+  "python": "3.12.3",
+  "dependencies": {
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "scikit-learn": "1.8.0",
+    "xgboost": "3.2.0",
+    "fastapi": "0.142.2",
+    "pydantic": "2.13.5",
+    "pytest": "9.1.1",
+    "nltk": "3.10.3",
+    "ftfy": "6.3.1"
+  },
+  "artifacts": {
+    "urgency_tfidf_vectorizer.pkl": "8a0e2f35067c8b867c7b771ebcfe9672332e9c5afc9060e2353bdcd985d03509",
+    "primary_tfidf_vectorizer.pkl": "29b00aaa4186642134818bbb4d7590097ee82b9dead4f58c394a805364140f1d",
+    "primary_chi2_selector.pkl": "58e17570b99117b4edbe8b7d872c9068883699e2ca778ddf6d318f08555c398e",
+    "config.json": "0e90561f45eb47079b53647199d5c11369d7dfb66d4d49e42654d925b8b7f64e",
+    "curated_urgency_keywords.json": "c7c168043c227b641b6254878851451b646845366562592fd50cb6ac5f5271b4",
+    "urgency_logreg.pkl": "1c9536d756320a86fec3c7818f654d68af27e1c82fd3dad140e207f5ef503b15",
+    "primary_xgboost.pkl": "4c9d64d1aae41aced3dce83db3325c6d7f7952446edf8836412417b6842b6fdd",
+    "emotion_lexicon.json": "dc42e67e9cc60e177a8cd08f0766feb08fcb021a8e306ad44bd38f4c01bc05a0"
+  }
+}

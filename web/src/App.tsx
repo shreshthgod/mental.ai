@@ -1,11 +1,11 @@
 import { lazy, Suspense, useEffect, useState, type ReactNode } from "react";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { Navigation } from "./components/chrome/Navigation";
 import { GridOverlay } from "./components/chrome/GridOverlay";
 import GradientWaves from "./components/GradientWaves/GradientWaves";
 import { Landing } from "./pages/Landing";
 import { Start } from "./pages/Start";
-import { validateSession } from "./lib/auth";
+import { consumeOAuthReturnPath, validateSession } from "./lib/auth";
 import { useAuth } from "./lib/authContext";
 
 // Route-level code splitting (design spec 14). The two heaviest routes load on
@@ -65,6 +65,7 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export default function App() {
   const location = useLocation();
   const [introSettled, setIntroSettled] = useState(false);
+  const navigate = useNavigate();
   const state = useAuth();
   const onSettled = (s: boolean) => setIntroSettled(s);
 
@@ -74,6 +75,12 @@ export default function App() {
   useEffect(() => {
     void validateSession();
   }, []);
+
+  useEffect(() => {
+    if (state !== "authed") return;
+    const destination = consumeOAuthReturnPath();
+    if (destination) navigate(destination, { replace: true });
+  }, [state, navigate]);
 
   // The About page has a long intro the grid should stay out of until the
   // hero has settled; the entry is a single screen and wants it immediately.

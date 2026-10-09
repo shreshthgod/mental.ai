@@ -1,0 +1,503 @@
+{
+  "annotation_version": "temporal-policy-review-2026.10.08.2",
+  "role": "separate_developer_reviewed_annotations_not_independent_evaluation",
+  "default": false,
+  "cases": [
+    {
+      "case_id": "S021",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "S056",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X052",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X053",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X054",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X055",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X091",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X092",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X093",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X094",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X112",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X113",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X114",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X115",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X119",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X120",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X121",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X153",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X163",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X178",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X179",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X190",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X193",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X208",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X223",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X224",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X225",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X226",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "Under the documented concern-event field, this benign/denial/informational control does not establish a concern-event time. Ordinary activity timing is not a safety event. This does not change no-escalation routing or assert confirmed safety.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X026",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X027",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X028",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X029",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X030",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X031",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X032",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X033",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X034",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X035",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X036",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X037",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X039",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X041",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X043",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X184",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X187",
+      "original": "unclear",
+      "proposed": "current",
+      "rationale": "The disclosure states a present wish, belief, feeling, denial or recurring unwanted thought. Current refers to that stated state, not intent, access or timing of a future act. Immediacy remains independently unknown/not stated.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "S025",
+      "original": "current",
+      "proposed": "recent",
+      "rationale": "The described harm/thought is anchored to yesterday/earlier; later continuing unease or recovery affects present support without replacing the earlier event time.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X118",
+      "original": "current",
+      "proposed": "recent",
+      "rationale": "The described harm/thought is anchored to yesterday/earlier; later continuing unease or recovery affects present support without replacing the earlier event time.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X160",
+      "original": "current",
+      "proposed": "recent",
+      "rationale": "The described harm/thought is anchored to yesterday/earlier; later continuing unease or recovery affects present support without replacing the earlier event time.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X158",
+      "original": "current",
+      "proposed": "historical",
+      "rationale": "The concern is explicitly years ago; current help/recovery does not make the earlier disclosure a current suicidal act or desire.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "S033",
+      "original": "current",
+      "proposed": "hypothetical",
+      "rationale": "The concern is within an explicitly fictional narrative; it is not established as the writer's real current intent. A separately reasserted personal disclosure must remain current and is not part of these cases.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X198",
+      "original": "unclear",
+      "proposed": "hypothetical",
+      "rationale": "The concern is within an explicitly fictional narrative; it is not established as the writer's real current intent. A separately reasserted personal disclosure must remain current and is not part of these cases.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X199",
+      "original": "unclear",
+      "proposed": "hypothetical",
+      "rationale": "The concern is within an explicitly fictional narrative; it is not established as the writer's real current intent. A separately reasserted personal disclosure must remain current and is not part of these cases.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X200",
+      "original": "unclear",
+      "proposed": "hypothetical",
+      "rationale": "The concern is within an explicitly fictional narrative; it is not established as the writer's real current intent. A separately reasserted personal disclosure must remain current and is not part of these cases.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X201",
+      "original": "unclear",
+      "proposed": "hypothetical",
+      "rationale": "The concern is within an explicitly fictional narrative; it is not established as the writer's real current intent. A separately reasserted personal disclosure must remain current and is not part of these cases.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X099",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X102",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X176",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X181",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X203",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X204",
+      "original": "current",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X229",
+      "original": "recent",
+      "proposed": "unclear",
+      "rationale": "A completed experience or past identification is stated without an event date/current reassertion. Do not fabricate recency/current event time. Urgent/concerning support expectations and historical facts remain unchanged.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    },
+    {
+      "case_id": "X228",
+      "original": "recent",
+      "proposed": "current",
+      "rationale": "The medication event has no stated date, but being medically monitored is an explicitly current medical-care state. This temporal label does not infer overdose timing, intent, plan or severity.",
+      "review_status": "developer_reviewed_policy_alignment_not_clinical",
+      "changes": "temporal_only; input/subject/routes unchanged"
+    }
+  ]
+}

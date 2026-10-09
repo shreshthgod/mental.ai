@@ -2,7 +2,7 @@ import { Reveal } from "../motion/Reveal";
 
 /**
  * Dual-signal architecture - one language input branching into the condition
- * model and the independent urgency safety net, converging on human review.
+ * model and the independent urgency classifier, returned as research details.
  * SVG with CSS-driven signal flow (offset-path); disabled under reduced motion.
  */
 export function DualSignal() {
@@ -16,18 +16,18 @@ export function DualSignal() {
             </Reveal>
             <Reveal delayMs={80}>
               <h2 id="dual-h" className="section__title">
-                Two signals. One decision - made by a human.
+                Two research signals. Separate support routing.
               </h2>
             </Reveal>
           </div>
           <Reveal delayMs={160}>
-            <p className="label">Fig. 01 · Dual-signal architecture</p>
+            <p className="label">Fig. 01 · Legacy model tracks</p>
           </Reveal>
         </div>
 
         <Reveal delayMs={120}>
           <svg className="dual__figure" viewBox="0 0 1200 440" role="img"
-            aria-label="Diagram: language flows into two independent models - a seven-class condition classifier and a binary urgency safety net - both converging to human review.">
+            aria-label="Diagram: model input flows into two legacy classifiers, producing raw condition and urgency research details. Authoritative support is assessed separately.">
             <defs>
               <radialGradient id="nodeGlow">
                 <stop offset="0%" stopColor="#7b5cff" stopOpacity="0.9" />
@@ -67,12 +67,12 @@ export function DualSignal() {
               <circle cx="610" cy="330" r="34" fill="url(#nodeGlowBlue)" opacity="0.4" className="dual__pulse dual__pulse--c" />
               <circle cx="610" cy="330" r="5" fill="#8fc2ff" />
               <text x="610" y="296" textAnchor="middle" className="dual__svg-label">URGENCY SIGNAL</text>
-              <text x="610" y="368" textAnchor="middle" className="dual__svg-sub">independent safety net</text>
+              <text x="610" y="368" textAnchor="middle" className="dual__svg-sub">raw proxy prediction</text>
             </g>
             <g>
               <circle cx="1060" cy="220" r="30" fill="url(#nodeGlow)" opacity="0.35" className="dual__pulse dual__pulse--d" />
               <circle cx="1060" cy="220" r="4.5" fill="#f4f4f6" />
-              <text x="1060" y="262" textAnchor="middle" className="dual__svg-label">HUMAN REVIEW</text>
+              <text x="1060" y="262" textAnchor="middle" className="dual__svg-label">MODEL DETAILS</text>
             </g>
           </svg>
         </Reveal>
@@ -89,15 +89,14 @@ export function DualSignal() {
           <Reveal className="dual__cell" delayMs={200}>
             <h3><span className="label label--accent">Track 02</span> Urgency signal</h3>
             <p>
-              An independent logistic-regression safety net over the full 30,000-term
-              TF-IDF space, deployed at a 0.15 decision threshold that deliberately
-              favors recall. Urgency is not one of the seven classes - it is a
-              separate routing signal for human review.
+              An independent logistic-regression classifier over the full 30,000-term
+              TF-IDF space. The packaged historical threshold is 0.15; each result
+              reports the effective threshold. A flag alone cannot declare an emergency.
             </p>
           </Reveal>
         </div>
         <Reveal delayMs={240}>
-          <p className="dual__note">Both tracks are trained on public proxy-label data · outputs are screening signals, not diagnoses</p>
+          <p className="dual__note">Raw proxy-label outputs are research details. Independent text evidence and uncertainty determine support; review recommendations notify nobody.</p>
         </Reveal>
       </div>
     </section>

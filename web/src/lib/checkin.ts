@@ -5,6 +5,7 @@
  * screening workspace with their own words already in the box; nothing is
  * transmitted until the user explicitly submits text to POST /predict.
  */
+import { privateStorageKey } from "./privateStore";
 const KEY = "mental.ai.checkin";
 
 export interface CheckIn {
@@ -14,6 +15,8 @@ export interface CheckIn {
 }
 
 export function saveCheckIn(answers: Record<string, string>): void {
+  const key = privateStorageKey(KEY);
+  if (key === null) return;
   const clean = Object.fromEntries(
     Object.entries(answers).filter(([, v]) => typeof v === "string" && v.trim().length > 0)
   );
@@ -22,15 +25,17 @@ export function saveCheckIn(answers: Record<string, string>): void {
     return;
   }
   try {
-    localStorage.setItem(KEY, JSON.stringify({ answers: clean, at: Date.now() }));
+    localStorage.setItem(key, JSON.stringify({ answers: clean, at: Date.now() }));
   } catch {
     /* storage unavailable: prefill is simply skipped */
   }
 }
 
 export function loadCheckIn(): Record<string, string> | null {
+  const key = privateStorageKey(KEY);
+  if (key === null) return null;
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(key);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as Partial<CheckIn>;
     if (!parsed?.answers || typeof parsed.answers !== "object") return null;
@@ -44,8 +49,10 @@ export function loadCheckIn(): Record<string, string> | null {
 }
 
 export function clearCheckIn(): void {
+  const key = privateStorageKey(KEY);
+  if (key === null) return;
   try {
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(key);
   } catch {
     /* ignore */
   }
@@ -53,17 +60,6 @@ export function clearCheckIn(): void {
 
 /** Flatten the check-in into the plain text the screening model expects. */
 export function checkInToText(answers: Record<string, string>): string {
-  const ORDER: Array<[string, string]> = [
-    ["feeling", "Today I feel"],
-    ["weighing", "What has been on my mind"],
-    ["today", "Today"],
-  ];
-  const lines: string[] = [];
-  const opening = answers.greeting?.trim();
-  if (opening) lines.push(opening);
-  for (const [key, prefix] of ORDER) {
-    const value = answers[key]?.trim();
-    if (value) lines.push(`${prefix}: ${value}`);
-  }
-  return lines.join("\n");
+  return ["greeting", "feeling", "weighing", "today"]
+    .map(key => answers[key]).filter(value => typeof value === "string" && value.trim().length > 0).join("\n");
 }

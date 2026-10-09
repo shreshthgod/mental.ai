@@ -265,6 +265,7 @@ export function Start() {
                 error={error}
                 hidden={welcome}
                 onSubmit={signIn}
+                returnTo={from.current}
               />
             )}
           </div>

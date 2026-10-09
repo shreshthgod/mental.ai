@@ -686,22 +686,51 @@
 /* Short desktop viewports: keep the single frame, but give the copy and the
    form less to sit in so the primary controls stay above the fold. Width-gated
    so this never reaches the stacked layout, which scrolls anyway. */
-@media (min-width: 1181px) and (max-height: 860px) {
+@media (min-width: 1181px) and (max-height: 940px) {
   .entry__copy { bottom: clamp(28px, 4vh, 48px); gap: 13px; }
   .entry__headline { font-size: clamp(34px, 2.7vw, 42px); }
   .entry__ctas { margin-top: 6px; }
-  .auth-stage { padding-bottom: clamp(44px, 6vh, 56px); }
-  .entry__panel-inner { padding: clamp(22px, 1.8vw, 27px); }
-  .signin { margin-top: 26px; gap: 15px; }
-  .signin__field { gap: 8px; }
-  .signin__input { height: 48px; }
-  .signin__submit { height: 48px; margin-top: 4px; }
-  .entry__heading { margin-top: 16px; }
-  .entry__link { margin-top: 16px; padding-top: 12px; }
-  .entry__micro { margin-top: 12px; padding-top: 11px; }
-  /* Decoration before content: two of the three annotations go rather than
-     competing with the form for the last row of pixels. */
+  /* The credentials panel carries more rows than it used to - the social
+     control and the account switch - so the whole column tightens together.
+     Proportions are preserved; only the spacing is compressed. */
+  .auth-stage { padding-bottom: clamp(40px, 5.5vh, 54px); }
+  .entry__panel-inner { padding: clamp(20px, 1.7vw, 25px); }
+  .entry__heading { margin-top: 14px; }
+  .signin { margin-top: 22px; gap: 13px; }
+  .signin__field { gap: 7px; }
+  .signin__input { height: 46px; }
+  .signin__submit { height: 46px; margin-top: 4px; }
+  .signin__micro { margin-top: 8px; padding-top: 10px; }
+  .signin__or { margin-top: 14px; }
+  .signin__social { height: 42px; margin-top: 9px; }
+  .signin__switch { margin-top: 11px; }
+  .entry__link { margin-top: 14px; padding-top: 11px; }
+  .entry__micro { margin-top: 10px; padding-top: 10px; }
+  /* Decoration before content: the annotations give way rather than competing
+     with the form for the last row of pixels. */
   .entry__label--2 { display: none; }
+}
+
+/* Very short desktop windows: the panel still has to fit above the annotation,
+   so the clearance under it shrinks to the gap and nothing else changes. */
+@media (min-width: 1181px) and (max-height: 800px) {
+  .auth-stage { padding-bottom: 36px; }
+  .entry__panel-inner { padding: clamp(18px, 1.5vw, 22px); }
+  .signin { margin-top: 18px; gap: 11px; }
+  .signin__field { gap: 6px; }
+  .signin__input { height: 44px; }
+  .signin__submit { height: 44px; }
+  .signin__social { height: 40px; }
+  .signin__micro { margin-top: 6px; padding-top: 8px; }
+  .entry__heading { margin-top: 12px; }
+  .entry__link { margin-top: 12px; padding-top: 10px; }
+  .entry__label--3 { display: none; }
+}
+
+/* Below this the annotation cannot be given any room at all, so it goes. It is
+   decorative and aria-hidden; nothing else depends on it. */
+@media (min-width: 1181px) and (max-height: 745px) {
+  .auth-stage__foot { display: none; }
 }
 
 /* -------------------------- REDUCED MOTION ----------------------------- */
