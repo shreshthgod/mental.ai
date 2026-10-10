@@ -47,14 +47,18 @@ const Grainient = lazy(() =>
 /** How long the greeting holds before the screening takes over. */
 const WELCOME_MS = 1150;
 
+const INTRO_KEY = "mental.ai_intro_played";
+
 /**
  * Choreographed entry sequence:
  *   1. T = 0ms: "Mental.ai" animates for 1.0 second in metallic Marvel/Transformers movie credit style.
  *   2. T = 1000ms: Hero appears (rotating metallic DNA spiral spring emerges at the center).
- *   3. T = 3000ms (2 seconds after hero appears): The composition drifts smoothly to the left 70% of the screen.
+ *   3. T = 3250ms (2 seconds after hero appears): The composition drifts smoothly to the left 70% of the screen.
+ * Returning visitors in the same browsing session get the composed state directly via HANDOVER_INSTANT_MS.
  */
 const HERO_APPEAR_MS = 1000;
-const HANDOVER_MS = 3000;
+const HANDOVER_MS = 3800;
+const HANDOVER_INSTANT_MS = 260;
 
 type Phase = "form" | "authenticating" | "welcome";
 
@@ -108,6 +112,15 @@ export function Start() {
   const heroTimerRef = useRef<number | null>(null);
   const handoverRef = useRef<number | null>(null);
 
+  // Return visit within same browsing session lands on composed state quickly
+  const [instant] = useState(() => {
+    try {
+      return sessionStorage.getItem(INTRO_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
   // Deep link: the guard records where an unauthenticated visitor was heading.
   const from = useRef<string>("/screen");
   const state = location.state as { from?: { pathname?: string; search?: string; hash?: string } } | null;
@@ -123,21 +136,30 @@ export function Start() {
     const raf = requestAnimationFrame(() => setLive(true));
 
     // T = 1000ms (1s): hero appears
-    heroTimerRef.current = window.setTimeout(() => {
-      setHeroVisible(true);
-    }, reduced ? 0 : HERO_APPEAR_MS);
+    heroTimerRef.current = window.setTimeout(
+      () => setHeroVisible(true),
+      instant ? 0 : (reduced ? 0 : HERO_APPEAR_MS)
+    );
 
-    // T = 3000ms (2s later): drifts to the left 70% of the screen
-    handoverRef.current = window.setTimeout(() => {
-      setSplit(true);
-    }, reduced ? 200 : HANDOVER_MS);
+    // T = ~3500ms (2s later): drifts to the left 70% of the screen
+    handoverRef.current = window.setTimeout(
+      () => {
+        setSplit(true);
+        try {
+          sessionStorage.setItem(INTRO_KEY, "1");
+        } catch {
+          /* private mode */
+        }
+      },
+      instant ? HANDOVER_INSTANT_MS : (reduced ? 200 : HANDOVER_MS)
+    );
 
     return () => {
       cancelAnimationFrame(raf);
       if (heroTimerRef.current !== null) window.clearTimeout(heroTimerRef.current);
       if (handoverRef.current !== null) window.clearTimeout(handoverRef.current);
     };
-  }, [reduced]);
+  }, [instant, reduced]);
 
   useEffect(
     () => () => {

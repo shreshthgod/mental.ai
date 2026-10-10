@@ -41,6 +41,7 @@ export function WordPlane({ live, plane, dimmed = false }: Props) {
               } ${suppressed ? "entry__letter--behind" : ""}`}
               style={{
                 ["--char-index" as string]: i,
+                ["--letter-delay" as string]: `${i * 85}ms`,
               }}
             >
               {ch}

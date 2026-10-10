@@ -25,8 +25,8 @@ export interface NeuralFraming {
   scale?: number;
 }
 
-const FRAME_W = 5.9;
-const FRAME_H = 5.75;
+const FRAME_W = 6.4;
+const FRAME_H = 6.8;
 
 // High-fidelity metallic titanium / chrome tints
 const CHROME_TITANIUM = 0x22262e;
@@ -63,7 +63,7 @@ export function createNeuralSculpture(
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(36, 1, 0.1, 60);
-  camera.position.set(0, 0.08, 5.8);
+  camera.position.set(0, 0.08, 6.2);
 
   const envMap = buildStudioEnvironment(renderer);
   scene.environment = envMap;
@@ -134,10 +134,10 @@ export function createNeuralSculpture(
   const dnaGroup = new THREE.Group();
   group.add(dnaGroup);
 
-  // ---------------- Double Helix & Spring Geometry ----------------
-  const DNA_HEIGHT = 4.8;
-  const DNA_TURNS = 2.4;
-  const DNA_RADIUS = 1.22;
+  // ---------------- Double Helix & Spring Geometry (Spaced out, Bigger, Thicker) ----------------
+  const DNA_HEIGHT = 6.4;
+  const DNA_TURNS = 1.35;
+  const DNA_RADIUS = 1.75;
 
   function createHelixCurve(phaseOffset: number): THREE.CatmullRomCurve3 {
     const pts: THREE.Vector3[] = [];
@@ -145,8 +145,8 @@ export function createNeuralSculpture(
     for (let i = 0; i <= N; i++) {
       const t = i / N;
       const angle = t * DNA_TURNS * Math.PI * 2 + phaseOffset;
-      // Elegant waist taper: slightly wider at center, tapered at ends
-      const r = DNA_RADIUS * (0.86 + 0.28 * Math.sin(t * Math.PI));
+      // Waist taper: wider at center, tapered gently toward ends
+      const r = DNA_RADIUS * (0.88 + 0.24 * Math.sin(t * Math.PI));
       const y = (t - 0.5) * DNA_HEIGHT;
       pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
     }
@@ -157,9 +157,9 @@ export function createNeuralSculpture(
   const curveAlpha = createHelixCurve(0);
   const curveBeta = createHelixCurve(Math.PI);
 
-  const tubularSegs = quality < 1 ? 140 : 240;
-  const radialSegs = quality < 1 ? 12 : 20;
-  const strandRadius = 0.078;
+  const tubularSegs = quality < 1 ? 160 : 260;
+  const radialSegs = quality < 1 ? 14 : 22;
+  const strandRadius = 0.15; // Prominent, thick metallic strands
 
   const geomAlpha = new THREE.TubeGeometry(curveAlpha, tubularSegs, strandRadius, radialSegs, false);
   const meshAlpha = new THREE.Mesh(geomAlpha, primaryHelixMat);
@@ -169,13 +169,13 @@ export function createNeuralSculpture(
   const meshBeta = new THREE.Mesh(geomBeta, primaryHelixMat);
   dnaGroup.add(meshBeta);
 
-  // ---------------- Horizontal DNA Connecting Rungs ----------------
-  const RUNGS_COUNT = 24;
-  const nodeGeom = new THREE.SphereGeometry(0.062, quality < 1 ? 12 : 18, quality < 1 ? 12 : 18);
-  const jewelGeom = new THREE.CylinderGeometry(0.048, 0.048, 0.14, 16);
+  // ---------------- Horizontal DNA Connecting Rungs (Spaced Out & Thicker) ----------------
+  const RUNGS_COUNT = 10; // Spaced out rungs
+  const nodeGeom = new THREE.SphereGeometry(0.14, quality < 1 ? 14 : 20, quality < 1 ? 14 : 20);
+  const jewelGeom = new THREE.CylinderGeometry(0.09, 0.09, 0.22, 16);
 
   for (let i = 0; i < RUNGS_COUNT; i++) {
-    const t = 0.05 + (i / (RUNGS_COUNT - 1)) * 0.9;
+    const t = 0.07 + (i / (RUNGS_COUNT - 1)) * 0.86;
     const pA = curveAlpha.getPointAt(t);
     const pB = curveBeta.getPointAt(t);
 
@@ -183,8 +183,8 @@ export function createNeuralSculpture(
     const dir = new THREE.Vector3().subVectors(pB, pA);
     const length = dir.length();
 
-    // Horizontal bar
-    const rungGeom = new THREE.CylinderGeometry(0.032, 0.032, length, 14);
+    // Horizontal bar (thick, substantial cylinder)
+    const rungGeom = new THREE.CylinderGeometry(0.075, 0.075, length, 16);
     const rungMesh = new THREE.Mesh(rungGeom, rungMat);
     rungMesh.position.copy(mid);
     rungMesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
@@ -207,17 +207,17 @@ export function createNeuralSculpture(
     dnaGroup.add(jewelMesh);
   }
 
-  // ---------------- Outer Metallic Spiral Spring Ribbon ----------------
+  // ---------------- Outer Metallic Spiral Spring Ribbon (Spaced out & Thicker) ----------------
   function createSpiralSpringCurve(): THREE.CatmullRomCurve3 {
     const pts: THREE.Vector3[] = [];
     const N = 110;
-    const SPRING_TURNS = 3.5;
-    const SPRING_RADIUS = 1.58;
+    const SPRING_TURNS = 1.75; // Graceful, spaced outer coiling
+    const SPRING_RADIUS = 2.15; // Generously encasing the DNA
     for (let i = 0; i <= N; i++) {
       const t = i / N;
       const angle = t * SPRING_TURNS * Math.PI * 2 + 0.45;
-      const r = SPRING_RADIUS * (0.88 + 0.26 * Math.sin(t * Math.PI));
-      const y = (t - 0.5) * (DNA_HEIGHT * 1.08);
+      const r = SPRING_RADIUS * (0.88 + 0.24 * Math.sin(t * Math.PI));
+      const y = (t - 0.5) * (DNA_HEIGHT * 1.06);
       pts.push(new THREE.Vector3(Math.cos(angle) * r, y, Math.sin(angle) * r));
     }
     return new THREE.CatmullRomCurve3(pts, false, "centripetal");
@@ -227,13 +227,13 @@ export function createNeuralSculpture(
   const springGeom = new THREE.TubeGeometry(
     springCurve,
     tubularSegs,
-    0.055,
-    quality < 1 ? 8 : 12,
+    0.11, // Thicker ribbon tube
+    quality < 1 ? 10 : 14,
     false
   );
   const springMesh = new THREE.Mesh(springGeom, spiralSpringMat);
-  // Slightly scale on Z to create a flattened, beveled metallic spring ribbon
-  springMesh.scale.set(1, 1, 0.45);
+  // Slightly scale on Z to create a flattened, beveled metallic ribbon profile
+  springMesh.scale.set(1, 1, 0.55);
   dnaGroup.add(springMesh);
 
   // ---------------- Studio Direct Lighting ----------------
@@ -254,13 +254,13 @@ export function createNeuralSculpture(
   const dustCount = 80;
   const dustPos = new Float32Array(dustCount * 3);
   for (let i = 0; i < dustCount * 3; i += 3) {
-    dustPos[i] = (Math.random() - 0.5) * 7;
-    dustPos[i + 1] = (Math.random() - 0.5) * 6;
-    dustPos[i + 2] = (Math.random() - 0.5) * 4;
+    dustPos[i] = (Math.random() - 0.5) * 8;
+    dustPos[i + 1] = (Math.random() - 0.5) * 7;
+    dustPos[i + 2] = (Math.random() - 0.5) * 5;
   }
   dustGeom.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
   const dustMat = new THREE.PointsMaterial({
-    size: 0.035,
+    size: 0.038,
     color: 0x9fb8ff,
     transparent: true,
     opacity: 0.35,
@@ -287,10 +287,17 @@ export function createNeuralSculpture(
   let baseScale = 1;
   let contract = 0;
 
+  let lastW = 0;
+  let lastH = 0;
+
   function resize() {
     const host = canvas.parentElement ?? canvas;
     const w = Math.max(1, host.clientWidth || canvas.clientWidth);
     const h = Math.max(1, host.clientHeight || canvas.clientHeight);
+    if (w === lastW && h === lastH) return;
+    lastW = w;
+    lastH = h;
+
     renderer.setPixelRatio(window.devicePixelRatio || 1);
     renderer.setSize(w, h, false);
 
@@ -332,20 +339,20 @@ export function createNeuralSculpture(
   function frame(now: number) {
     raf = requestAnimationFrame(frame);
     const time = (now - t0) / 1000;
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const dt = Math.min(0.033, (now - last) / 1000);
     last = now;
     if (!visible || !tabActive) return;
 
     smoothX += (pointerX - smoothX) * 0.04;
     smoothY += (pointerY - smoothY) * 0.04;
 
-    // Continuous, silky smooth 360-degree rotation of the DNA spiral spring!
-    dnaGroup.rotation.y += dt * 0.55;
+    // Slow, stately, continuous 360-degree rotation of the DNA spiral spring (0.18 rad/s)
+    dnaGroup.rotation.y += dt * 0.18;
 
-    // Organic micro-undulation along other axes
-    group.rotation.x = Math.sin(time * 0.65) * 0.035 + smoothY * 0.08;
-    group.rotation.z = Math.cos(time * 0.55) * 0.025 + smoothX * 0.08;
-    group.position.y = baseY + Math.sin(time * 1.1) * 0.05;
+    // Gentle micro-undulation along other axes without nervous wobbling
+    group.rotation.x = Math.sin(time * 0.05) * 0.02 + smoothY * 0.04;
+    group.rotation.z = Math.cos(time * 0.04) * 0.015 + smoothX * 0.04;
+    group.position.y = baseY + Math.sin(time * 0.08) * 0.03;
     group.position.x = baseX;
 
     group.scale.setScalar(baseScale * (1 - contract * 0.06));
@@ -354,7 +361,7 @@ export function createNeuralSculpture(
     camera.position.y = Math.cos(time * 0.03) * 0.06 - smoothY * 0.1;
     camera.lookAt(0, 0, 0);
 
-    dust.rotation.y = time * 0.008;
+    dust.rotation.y = time * 0.005;
 
     renderer.render(scene, camera);
   }

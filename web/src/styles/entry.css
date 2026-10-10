@@ -190,13 +190,14 @@
   color: transparent;
   -webkit-text-fill-color: transparent;
   opacity: 0;
-  transform: scale(1.12) translateY(0.12em);
-  filter: brightness(2.2) blur(3px);
-  /* Exactly 1-second metallic animation */
+  transform: scale(1.15) translateY(0.08em);
+  filter: brightness(2.6) blur(2px);
+  /* Sequential letter-by-letter reveal (M -> ME -> MEN -> MENTAL) within 1.0 second */
   transition:
-    opacity 1000ms var(--ease-out-expo),
-    transform 1000ms var(--ease-out-expo),
-    filter 1000ms var(--ease-out-expo);
+    opacity 160ms var(--ease-out-expo),
+    transform 200ms var(--ease-out-expo),
+    filter 200ms var(--ease-out-expo);
+  transition-delay: var(--letter-delay, 0ms);
   will-change: transform, opacity, filter;
 }
 .entry__letter--in {
@@ -252,13 +253,10 @@
   inset: 0;
   z-index: var(--z-sculpture);
   opacity: 0;
-  transform: scale(0.965);
-  transition:
-    opacity 900ms var(--ease-out-expo),
-    transform 1200ms var(--ease-out-expo);
+  transition: opacity 800ms var(--ease-out-expo);
 }
 .entry--hero-live .entry__stage,
-.entry--welcome .entry__stage { opacity: 1; transform: none; }
+.entry--welcome .entry__stage { opacity: 1; }
 .entry__stage canvas { display: block; width: 100%; height: 100%; }
 
 /* 6. Falloff. Load-bearing for readability: the lower stops hold the hero copy.
@@ -432,6 +430,7 @@
   position: relative;
   z-index: var(--z-auth);
   min-width: 0;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -446,6 +445,7 @@
 }
 .entry--split .auth-stage {
   visibility: visible;
+  overflow: visible;
   transition-delay: 0s;
 }
 
@@ -475,7 +475,7 @@
   transform: translateY(12px);
   transition: opacity 700ms var(--ease-out-expo) 430ms, transform 700ms var(--ease-out-expo) 430ms;
 }
-.entry--live .entry__panel-inner,
+.entry--split .entry__panel-inner,
 .entry--welcome .entry__panel-inner { opacity: 1; transform: none; }
 .entry__panel-inner--out {
   opacity: 0 !important;
