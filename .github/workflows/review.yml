@@ -1,0 +1,46 @@
+name: Review checks
+on:
+  pull_request:
+  push:
+    branches: [feat/on-device-intelligence-product-refinement]
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: "Step 12 - Packaging/package:."
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+      - run: npm ci --prefix web
+      - run: pip install -r requirements.txt pytest httpx
+      - run: python scripts/prepare_runtime_resources.py --output nltk_data
+      - run: echo "NLTK_DATA=$GITHUB_WORKSPACE/nltk_data" >> "$GITHUB_ENV"
+      - run: npm --prefix web run lint
+      - run: npm --prefix web run typecheck
+      - run: python -m pytest tests -q
+      - run: npm --prefix web test
+      - run: python evaluation/evaluate_contextual_intelligence.py --rules-only --output /tmp/evaluation-smoke.json
+      - run: npm --prefix web run build
+      - run: npx --prefix web playwright install --with-deps chromium
+      - run: |
+          npm --prefix web run dev -- --host 127.0.0.1 > /tmp/vite.log 2>&1 &
+          for attempt in $(seq 1 30); do curl -fsS http://127.0.0.1:5173/ >/dev/null && break; sleep 1; done
+          cd web
+          node scripts/reviewqa.mjs
+          node scripts/workspaceqa.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: review-screenshots
+          path: web/shots/review-*

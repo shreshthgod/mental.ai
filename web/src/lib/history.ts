@@ -77,7 +77,6 @@ export function mergeAccountHistory(rows: ScreeningSummary[]): ScreeningRecord[]
     byId.set(row.id, { id: row.id, at: Date.parse(row.created_at), text: original?.text ?? null, response, assessment });
   }
   const records = [...byId.values()].sort((a, b) => b.at - a.at).slice(0, MAX_ENTRIES);
-  persist(records);
   return records;
 }
 

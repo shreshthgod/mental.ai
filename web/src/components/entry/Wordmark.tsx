@@ -1,17 +1,16 @@
-/**
- * MENTAL.AI Wordmark — Metallic Marvel / Transformers Movie Credits Style.
- *
- * Chiseled, solid metallic typography with chrome beveling, high-contrast
- * specular reflections, and cinematic 1-second lock-in animation.
- *
- * Rendered in dual planes (back and front) so the metallic DNA sculpture passes
- * directly through the letters without clipping artifacts.
- */
-
 const GLYPHS = ["M", "E", "N", "T", "A", "L", ".", "A", "I"];
 
-/** Indices drawn in front of the sculpture: the middle crossing letters. */
-const FRONT = new Set([2, 3, 4]);
+
+
+function pose(i: number) {
+  const mid = (GLYPHS.length - 1) / 2;
+  return {
+    dx: `${(i - mid) * -0.05}em`,
+    dy: `${(i - mid) * 0.16 + 0.3}em`,
+    rot: `${(i % 2 === 0 ? 1 : -1) * (3 + i)}deg`,
+    delay: 150 + i * 85,
+  };
+}
 
 interface Props {
   live: boolean;
@@ -20,7 +19,7 @@ interface Props {
   dimmed?: boolean;
 }
 
-export function WordPlane({ live, plane, dimmed = false }: Props) {
+export function WordPlane({ live, instant = false, plane, dimmed = false }: Props) {
   return (
     <div
       className={`entry__word-plane entry__word-plane--${plane} ${
@@ -30,11 +29,10 @@ export function WordPlane({ live, plane, dimmed = false }: Props) {
     >
       <span className="entry__word">
         {GLYPHS.map((ch, i) => {
+          const p = pose(i);
           const isDot = ch === ".";
-          const isFront = FRONT.has(i);
-          // Front plane paints only crossing letters; back plane paints only outer letters.
-          // Neither plane paints both, preventing double strokes, ghost boxes, and subpixel glitches.
-          const suppressed = plane === "front" ? !isFront : isFront;
+          // Keep both planes metrically aligned, but paint every glyph above the sculpture.
+          const suppressed = plane === "back";
           return (
             <span
               key={i}
@@ -42,8 +40,10 @@ export function WordPlane({ live, plane, dimmed = false }: Props) {
                 live ? "entry__letter--in" : ""
               } ${suppressed ? "entry__letter--behind" : ""}`}
               style={{
-                ["--char-index" as string]: i,
-                ["--letter-delay" as string]: `${i * 90}ms`,
+                ["--lx" as string]: p.dx,
+                ["--ly" as string]: p.dy,
+                ["--lr" as string]: p.rot,
+                ["--ld" as string]: `${instant ? i * 28 : p.delay}ms`,
               }}
             >
               {ch}

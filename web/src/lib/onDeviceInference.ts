@@ -1,13 +1,4 @@
-/**
- * On-Device Intelligence & Private Screening Runtime.
- *
- * Runs 100% locally in the browser with ZERO server network egress for raw user text.
- * Implements:
- *   1. Authoritative deterministic safety screening engine.
- *   2. Multi-label emotion recognition (9 dimensions) with clinical distinction advisories.
- *   3. Lexical condition & urgency screening heuristics with calibrated abstention.
- *   4. Extensible runtime architecture for ONNX Runtime Web (WASM / WebGPU).
- */
+/** Local English safety rules; trained browser classifiers are unavailable. */
 
 import type { PredictResponse } from "./contract";
 
@@ -41,11 +32,13 @@ export interface OnDeviceSafetyResult {
 
 export interface OnDeviceEmotionCue {
   name: string;
-  confidence: number;
+  confidence: null;
   description: string;
 }
 
 export interface OnDeviceEmotionResult {
+  status: "disabled";
+  model_version: "emotion-unavailable-v1";
   emotions: OnDeviceEmotionCue[];
   dominant_emotion: string | null;
   first_person: boolean;
@@ -59,9 +52,6 @@ export interface OnDevicePredictResponse extends PredictResponse {
   privacy_guarantee: string;
 }
 
-// ---------------------------------------------------------------------------
-// 1. Authoritative Local Deterministic Safety Engine
-// ---------------------------------------------------------------------------
 
 const TENTH_FLOOR_CRISIS_REGEX =
   /\b(jump(ing)?\s+(off|from)\s+(the\s+)?(10th|\d+th)?\s*(floor|building|bridge|roof|balcony)|kill\s+(my|one)?self|end\s+my\s+life|hang\s+(my|one)?self|shoot\s+(my|one)?self|overdose|slit\s+(my|one)?\s*wrists?|suicide|die\s+by\s+suicide|want\s+to\s+die|wanna\s+die)\b/i;
@@ -85,27 +75,23 @@ export function evaluateOnDeviceSafety(text: string): OnDeviceSafetyResult {
   const trimmed = text.trim();
   const lower = trimmed.toLowerCase();
 
-  // 1. Detect Subject
-  let subject: Subject = "self";
+  let subject: Subject = /\b(i|me|my|myself)\b/i.test(lower) ? "self" : "unclear";
   if (THIRD_PERSON_REGEX.test(lower)) {
     subject = "another_person";
   } else if (QUOTATION_OR_FICTION_REGEX.test(lower)) {
     subject = "fictional_or_quoted";
   }
 
-  // 2. Detect Temporal Context
-  let temporalContext: TemporalContext = "current";
+  let temporalContext: TemporalContext = "unclear";
   if (HISTORICAL_REGEX.test(lower)) {
     temporalContext = "historical";
   }
 
-  // 3. Detect Immediacy
   let immediacy: Immediacy = "not_stated";
   if (IMMEDIATE_PLAN_REGEX.test(lower)) {
     immediacy = "stated";
   }
 
-  // 4. Crisis Evaluation
   const hasCrisisTerms = TENTH_FLOOR_CRISIS_REGEX.test(lower);
   const hasSelfHarm = SELF_HARM_REGEX.test(lower);
 
@@ -119,7 +105,7 @@ export function evaluateOnDeviceSafety(text: string): OnDeviceSafetyResult {
   }
 
   let level: SafetyLevel = "NONE_DETECTED";
-  let summary = "No immediate crisis indicators detected in text.";
+  let summary = "No listed safety phrase matched. This does not establish safety.";
   let needsClarification = false;
   let reviewRecommended = false;
   let supportAction =
@@ -157,6 +143,14 @@ export function evaluateOnDeviceSafety(text: string): OnDeviceSafetyResult {
       "You seem to be carrying a heavy emotional load. Consider reaching out to a trusted confidant, doctor, or supportive listener today.";
   }
 
+  const unsupported = Array.from(lower).some(c => c.codePointAt(0)! > 127) || /\b(mujhe|main|nahi|hai|hoon|udaas|zindagi)\b/.test(lower);
+  if (unsupported && !hasCrisisTerms && !hasSelfHarm) {
+    level = "UNKNOWN";
+    needsClarification = true;
+    summary = "Language support is unknown or unsupported; these English rules cannot assess this text.";
+    supportAction = "Are you safe right now? If anyone is in immediate danger, contact local emergency services.";
+  }
+
   return {
     level,
     subject,
@@ -166,190 +160,50 @@ export function evaluateOnDeviceSafety(text: string): OnDeviceSafetyResult {
     summary,
     needs_clarification: needsClarification,
     review_recommended: reviewRecommended,
-    analysis_status: "complete",
-    policy_version: "2026.10-on-device-v1",
-    language_support: "complete",
+    analysis_status: unsupported ? "unsupported" : "degraded",
+    policy_version: "2026.10-local-rules-v2",
+    language_support: unsupported ? "unsupported" : "unknown",
     assessment_scope: "recognized_rules_only",
     support_action: supportAction,
   };
 }
 
-// ---------------------------------------------------------------------------
-// 2. Multi-Label Emotion Recognition (9 Dimensions)
-// ---------------------------------------------------------------------------
 
-const EMOTION_PATTERNS: Record<string, { pattern: RegExp; desc: string }> = {
-  sadness: {
-    pattern: /\b(sad|unhappy|crying|tears|depressed|heartbroken|sorrow|down|blue|grief|mourning)\b/i,
-    desc: "Feelings of loss, sorrow, grief, or low mood",
-  },
-  loneliness: {
-    pattern: /\b(lonely|alone|isolated|nobody\s+cares|left\s+out|no\s+one\s+understands|alienated)\b/i,
-    desc: "Perceived social isolation or lack of relational support",
-  },
-  anger: {
-    pattern: /\b(angry|furious|rage|mad|pissed|irritated|bitter|resentful|hostile|outraged)\b/i,
-    desc: "Feelings of intense irritation, indignation, or resentment",
-  },
-  fear: {
-    pattern: /\b(afraid|scared|terrified|fearful|panicking|panic|dread|horrified|frightened)\b/i,
-    desc: "Perceived acute threat, dread, or intense apprehension",
-  },
-  anxiety_related: {
-    pattern: /\b(anxious|nervous|tense|on\s+edge|racing\s+mind|jittery|restless|worried|stress)\b/i,
-    desc: "Anticipatory worry, autonomic tension, or mental restlessness",
-  },
-  happiness: {
-    pattern: /\b(happy|glad|joy|joyful|cheerful|peaceful|grateful|content|delighted)\b/i,
-    desc: "Feelings of contentment, joy, relief, or gratitude",
-  },
-  excitement: {
-    pattern: /\b(excited|thrilled|pumped|hyped|eager|looking\s+forward|electrified|enthusiastic)\b/i,
-    desc: "High-energy positive anticipation or lively stimulation",
-  },
-  frustration: {
-    pattern: /\b(frustrated|annoyed|exasperated|stuck|fed\s+up|irritated|blocked|defeated)\b/i,
-    desc: "Feeling hindered, thwarted, or unable to make headway",
-  },
-  uncertainty: {
-    pattern: /\b(confused|unsure|uncertain|conflicted|lost|indecisive|torn|doubtful|ambivalent)\b/i,
-    desc: "Ambivalence, lack of clarity, or difficult decisions",
-  },
-};
-
-export function evaluateOnDeviceEmotions(text: string): OnDeviceEmotionResult {
-  const lower = text.toLowerCase();
-  const detected: OnDeviceEmotionCue[] = [];
-
-  for (const [name, cfg] of Object.entries(EMOTION_PATTERNS)) {
-    const matches = lower.match(cfg.pattern);
-    if (matches && matches.length > 0) {
-      const matchCount = matches.length;
-      const confidence = Math.min(0.95, 0.65 + matchCount * 0.1);
-      detected.push({
-        name,
-        confidence: Number(confidence.toFixed(2)),
-        description: cfg.desc,
-      });
-    }
-  }
-
-  detected.sort((a, b) => b.confidence - a.confidence);
-
-  const isThirdPerson = THIRD_PERSON_REGEX.test(lower);
-
+export function evaluateOnDeviceEmotions(_text: string): OnDeviceEmotionResult {
   return {
-    emotions: detected,
-    dominant_emotion: detected.length > 0 ? detected[0].name : null,
-    first_person: !isThirdPerson,
-    clinical_distinction_advisory:
-      "Observed emotional cues (such as sadness, anger, or anxiety) describe transient subjective experiences and do NOT equate to clinical diagnoses (such as Major Depressive Disorder or Bipolar Disorder).",
-    uninferrable_limitations: [
-      "Duration, chronicity, and onset cannot be reliably inferred from a single text sample.",
-      "Underlying medical or neurobiological etiologies cannot be assessed through text analysis.",
-      "Absence of detected emotion words does not prove emotional stability.",
-    ],
+    status: "disabled",
+    model_version: "emotion-unavailable-v1",
+    emotions: [],
+    dominant_emotion: null,
+    first_person: false,
+    clinical_distinction_advisory: "Emotion classification is unavailable pending independent validation.",
+    uninferrable_limitations: ["No emotional state or diagnosis is inferred."],
   };
 }
 
-// ---------------------------------------------------------------------------
-// 3. Complete On-Device Prediction Handler
-// ---------------------------------------------------------------------------
-
 export async function runOnDeviceInference(text: string): Promise<OnDevicePredictResponse> {
-  const safety = evaluateOnDeviceSafety(text);
-  const emotion = evaluateOnDeviceEmotions(text);
-
-  // Derive condition distribution heuristically for offline screening
-  const isUrgent = safety.level === "HIGH" || safety.level === "IMMEDIATE";
-
-  // Heuristic class distribution with honest calibration
-  const classProbs: Record<string, number> = {
-    Anxiety: 0.1,
-    Bipolar: 0.05,
-    Depression: 0.15,
-    Normal: 0.5,
-    Personality_disorder: 0.05,
-    Stress: 0.1,
-    Suicidal: 0.05,
-  };
-
-  if (isUrgent) {
-    classProbs.Suicidal = 0.85;
-    classProbs.Depression = 0.08;
-    classProbs.Normal = 0.02;
-    classProbs.Anxiety = 0.02;
-    classProbs.Stress = 0.02;
-    classProbs.Bipolar = 0.005;
-    classProbs.Personality_disorder = 0.005;
-  } else if (emotion.emotions.some((e) => e.name === "anxiety_related" || e.name === "fear")) {
-    classProbs.Anxiety = 0.55;
-    classProbs.Stress = 0.25;
-    classProbs.Normal = 0.1;
-    classProbs.Depression = 0.05;
-    classProbs.Suicidal = 0.02;
-    classProbs.Bipolar = 0.015;
-    classProbs.Personality_disorder = 0.015;
-  } else if (emotion.emotions.some((e) => e.name === "sadness" || e.name === "loneliness")) {
-    classProbs.Depression = 0.5;
-    classProbs.Normal = 0.2;
-    classProbs.Stress = 0.15;
-    classProbs.Anxiety = 0.1;
-    classProbs.Suicidal = 0.02;
-    classProbs.Bipolar = 0.015;
-    classProbs.Personality_disorder = 0.015;
-  }
-
-  // Find top class
-  let topClass = "Normal";
-  let maxP = -1;
-  for (const [cls, p] of Object.entries(classProbs)) {
-    if (p > maxP) {
-      maxP = p;
-      topClass = cls;
-    }
-  }
-
-  const suicideProb = isUrgent ? 0.92 : safety.level === "CONCERNING" ? 0.42 : 0.08;
-
-  const result: OnDevicePredictResponse = {
+  if (!text.trim() || Array.from(text).length > 10000) throw new Error("Enter 1–10,000 characters.");
+  return {
     schema_version: "1.0",
-    request_id: `local-${crypto.randomUUID().slice(0, 8)}`,
-    safety,
-    emotion,
+    request_id: `local-${crypto.randomUUID()}`,
+    safety: evaluateOnDeviceSafety(text),
+    emotion: evaluateOnDeviceEmotions(text),
     cleaned_text: null,
     lemmatized_text: null,
     mode: "on_device_private",
-    privacy_guarantee:
-      "Evaluated 100% on-device in your browser. Zero text or embeddings were transmitted to any server.",
+    privacy_guarantee: "This analysis runs local rules. Text and embeddings are not uploaded. Authentication and configuration use the network.",
     components: {
-      independent_safety: "complete",
-      semantic: "disabled",
-      preprocessing: "complete",
-      primary: "complete",
-      urgency: "complete",
+      independent_safety: "complete", semantic: "unavailable", preprocessing: "unavailable",
+      primary: "unavailable", urgency: "unavailable",
     },
-    primary: {
-      predicted_class: topClass,
-      class_probabilities: classProbs,
-      status: "complete",
-    },
-    urgency: {
-      predicted_class: isUrgent ? "suicide" : "non-suicide",
-      suicide_probability: suicideProb,
-      decision_threshold_used: 0.5,
-      flagged: isUrgent,
-      status: "complete",
-    },
-    model_version: "2026.10-on-device-rules",
-    service_version: "0.1.0-on-device",
-    provenance_caveat:
-      "Screening signal produced on-device in private mode. Not a clinical diagnosis.",
-    persistence: {
-      status: "saved",
-      record_id: `local-rec-${crypto.randomUUID().slice(0, 8)}`,
-    },
+    primary: { predicted_class: null, class_probabilities: {}, status: "unavailable" },
+    // The shared v1 contract requires a threshold even when the classifier is absent.
+    // It is unused and must not be shown as an active decision threshold.
+    urgency: { predicted_class: null, suicide_probability: null, decision_threshold_used: 0.5,
+      flagged: false, status: "unavailable" },
+    model_version: "no-trained-browser-model-v2",
+    service_version: "local-rules-v2",
+    provenance_caveat: "Limited English safety rules; trained condition, urgency and emotion classifiers are unavailable. Not a diagnosis.",
+    persistence: { status: "not_saved", record_id: null },
   };
-
-  return result;
 }

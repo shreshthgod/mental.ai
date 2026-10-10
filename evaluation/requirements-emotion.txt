@@ -1,0 +1,6 @@
+# Isolated experiment dependencies; no API runtime imports.
+onnxruntime==1.31.0
+tokenizers==0.23.3
+numpy==2.4.4
+scikit-learn==1.8.0
+psutil==7.0.0

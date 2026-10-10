@@ -3,7 +3,7 @@
 Branch: `feat/on-device-intelligence-product-refinement`
 Upstream baseline: `https://github.com/shreshthgod/mental.ai` `main` @ `78ac6da4d49ac35d65e00ca82b25245560695fa3`
 
-## 1. Remotes as found
+## Remotes as found
 
 `origin` was `https://github.com/PrathamKapoor/Vantage-The-Emotional-Signaler.git`
 and pointed at the *older* Vantage line. The published MENTAL.AI repository named in
@@ -18,7 +18,7 @@ Actions taken:
   replacement was used at any point.
 - Left `origin` in place. Nothing was pushed to it.
 
-## 2. State before reconciliation
+## State before reconciliation
 
 | | |
 |---|---|
@@ -32,7 +32,7 @@ Actions taken:
 `git log --left-right --oneline upstream/main...main` returned four commits on the
 left and none on the right: local `main` was a strict ancestor of `upstream/main`.
 
-## 3. Local-only vs remote-only vs shared
+## Local-only vs remote-only vs shared
 
 | Category | Commits |
 |---|---|
@@ -50,7 +50,7 @@ Vantage-branded frontend, and `2053855` onward is the MENTAL.AI recovery line th
 renames the brand and rebuilds auth, persistence, the entry composition and the
 safety engine.
 
-## 4. Integration
+## Integration
 
 `git merge --ff-only upstream/main` fast-forwarded `62f43c6..78ac6da` with no
 conflict, because there was nothing local to conflict with. 252 files changed,
@@ -76,7 +76,7 @@ Resolutions by area:
 - **Local-only build output** (`web/dist/`, `web/shots/`) is git-ignored and was
   neither deleted nor committed.
 
-## 5. Identity
+## Identity
 
 `git config user.name` = `PrathamKapoor`, `user.email` = `prathamkapoor027@gmail.com`,
 both already repository-local. Push rights on `shreshthgod/mental.ai` were verified
@@ -84,13 +84,10 @@ through the GitHub API before any commit was created: authenticated as
 `PrathamKapoor`, `permissions.push = true`, `permissions.admin = false`.
 
 Note on conflicting history: `handoff.md` section 6 records an earlier instruction
-that author and committer must be `shreshthgod <shreshthnmims.it@gmail.com>`. The
-brief for this work specifies **Pratham Kapoor** as the author and committer, and the
-configured local identity already is that, so commits on this branch are authored and
-committed by Pratham Kapoor. Existing `shreshthgod` commits keep their original
+that author and committer must be `shreshthgod <shreshthnmims.it@gmail.com>`. The current instruction requires `PrathamKapoor <prathamkapoor027@gmail.com>` for feature-branch authors and committers. PR commits are normalized to that identity during this review. Existing `shreshthgod` commits keep their original
 author and were not rewritten.
 
-## 6. Outcome
+## Outcome
 
 Local branch base is now byte-identical to `upstream/main` @ `78ac6da`. Nothing local
 was lost, no upstream fix was silently dropped, no history was rewritten.

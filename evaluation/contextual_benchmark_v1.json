@@ -1,7 +1,7 @@
 {
   "version": "contextual-benchmark-2026.10.10.1",
   "license": "Creative Commons Zero v1.0 Universal (CC0) / Public Domain dedication for synthetic evaluation fixtures",
-  "provenance": "Independently authored synthetic test cases covering challenging linguistic and contextual phenomena; not recycled from training sets or consumed safety holdouts.",
+  "provenance": "Hand-authored synthetic development fixtures, already inspected and consumed. Independence from original model training data has not been established.",
   "clinical_caveat": "Research and software quality benchmark only; does not establish diagnostic efficacy or clinical validity.",
   "cases": [
     {
@@ -10,7 +10,11 @@
       "text": "Oh fantastic, another sleepless night of panic attacks and shaking. Exactly what I dreamed of.",
       "expected_condition": "Anxiety",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["anxiety_related", "frustration", "fear"],
+      "expected_emotions": [
+        "anxiety_related",
+        "frustration",
+        "fear"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -21,7 +25,10 @@
       "text": "Living with this constant agony is just a walk in the park, really enjoying every second.",
       "expected_condition": "Depression",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["sadness", "frustration"],
+      "expected_emotions": [
+        "sadness",
+        "frustration"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -32,7 +39,10 @@
       "text": "I am not happy with my job, but I am certainly not suicidal or wanting to hurt myself.",
       "expected_condition": "Normal",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["frustration", "uncertainty"],
+      "expected_emotions": [
+        "frustration",
+        "uncertainty"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -43,7 +53,9 @@
       "text": "I don't feel depressed, I'm just utterly exhausted from working two shifts.",
       "expected_condition": "Stress",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["frustration"],
+      "expected_emotions": [
+        "frustration"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -54,7 +66,11 @@
       "text": "I feel like I am drowning in quicksand with a dark cloud permanently over my head.",
       "expected_condition": "Depression",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["sadness", "loneliness", "fear"],
+      "expected_emotions": [
+        "sadness",
+        "loneliness",
+        "fear"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -65,7 +81,10 @@
       "text": "I'm seeing red today and I could punch a brick wall after the argument with my landlord.",
       "expected_condition": "Stress",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["anger", "frustration"],
+      "expected_emotions": [
+        "anger",
+        "frustration"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -76,7 +95,9 @@
       "text": "My favorite poet wrote 'I have known the depths of misery and despair' in his 18th century journal.",
       "expected_condition": "Normal",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["sadness"],
+      "expected_emotions": [
+        "sadness"
+      ],
       "subject": "fictional_or_quoted",
       "temporal": "historical",
       "language": "en"
@@ -87,7 +108,10 @@
       "text": "The patient stated: 'I plan to swallow all my prescription pills tonight at midnight.'",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness", "fear"],
+      "expected_emotions": [
+        "sadness",
+        "fear"
+      ],
       "subject": "another_person",
       "temporal": "current",
       "language": "en"
@@ -98,7 +122,13 @@
       "text": "I am so excited and happy about my new job, but terrified and anxious that I will fail and end up lonely.",
       "expected_condition": "Anxiety",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["happiness", "excitement", "fear", "anxiety_related", "loneliness"],
+      "expected_emotions": [
+        "happiness",
+        "excitement",
+        "fear",
+        "anxiety_related",
+        "loneliness"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -109,7 +139,12 @@
       "text": "I feel a strange mix of anger, sadness, and deep confusion about why they abandoned me alone.",
       "expected_condition": "Depression",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["anger", "sadness", "loneliness", "uncertainty"],
+      "expected_emotions": [
+        "anger",
+        "sadness",
+        "loneliness",
+        "uncertainty"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -120,7 +155,9 @@
       "text": "My roommate has been locking herself in her room, crying uncontrollably and talking about ending it all.",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness"],
+      "expected_emotions": [
+        "sadness"
+      ],
       "subject": "another_person",
       "temporal": "current",
       "language": "en"
@@ -142,7 +179,10 @@
       "text": "Giving away all my favorite possessions tomorrow morning. None of this matters anymore and I won't be around.",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness", "loneliness"],
+      "expected_emotions": [
+        "sadness",
+        "loneliness"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -153,7 +193,9 @@
       "text": "Finally found a way to stop the noise permanently. Peaceful at last after tonight.",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness"],
+      "expected_emotions": [
+        "sadness"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -164,7 +206,9 @@
       "text": "Ten years ago I attempted suicide and was in the ICU, but today I am happily married and thriving in my career.",
       "expected_condition": "Normal",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["happiness"],
+      "expected_emotions": [
+        "happiness"
+      ],
       "subject": "self",
       "temporal": "historical",
       "language": "en"
@@ -186,7 +230,11 @@
       "text": "Mujhe bohot zyada anxiety aur akelapan feel ho raha hai, dil ghabra raha hai.",
       "expected_condition": "Anxiety",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["anxiety_related", "loneliness", "fear"],
+      "expected_emotions": [
+        "anxiety_related",
+        "loneliness",
+        "fear"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "hi_en"
@@ -197,7 +245,10 @@
       "text": "Ab jeene ka koi mann nahi karta, sab khatam karne ka soch raha hoon.",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness", "loneliness"],
+      "expected_emotions": [
+        "sadness",
+        "loneliness"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "hi_en"
@@ -230,7 +281,10 @@
       "text": "i wanna jump from 10th floor",
       "expected_condition": "Suicidal",
       "expected_safety": "HIGH",
-      "expected_emotions": ["sadness", "fear"],
+      "expected_emotions": [
+        "sadness",
+        "fear"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -241,7 +295,11 @@
       "text": "For two weeks I was hyper, barely slept 2 hours a night and started 5 businesses, now I can't even get out of bed.",
       "expected_condition": "Bipolar",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["excitement", "sadness", "frustration"],
+      "expected_emotions": [
+        "excitement",
+        "sadness",
+        "frustration"
+      ],
       "subject": "self",
       "temporal": "recent",
       "language": "en"
@@ -252,7 +310,10 @@
       "text": "Final exams are in three days and my thesis is due, having trouble balancing all these deadlines.",
       "expected_condition": "Stress",
       "expected_safety": "NONE_DETECTED",
-      "expected_emotions": ["anxiety_related", "frustration"],
+      "expected_emotions": [
+        "anxiety_related",
+        "frustration"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
@@ -263,10 +324,16 @@
       "text": "I keep splitting on everyone I love. One moment they are my savior, the next I despise them and fear abandonment.",
       "expected_condition": "Personality disorder",
       "expected_safety": "CONCERNING",
-      "expected_emotions": ["anger", "fear", "loneliness", "uncertainty"],
+      "expected_emotions": [
+        "anger",
+        "fear",
+        "loneliness",
+        "uncertainty"
+      ],
       "subject": "self",
       "temporal": "current",
       "language": "en"
     }
-  ]
+  ],
+  "split": "consumed_development"
 }

@@ -1,20 +1,6 @@
-/**
- * Opening check-in for the screening workspace.
- *
- * Four short prompts, one screen each, assembled into a single plain-text
- * check-in and handed to the workspace as prefill. Nothing is analysed here and
- * nothing is transmitted: the answers only reach this browser's storage until
- * the user explicitly submits text to POST /predict.
- *
- * This is the entry point of the screening flow, so it runs behind
- * authentication. Asking someone to describe how they feel is the first real
- * task of the product, and it belongs after sign-in rather than in front of it.
- *
- * Copy and structure are carried over unchanged from the flow that used to sit
- * inside the sign-in page; only its home and its completion callback changed.
- */
+/** Collect a local check-in; persistent storage requires a separate choice. */
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { checkInToText, saveCheckIn } from "../../lib/checkin";
+import { checkInToText, saveCheckIn, clearCheckIn } from "../../lib/checkin";
 import { generateWelcomeGreeting, clearRememberedThemes, type WelcomeGreeting } from "../../lib/personalization";
 
 type StepId = "greeting" | "feeling" | "weighing" | "today";
@@ -23,7 +9,6 @@ const STEPS: StepId[] = ["greeting", "feeling", "weighing", "today"];
 
 interface Step {
   label: string;
-  /** Compact form, used to label each answer in the recap. */
   short: string;
   prompt: string;
   placeholder: string;
@@ -59,15 +44,13 @@ const STEP_COPY: Record<StepId, Step> = {
 };
 
 interface Props {
-  /** Called with the flattened check-in text once the last step is submitted. */
   onComplete: (text: string, answers: Record<string, string>) => void;
-  /** Answers recovered from a previous visit, used to prefill the fields. */
   initial?: Record<string, string> | null;
-  /** Optional user name for personalization */
   userName?: string;
 }
 
 export function CheckInFlow({ onComplete, initial, userName }: Props) {
+  const [remember, setRemember] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(initial ?? {});
   const [greeting, setGreeting] = useState<WelcomeGreeting>(() => generateWelcomeGreeting(userName));
@@ -82,6 +65,12 @@ export function CheckInFlow({ onComplete, initial, userName }: Props) {
   useEffect(() => {
     headingRef.current?.focus();
   }, [stepIndex]);
+
+  useEffect(() => {
+    const refresh = () => setGreeting(generateWelcomeGreeting(userName));
+    window.addEventListener("mental-personalization-change", refresh);
+    return () => window.removeEventListener("mental-personalization-change", refresh);
+  }, [userName]);
 
   const setAnswer = (value: string) =>
     setAnswers((prev) => ({ ...prev, [stepId]: value }));
@@ -99,7 +88,8 @@ export function CheckInFlow({ onComplete, initial, userName }: Props) {
       setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
       return;
     }
-    saveCheckIn(answers);
+    if (remember) saveCheckIn(answers);
+    else clearCheckIn();
     onComplete(checkInToText(answers), answers);
   };
 
@@ -157,6 +147,7 @@ export function CheckInFlow({ onComplete, initial, userName }: Props) {
       )}
 
       <form className="checkin__form" onSubmit={submit}>
+        <label><input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} /> Save check-in answers on this browser for this account. Storage is not encrypted.</label>
         <div className="checkin__field">
           <span className="label">{copy.label}</span>
           <p className="checkin__prompt" ref={headingRef} tabIndex={-1}>

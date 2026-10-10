@@ -1,23 +1,17 @@
-/**
- * Personalized therapist-like welcome experience.
- *
- * All state is strictly client-side and scoped to the active browser account.
- * Themes are abstracted into high-level reflective categories; raw text is
- * NEVER mirrored back verbatim, and clinical labels are NEVER assumed.
- */
 import { privateStorageKey } from "./privateStore";
 
 const STORAGE_KEY = "mental.ai.personalization";
 
 export interface PersonalizationPreferences {
   enabled: boolean;
+  consentVersion?: 1;
   preferredName?: string;
   lastVisitAt?: number;
   rememberedThemes: string[];
 }
 
 const DEFAULT_PREFS: PersonalizationPreferences = {
-  enabled: true,
+  enabled: false,
   rememberedThemes: [],
 };
 
@@ -29,10 +23,12 @@ export function loadPersonalizationPrefs(): PersonalizationPreferences {
     if (!raw) return { ...DEFAULT_PREFS };
     const parsed = JSON.parse(raw);
     return {
-      enabled: typeof parsed.enabled === "boolean" ? parsed.enabled : true,
+      enabled: parsed.enabled === true && parsed.consentVersion === 1,
       preferredName: typeof parsed.preferredName === "string" ? parsed.preferredName : undefined,
       lastVisitAt: typeof parsed.lastVisitAt === "number" ? parsed.lastVisitAt : undefined,
-      rememberedThemes: Array.isArray(parsed.rememberedThemes) ? parsed.rememberedThemes : [],
+      rememberedThemes: parsed.enabled === true && parsed.consentVersion === 1 && Array.isArray(parsed.rememberedThemes)
+        ? parsed.rememberedThemes.filter((v: unknown): v is string => typeof v === "string").slice(0, 3) : [],
+      consentVersion: parsed.consentVersion === 1 ? 1 : undefined,
     };
   } catch {
     return { ...DEFAULT_PREFS };
@@ -46,9 +42,16 @@ export function savePersonalizationPrefs(prefs: Partial<PersonalizationPreferenc
   const updated: PersonalizationPreferences = {
     ...current,
     ...prefs,
+    consentVersion: prefs.enabled === true ? 1 : current.consentVersion,
   };
+  if (!updated.enabled) {
+    updated.rememberedThemes = [];
+    delete updated.preferredName;
+    delete updated.lastVisitAt;
+  }
   try {
     localStorage.setItem(key, JSON.stringify(updated));
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("mental-personalization-change"));
   } catch {
     /* ignore local storage quota / unavailability */
   }
@@ -64,14 +67,12 @@ export function clearAllPersonalization(): void {
   if (!key) return;
   try {
     localStorage.removeItem(key);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("mental-personalization-change"));
   } catch {
     /* ignore */
   }
 }
 
-/**
- * Distill high-level conversational themes safely without saving raw quotes.
- */
 export function extractSafeThemes(text: string): string[] {
   const lower = text.toLowerCase();
   const themes: string[] = [];
@@ -95,9 +96,6 @@ export function extractSafeThemes(text: string): string[] {
   return themes.slice(0, 2);
 }
 
-/**
- * Record a visit and update safe high-level themes.
- */
 export function recordSessionVisit(text?: string, name?: string): void {
   const prefs = loadPersonalizationPrefs();
   if (!prefs.enabled) return;
@@ -119,19 +117,16 @@ export interface WelcomeGreeting {
   themes: string[];
 }
 
-/**
- * Construct a gentle, non-prescriptive welcome reflection.
- */
 export function generateWelcomeGreeting(name?: string): WelcomeGreeting {
   const prefs = loadPersonalizationPrefs();
-  const greetingName = name || prefs.preferredName;
+  const greetingName = name || (prefs.enabled ? prefs.preferredName : undefined);
   const nameSalutation = greetingName ? `, ${greetingName}` : "";
 
   if (!prefs.enabled || prefs.rememberedThemes.length === 0) {
     return {
       headline: `Welcome${nameSalutation}`,
       subtext:
-        "Take a quiet breath. Whatever is on your mind today, you're welcome to write as much or as little as you need.",
+        "Write as much or as little as you like.",
       hasPastContext: false,
       themes: [],
     };
@@ -144,7 +139,7 @@ export function generateWelcomeGreeting(name?: string): WelcomeGreeting {
 
   return {
     headline: `Welcome back${nameSalutation}`,
-    subtext: `Last time we checked in, things were centering around ${themesList}. How have things been moving since then, or is there something completely different on your mind today?`,
+    subtext: `Your saved themes include ${themesList}. What would you like to reflect on today?`,
     hasPastContext: true,
     themes: prefs.rememberedThemes,
   };

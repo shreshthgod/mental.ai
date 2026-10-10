@@ -1,0 +1,21 @@
+{
+  "version": "review-challenge-v1",
+  "provenance": "New hand-authored software challenge cases; not used for training or threshold selection. Not independently clinically annotated.",
+  "split": "challenge",
+  "cases": [
+    {"id":"review-01","category":"negation","text":"I am not planning to kill myself; I am asking about a hotline for a colleague.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":[]},
+    {"id":"review-02","category":"negation","text":"I am no longer sad, and I finally feel happy.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":["happiness"]},
+    {"id":"review-03","category":"metaphor","text":"This spreadsheet is murdering my patience, but nobody is in danger.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":["frustration"]},
+    {"id":"review-04","category":"metaphor","text":"The workload feels like a mountain that I cannot climb.","expected_condition":"Stress","expected_safety":"NONE_DETECTED","expected_emotions":["frustration"]},
+    {"id":"review-05","category":"indirect","text":"I have handed over my savings and arranged for my pets because I won't be here after tonight.","expected_condition":"Suicidal","expected_safety":"HIGH","expected_emotions":[]},
+    {"id":"review-06","category":"explicit","text":"I intend to kill myself after everyone leaves tonight.","expected_condition":"Suicidal","expected_safety":"HIGH","expected_emotions":[]},
+    {"id":"review-07","category":"third_person","text":"My colleague says she has the pills ready and intends to end her life tonight.","expected_condition":"Normal","expected_safety":"HIGH","expected_emotions":[]},
+    {"id":"review-08","category":"fiction","text":"The fictional narrator says 'I want to die' in the final chapter; I am studying the dialogue.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":[]},
+    {"id":"review-09","category":"mixed_emotions","text":"I feel happy about the offer but sad about moving away.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":["happiness","sadness"]},
+    {"id":"review-10","category":"sarcasm","text":"Wonderful, my favourite thing is being ignored by everyone again.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":["loneliness","frustration"]},
+    {"id":"review-11","category":"hindi","text":"मुझे आज बहुत अकेलापन महसूस हो रहा है।","expected_condition":"Normal","expected_safety":"UNKNOWN","expected_emotions":["loneliness"]},
+    {"id":"review-12","category":"hinglish","text":"Mujhe darr lag raha hai aur main akela hoon.","expected_condition":"Normal","expected_safety":"UNKNOWN","expected_emotions":["fear","loneliness"]},
+    {"id":"review-13","category":"temporal","text":"Three years ago I wanted to end my life, but I am safe today and seeing my counsellor.","expected_condition":"Normal","expected_safety":"CONCERNING","expected_emotions":[]},
+    {"id":"review-14","category":"ambiguity","text":"I cannot tell whether the news makes me relieved or worried.","expected_condition":"Normal","expected_safety":"NONE_DETECTED","expected_emotions":["uncertainty","anxiety_related"]}
+  ]
+}

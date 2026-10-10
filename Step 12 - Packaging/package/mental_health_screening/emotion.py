@@ -1,15 +1,7 @@
-"""Emotion analysis module separate from clinical condition and safety tracks.
+"""Unvalidated English lexical emotion cues for offline experiments.
 
-Distinguishes:
-1. Observed emotional cues (lexical and syntactic indicators).
-2. Self-reported feelings (first-person disclosure vs external/third-person reporting).
-3. Mental-health screening signals (condition patterns are separate from emotional states).
-4. Potentially urgent support needs (crisis language vs benign emotional expression).
-5. Information that cannot be inferred reliably from text alone (etiology, chronicity, clinical certainty).
-
-Explicit clinical boundary:
-Detected sadness does NOT equate to depression.
-Detected excitement or elevated mood does NOT equate to bipolar disorder.
+Scores are capped term counts, not probabilities or calibrated confidence.
+The lexicon has no verified attribution to a published emotion taxonomy.
 """
 from __future__ import annotations
 
@@ -19,7 +11,6 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, Mapping, Sequence
 
-# Supported multi-label emotional categories
 EMOTION_CATEGORIES = (
     "sadness",
     "loneliness",
@@ -32,8 +23,7 @@ EMOTION_CATEGORIES = (
     "uncertainty",
 )
 
-# Documented curated lexicon mapping for emotional cues.
-# Sourced from validated psychological emotion taxonomies (NRC / Ekman / Plutchik expansions).
+
 EMOTION_CUE_LEXICON: dict[str, Sequence[str]] = {
     "sadness": (
         "sad", "sorrow", "grief", "heartbroken", "gloomy", "melancholy", "down",
@@ -131,7 +121,7 @@ class EmotionAnalysis:
 
 
 class EmotionRecognizer:
-    """Analyzes multi-label emotional signals with self-report and clinical boundaries."""
+    """Match lexical cues; do not infer diagnoses or confidence."""
 
     def __init__(self, custom_lexicon_path: str | None = None):
         self._lexicon = dict(EMOTION_CUE_LEXICON)
@@ -140,7 +130,7 @@ class EmotionRecognizer:
                 with open(custom_lexicon_path, "r", encoding="utf-8") as f:
                     data = json.load(f)
                     if isinstance(data, dict) and "lexicon" in data:
-                        # Incorporate statistical emotion lexicon distributions where available
+
                         for word, dist in data["lexicon"].items():
                             if isinstance(dist, dict):
                                 for em_name, p in dist.items():
@@ -168,12 +158,10 @@ class EmotionRecognizer:
         lower = text.lower()
         words = set(re.findall(r"[a-z']+", lower))
 
-        # Check negation context
         negated_targets: set[str] = set()
         for match in re.finditer(r"\b(not|never|don't|no|hardly)\s+(\w+)", lower):
             negated_targets.add(match.group(2))
 
-        # Self-reported vs third-person detection
         is_self_reported = any(bool(p.search(lower)) for p in FIRST_PERSON_PATTERNS)
         is_third_person = any(bool(p.search(lower)) for p in THIRD_PERSON_PATTERNS)
 
@@ -205,7 +193,6 @@ class EmotionRecognizer:
                     )
                 )
 
-        # Sort cues by score descending
         cues.sort(key=lambda c: c.score, reverse=True)
         primary_emotions = tuple(c.emotion for c in cues if c.score >= 0.3)
 
@@ -214,7 +201,6 @@ class EmotionRecognizer:
             or bool(re.search(r"\b(i don't know|not sure|maybe|perhaps|confused)\b", lower))
         )
 
-        # Build clinical distinction advisory
         distinctions: list[str] = []
         if "sadness" in primary_emotions:
             distinctions.append("Observed sadness is an emotional cue, not clinical depression.")
