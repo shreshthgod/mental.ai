@@ -31,8 +31,10 @@ export function WordPlane({ live, plane, dimmed = false }: Props) {
       <span className="entry__word">
         {GLYPHS.map((ch, i) => {
           const isDot = ch === ".";
-          // In front plane only crossing letters are painted; rest remain invisible to hold exact metrics
-          const suppressed = plane === "front" && !FRONT.has(i);
+          const isFront = FRONT.has(i);
+          // Front plane paints only crossing letters; back plane paints only outer letters.
+          // Neither plane paints both, preventing double strokes, ghost boxes, and subpixel glitches.
+          const suppressed = plane === "front" ? !isFront : isFront;
           return (
             <span
               key={i}
@@ -41,7 +43,7 @@ export function WordPlane({ live, plane, dimmed = false }: Props) {
               } ${suppressed ? "entry__letter--behind" : ""}`}
               style={{
                 ["--char-index" as string]: i,
-                ["--letter-delay" as string]: `${i * 85}ms`,
+                ["--letter-delay" as string]: `${i * 90}ms`,
               }}
             >
               {ch}

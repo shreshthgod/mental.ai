@@ -141,7 +141,7 @@ export function Start() {
       instant ? 0 : (reduced ? 0 : HERO_APPEAR_MS)
     );
 
-    // T = ~3500ms (2s later): drifts to the left 70% of the screen
+    // T = ~3250ms (2s later): drifts to the left 70% of the screen
     handoverRef.current = window.setTimeout(
       () => {
         setSplit(true);
