@@ -1,0 +1,634 @@
+{
+  "status": "research_challenge",
+  "dataset_split": "challenge",
+  "independent_holdout": false,
+  "dataset_sha256": "2ab9b4c23229341e99f42a9953fb1bf481d3938729cd255575b9cfe236d067e0",
+  "cases": 14,
+  "limitations": [
+    "Previously inspected examples; no generalization claim",
+    "Condition labels are scenario annotations, not clinical ground truth",
+    "Emotion scores are lexical counts, not calibrated probabilities"
+  ],
+  "contextual": {
+    "status": "unavailable"
+  },
+  "validated_hybrid": {
+    "status": "unavailable"
+  },
+  "condition": {
+    "Anxiety": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 0.0
+    },
+    "Normal": {
+      "precision": 0.7777777777777778,
+      "recall": 0.6363636363636364,
+      "f1-score": 0.7,
+      "support": 11.0
+    },
+    "Stress": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1.0
+    },
+    "Suicidal": {
+      "precision": 0.25,
+      "recall": 0.5,
+      "f1-score": 0.3333333333333333,
+      "support": 2.0
+    },
+    "accuracy": 0.5714285714285714,
+    "macro avg": {
+      "precision": 0.2569444444444444,
+      "recall": 0.28409090909090906,
+      "f1-score": 0.2583333333333333,
+      "support": 14.0
+    },
+    "weighted avg": {
+      "precision": 0.6468253968253969,
+      "recall": 0.5714285714285714,
+      "f1-score": 0.5976190476190475,
+      "support": 14.0
+    }
+  },
+  "legacy_config": {
+    "handcrafted_feature_order": [
+      "char_count",
+      "word_count",
+      "avg_word_len",
+      "exclam_count",
+      "question_count",
+      "ellipsis_count",
+      "all_caps_ratio",
+      "repeated_punct_count",
+      "vader_neg",
+      "vader_neu",
+      "vader_pos",
+      "vader_compound",
+      "flesch_reading_ease",
+      "flesch_kincaid_grade",
+      "pronoun_ratio",
+      "negation_count",
+      "absolutist_ratio",
+      "urgency_keyword_count",
+      "urgency_keyword_flag",
+      "nrc_fear",
+      "nrc_anger",
+      "nrc_anticipation",
+      "nrc_trust",
+      "nrc_surprise",
+      "nrc_positive",
+      "nrc_negative",
+      "nrc_sadness",
+      "nrc_disgust",
+      "nrc_joy",
+      "emo_lex_Normal",
+      "emo_lex_anger",
+      "emo_lex_fun",
+      "emo_lex_happiness",
+      "emo_lex_hate",
+      "emo_lex_love",
+      "emo_lex_sadness",
+      "emo_lex_surprise",
+      "emo_lex_worry"
+    ],
+    "primary_dataset": {
+      "classes": [
+        "Normal",
+        "Depression",
+        "Suicidal",
+        "Anxiety",
+        "Bipolar",
+        "Stress",
+        "Personality disorder"
+      ],
+      "chi2_k": 1500,
+      "model_file": "primary_xgboost.pkl",
+      "tfidf_vectorizer_file": "primary_tfidf_vectorizer.pkl",
+      "chi2_selector_file": "primary_chi2_selector.pkl",
+      "feature_space": "38 handcrafted + chi2-selected 1500 TF-IDF terms = 1538 dims",
+      "test_macro_f1": 0.6926
+    },
+    "urgency_dataset": {
+      "classes": [
+        "non-suicide",
+        "suicide"
+      ],
+      "model_file": "urgency_logreg.pkl",
+      "tfidf_vectorizer_file": "urgency_tfidf_vectorizer.pkl",
+      "feature_space": "full 30000-dim TF-IDF",
+      "decision_threshold": 0.15,
+      "default_threshold": 0.5,
+      "test_macro_f1_at_default_threshold": 0.9431,
+      "test_macro_f1_at_deployed_threshold": 0.8981,
+      "threshold_rationale": "0.15 chosen over the default 0.5 to prioritize suicide-class recall (0.987 vs 0.934) for a safety-net layer, at the cost of precision (0.840 vs 0.952). See Step 10's README for the full sweep."
+    },
+    "curated_urgency_keywords_file": "curated_urgency_keywords.json",
+    "emotion_lexicon_file": "emotion_lexicon.json",
+    "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56)."
+  },
+  "safety": {
+    "legacy_safety": {
+      "crisis_cases": 3,
+      "crisis_recall": 0.6666666666666666,
+      "false_negative_ids": [
+        "review-05"
+      ],
+      "false_positive_ids": [
+        "review-01"
+      ],
+      "false_positive_definition": "Predicted HIGH/IMMEDIATE for any other expected level"
+    },
+    "safety_raw": {
+      "crisis_cases": 3,
+      "crisis_recall": 0.6666666666666666,
+      "false_negative_ids": [
+        "review-05"
+      ],
+      "false_positive_ids": [
+        "review-01"
+      ],
+      "false_positive_definition": "Predicted HIGH/IMMEDIATE for any other expected level"
+    }
+  },
+  "emotion": {
+    "macro_f1": 0.2962962962962963,
+    "micro_f1": 0.4444444444444444,
+    "exact_subset_accuracy": 0.5,
+    "per_emotion": {
+      "sadness": {
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1-score": 0.6666666666666666,
+        "support": 1.0
+      },
+      "loneliness": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "anger": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 0.0
+      },
+      "fear": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1.0
+      },
+      "anxiety_related": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 1.0
+      },
+      "happiness": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "excitement": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 0.0
+      },
+      "frustration": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "uncertainty": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 1.0
+      },
+      "micro avg": {
+        "precision": 0.6666666666666666,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.4444444444444444,
+        "support": 12.0
+      },
+      "macro avg": {
+        "precision": 0.2777777777777778,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.2962962962962963,
+        "support": 12.0
+      },
+      "weighted avg": {
+        "precision": 0.2916666666666667,
+        "recall": 0.3333333333333333,
+        "f1-score": 0.3055555555555555,
+        "support": 12.0
+      },
+      "samples avg": {
+        "precision": 0.17857142857142858,
+        "recall": 0.17857142857142858,
+        "f1-score": 0.16666666666666666,
+        "support": 12.0
+      }
+    },
+    "errors": {
+      "sadness": {
+        "false_positive_ids": [
+          "review-02"
+        ],
+        "false_negative_ids": []
+      },
+      "loneliness": {
+        "false_positive_ids": [
+          "review-03"
+        ],
+        "false_negative_ids": [
+          "review-10",
+          "review-11",
+          "review-12"
+        ]
+      },
+      "anger": {
+        "false_positive_ids": [],
+        "false_negative_ids": []
+      },
+      "fear": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "review-12"
+        ]
+      },
+      "anxiety_related": {
+        "false_positive_ids": [],
+        "false_negative_ids": []
+      },
+      "happiness": {
+        "false_positive_ids": [],
+        "false_negative_ids": []
+      },
+      "excitement": {
+        "false_positive_ids": [],
+        "false_negative_ids": []
+      },
+      "frustration": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "review-03",
+          "review-04",
+          "review-10"
+        ]
+      },
+      "uncertainty": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "review-14"
+        ]
+      }
+    }
+  },
+  "latency_ms": {
+    "p50": 15.191750004305504,
+    "p95": 1741.4635400011302
+  },
+  "records": [
+    {
+      "id": "review-01",
+      "category": "negation",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "HIGH",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "HIGH",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-02",
+      "category": "negation",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "happiness",
+          "sadness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-03",
+      "category": "metaphor",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "loneliness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-04",
+      "category": "metaphor",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-05",
+      "category": "indirect",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-06",
+      "category": "explicit",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "HIGH",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "HIGH",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-07",
+      "category": "third_person",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "HIGH",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "HIGH",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-08",
+      "category": "fiction",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "NONE_DETECTED",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-09",
+      "category": "mixed_emotions",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "happiness",
+          "sadness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-10",
+      "category": "sarcasm",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-11",
+      "category": "hindi",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-12",
+      "category": "hinglish",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-13",
+      "category": "temporal",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "CONCERNING",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "CONCERNING",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "review-14",
+      "category": "ambiguity",
+      "prediction": {
+        "condition": "Anxiety",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "anxiety_related"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    }
+  ]
+}

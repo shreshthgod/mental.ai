@@ -1,0 +1,927 @@
+{
+  "status": "corrected_development_only",
+  "dataset_split": "consumed_development",
+  "independent_holdout": false,
+  "dataset_sha256": "e9fea9b84ddeb099238cc229bbb1192b168f2825338d0c892b61512960b24612",
+  "cases": 24,
+  "limitations": [
+    "Previously inspected examples; no generalization claim",
+    "Condition labels are scenario annotations, not clinical ground truth",
+    "Emotion scores are lexical counts, not calibrated probabilities"
+  ],
+  "contextual": {
+    "status": "unavailable"
+  },
+  "validated_hybrid": {
+    "status": "unavailable"
+  },
+  "condition": {
+    "Anxiety": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "Bipolar": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1-score": 0.6666666666666666,
+      "support": 2.0
+    },
+    "Depression": {
+      "precision": 0.3333333333333333,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.3333333333333333,
+      "support": 3.0
+    },
+    "Normal": {
+      "precision": 0.2,
+      "recall": 0.5,
+      "f1-score": 0.2857142857142857,
+      "support": 6.0
+    },
+    "Personality disorder": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 1.0
+    },
+    "Stress": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 3.0
+    },
+    "Suicidal": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1-score": 0.0,
+      "support": 6.0
+    },
+    "accuracy": 0.3333333333333333,
+    "macro avg": {
+      "precision": 0.36190476190476195,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.32653061224489793,
+      "support": 24.0
+    },
+    "weighted avg": {
+      "precision": 0.3,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.29365079365079366,
+      "support": 24.0
+    }
+  },
+  "legacy_config": {
+    "handcrafted_feature_order": [
+      "char_count",
+      "word_count",
+      "avg_word_len",
+      "exclam_count",
+      "question_count",
+      "ellipsis_count",
+      "all_caps_ratio",
+      "repeated_punct_count",
+      "vader_neg",
+      "vader_neu",
+      "vader_pos",
+      "vader_compound",
+      "flesch_reading_ease",
+      "flesch_kincaid_grade",
+      "pronoun_ratio",
+      "negation_count",
+      "absolutist_ratio",
+      "urgency_keyword_count",
+      "urgency_keyword_flag",
+      "nrc_fear",
+      "nrc_anger",
+      "nrc_anticipation",
+      "nrc_trust",
+      "nrc_surprise",
+      "nrc_positive",
+      "nrc_negative",
+      "nrc_sadness",
+      "nrc_disgust",
+      "nrc_joy",
+      "emo_lex_Normal",
+      "emo_lex_anger",
+      "emo_lex_fun",
+      "emo_lex_happiness",
+      "emo_lex_hate",
+      "emo_lex_love",
+      "emo_lex_sadness",
+      "emo_lex_surprise",
+      "emo_lex_worry"
+    ],
+    "primary_dataset": {
+      "classes": [
+        "Normal",
+        "Depression",
+        "Suicidal",
+        "Anxiety",
+        "Bipolar",
+        "Stress",
+        "Personality disorder"
+      ],
+      "chi2_k": 1500,
+      "model_file": "primary_xgboost.pkl",
+      "tfidf_vectorizer_file": "primary_tfidf_vectorizer.pkl",
+      "chi2_selector_file": "primary_chi2_selector.pkl",
+      "feature_space": "38 handcrafted + chi2-selected 1500 TF-IDF terms = 1538 dims",
+      "test_macro_f1": 0.6926
+    },
+    "urgency_dataset": {
+      "classes": [
+        "non-suicide",
+        "suicide"
+      ],
+      "model_file": "urgency_logreg.pkl",
+      "tfidf_vectorizer_file": "urgency_tfidf_vectorizer.pkl",
+      "feature_space": "full 30000-dim TF-IDF",
+      "decision_threshold": 0.15,
+      "default_threshold": 0.5,
+      "test_macro_f1_at_default_threshold": 0.9431,
+      "test_macro_f1_at_deployed_threshold": 0.8981,
+      "threshold_rationale": "0.15 chosen over the default 0.5 to prioritize suicide-class recall (0.987 vs 0.934) for a safety-net layer, at the cost of precision (0.840 vs 0.952). See Step 10's README for the full sweep."
+    },
+    "curated_urgency_keywords_file": "curated_urgency_keywords.json",
+    "emotion_lexicon_file": "emotion_lexicon.json",
+    "provenance_caveat": "Both models are trained on proxy labels (subreddit of origin), not clinician-verified diagnoses. Outputs are a screening signal, not a diagnosis -- see the paper-details doc's Limitations section (items 53-56)."
+  },
+  "safety": {
+    "legacy_safety": {
+      "crisis_cases": 6,
+      "crisis_recall": 0.16666666666666666,
+      "false_negative_ids": [
+        "bench-quotation-02",
+        "bench-thirdperson-01",
+        "bench-indirect-01",
+        "bench-indirect-02",
+        "bench-hinglish-02"
+      ],
+      "false_positive_ids": [],
+      "false_positive_definition": "Predicted HIGH/IMMEDIATE for any other expected level"
+    },
+    "safety_raw": {
+      "crisis_cases": 6,
+      "crisis_recall": 0.16666666666666666,
+      "false_negative_ids": [
+        "bench-quotation-02",
+        "bench-thirdperson-01",
+        "bench-indirect-01",
+        "bench-indirect-02",
+        "bench-hinglish-02"
+      ],
+      "false_positive_ids": [],
+      "false_positive_definition": "Predicted HIGH/IMMEDIATE for any other expected level"
+    }
+  },
+  "emotion": {
+    "macro_f1": 0.3566001899335232,
+    "micro_f1": 0.3448275862068966,
+    "exact_subset_accuracy": 0.25,
+    "per_emotion": {
+      "sadness": {
+        "precision": 0.5,
+        "recall": 0.09090909090909091,
+        "f1-score": 0.15384615384615385,
+        "support": 11.0
+      },
+      "loneliness": {
+        "precision": 1.0,
+        "recall": 0.2857142857142857,
+        "f1-score": 0.4444444444444444,
+        "support": 7.0
+      },
+      "anger": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "fear": {
+        "precision": 1.0,
+        "recall": 0.2857142857142857,
+        "f1-score": 0.4444444444444444,
+        "support": 7.0
+      },
+      "anxiety_related": {
+        "precision": 1.0,
+        "recall": 0.5,
+        "f1-score": 0.6666666666666666,
+        "support": 4.0
+      },
+      "happiness": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1-score": 0.5,
+        "support": 2.0
+      },
+      "excitement": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 2.0
+      },
+      "frustration": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 7.0
+      },
+      "uncertainty": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 3.0
+      },
+      "micro avg": {
+        "precision": 0.8333333333333334,
+        "recall": 0.21739130434782608,
+        "f1-score": 0.3448275862068966,
+        "support": 46.0
+      },
+      "macro avg": {
+        "precision": 0.5555555555555556,
+        "recall": 0.2958152958152958,
+        "f1-score": 0.3566001899335232,
+        "support": 46.0
+      },
+      "weighted avg": {
+        "precision": 0.5760869565217391,
+        "recall": 0.21739130434782608,
+        "f1-score": 0.29524340393905607,
+        "support": 46.0
+      },
+      "samples avg": {
+        "precision": 0.20833333333333334,
+        "recall": 0.13541666666666666,
+        "f1-score": 0.15416666666666667,
+        "support": 46.0
+      }
+    },
+    "errors": {
+      "sadness": {
+        "false_positive_ids": [
+          "bench-negation-02"
+        ],
+        "false_negative_ids": [
+          "bench-sarcasm-02",
+          "bench-metaphor-01",
+          "bench-quotation-01",
+          "bench-quotation-02",
+          "bench-multiemotion-02",
+          "bench-indirect-01",
+          "bench-indirect-02",
+          "bench-hinglish-02",
+          "bench-tenthfloor-01",
+          "bench-bipolar-01"
+        ]
+      },
+      "loneliness": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-metaphor-01",
+          "bench-indirect-01",
+          "bench-hinglish-01",
+          "bench-hinglish-02",
+          "bench-personality-01"
+        ]
+      },
+      "anger": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-metaphor-02",
+          "bench-multiemotion-02",
+          "bench-personality-01"
+        ]
+      },
+      "fear": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-metaphor-01",
+          "bench-quotation-02",
+          "bench-hinglish-01",
+          "bench-tenthfloor-01",
+          "bench-personality-01"
+        ]
+      },
+      "anxiety_related": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-hinglish-01",
+          "bench-stress-01"
+        ]
+      },
+      "happiness": {
+        "false_positive_ids": [
+          "bench-indirect-02"
+        ],
+        "false_negative_ids": [
+          "bench-historical-01"
+        ]
+      },
+      "excitement": {
+        "false_positive_ids": [],
+        "false_negative_ids": []
+      },
+      "frustration": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-sarcasm-01",
+          "bench-sarcasm-02",
+          "bench-negation-01",
+          "bench-negation-02",
+          "bench-metaphor-02",
+          "bench-bipolar-01",
+          "bench-stress-01"
+        ]
+      },
+      "uncertainty": {
+        "false_positive_ids": [],
+        "false_negative_ids": [
+          "bench-negation-01",
+          "bench-multiemotion-02",
+          "bench-personality-01"
+        ]
+      }
+    }
+  },
+  "latency_ms": {
+    "p50": 15.123999997740611,
+    "p95": 18.405914994946215
+  },
+  "records": [
+    {
+      "id": "bench-sarcasm-01",
+      "category": "sarcasm",
+      "prediction": {
+        "condition": "Anxiety",
+        "urgency_flag": false,
+        "legacy_safety": "CONCERNING",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "CONCERNING",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "anxiety_related",
+          "fear"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-sarcasm-02",
+      "category": "sarcasm",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-negation-01",
+      "category": "negation",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NEEDS_CLARIFICATION",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-negation-02",
+      "category": "negation",
+      "prediction": {
+        "condition": "Depression",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "sadness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-metaphor-01",
+      "category": "metaphor_idiom",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "CONCERNING",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "CONCERNING",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-metaphor-02",
+      "category": "metaphor_idiom",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-quotation-01",
+      "category": "quotation",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-quotation-02",
+      "category": "quotation",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-multiemotion-01",
+      "category": "multiple_emotions",
+      "prediction": {
+        "condition": "Anxiety",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "anxiety_related",
+          "excitement",
+          "fear",
+          "happiness",
+          "loneliness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-multiemotion-02",
+      "category": "multiple_emotions",
+      "prediction": {
+        "condition": "Depression",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "loneliness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-thirdperson-01",
+      "category": "third_person",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "CONCERNING",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "CONCERNING",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "sadness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-thirdperson-02",
+      "category": "third_person",
+      "prediction": {
+        "condition": "Bipolar",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-indirect-01",
+      "category": "indirect_distress",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-indirect-02",
+      "category": "indirect_distress",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "happiness"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-historical-01",
+      "category": "historical",
+      "prediction": {
+        "condition": "Suicidal",
+        "urgency_flag": true,
+        "legacy_safety": "CONCERNING",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "CONCERNING",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-historical-02",
+      "category": "historical",
+      "prediction": {
+        "condition": "Depression",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-hinglish-01",
+      "category": "hinglish_hindi",
+      "prediction": {
+        "condition": "Anxiety",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-hinglish-02",
+      "category": "hinglish_hindi",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-abstention-01",
+      "category": "abstention_calibration",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-abstention-02",
+      "category": "abstention_calibration",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-tenthfloor-01",
+      "category": "safety_integrity",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "HIGH",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "HIGH",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-bipolar-01",
+      "category": "condition_distinction",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [
+          "excitement"
+        ],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-stress-01",
+      "category": "condition_distinction",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": false,
+        "legacy_safety": "UNKNOWN",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    },
+    {
+      "id": "bench-personality-01",
+      "category": "condition_distinction",
+      "prediction": {
+        "condition": "Normal",
+        "urgency_flag": true,
+        "legacy_safety": "NEEDS_CLARIFICATION",
+        "legacy_status": "complete",
+        "model_version": "sha256:3f1c66aa36e8554541309067a2851e9791400447838106290571aa15fcfbc654",
+        "safety_raw": "NONE_DETECTED",
+        "policy_version": "safety-policy-2026.10.09.6",
+        "contextual": {
+          "status": "unavailable",
+          "reason": "No validated classifier artifact"
+        },
+        "fusion": {
+          "status": "unavailable",
+          "reason": "No validated contextual classifier"
+        },
+        "emotions": [],
+        "emotion_version": "lexical-cues-v1-unvalidated"
+      }
+    }
+  ]
+}

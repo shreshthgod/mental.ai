@@ -468,3 +468,19 @@
 @media (prefers-reduced-motion: reduce) {
   .checkin { animation: none; }
 }
+
+.privacy-controls {
+  position: relative;
+  margin-bottom: 32px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  line-height: 1.6;
+}
+.privacy-controls summary { cursor: pointer; }
+.privacy-controls p, .privacy-controls label { display: block; margin-top: 12px; }
+.privacy-controls button { margin: 12px 12px 0 0; white-space: normal; }
+.privacy-controls input { margin-right: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
