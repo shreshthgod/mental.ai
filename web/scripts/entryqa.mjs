@@ -197,8 +197,12 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
         // Identity of the canvas node, so a remount during the hand-over is
         // detectable rather than invisible behind identical geometry.
         canvasTag: canvas ? canvas.dataset.engine ?? "" : "",
-        authVisible: getComputedStyle(document.querySelector(".auth-stage")).visibility,
-        authOpacity: Number(getComputedStyle(document.querySelector(".entry__panel-inner")).opacity),
+        authVisible: document.querySelector(".auth-stage")
+          ? getComputedStyle(document.querySelector(".auth-stage")).visibility
+          : "hidden",
+        authOpacity: document.querySelector(".entry__panel-inner")
+          ? Number(getComputedStyle(document.querySelector(".entry__panel-inner")).opacity)
+          : 0,
       };
     });
 

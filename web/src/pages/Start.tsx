@@ -47,24 +47,14 @@ const Grainient = lazy(() =>
 /** How long the greeting holds before the screening takes over. */
 const WELCOME_MS = 1150;
 
-const INTRO_KEY = "mental.ai_intro_played";
-
 /**
- * When the full-bleed presentation hands over to the 70/30 composition.
- *
- * Derived from the existing entry timeline rather than invented. The glyph
- * assembly is the last thing to finish: the ninth glyph starts at
- * `150 + 8 * 85 = 830ms` and its longest transition is 1100ms, so the word is
- * whole at ~1930ms. The sculpture emerges at 620ms and its transform runs
- * 2200ms from a 320ms delay, landing at ~3140ms. This waits past both, then
- * leaves the hand-over itself the full `--entry-handover`, so the move reads as
- * one continuous motion rather than a cut.
- *
- * A returning visitor has already seen all of it in this session, so they get
- * the composed state rather than the sequence.
+ * Choreographed entry sequence:
+ *   1. T = 0ms: "Mental.ai" animates for 1.0 second in metallic Marvel/Transformers movie credit style.
+ *   2. T = 1000ms: Hero appears (rotating metallic DNA spiral spring emerges at the center).
+ *   3. T = 3000ms (2 seconds after hero appears): The composition drifts smoothly to the left 70% of the screen.
  */
-const HANDOVER_MS = 3250;
-const HANDOVER_INSTANT_MS = 260;
+const HERO_APPEAR_MS = 1000;
+const HANDOVER_MS = 3000;
 
 type Phase = "form" | "authenticating" | "welcome";
 
@@ -108,23 +98,15 @@ export function Start() {
   const authed = useAuth() === "authed";
 
   const [live, setLive] = useState(false);
+  const [heroVisible, setHeroVisible] = useState(false);
   const [split, setSplit] = useState(false);
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState<string | null>(null);
   const [greeting, setGreeting] = useState("");
   const [focusSignal, setFocusSignal] = useState(0);
   const timerRef = useRef<number | null>(null);
+  const heroTimerRef = useRef<number | null>(null);
   const handoverRef = useRef<number | null>(null);
-
-  // The full glyph assembly plays once per browsing session. Returning
-  // visitors should land on a usable page immediately, not watch it again.
-  const [instant] = useState(() => {
-    try {
-      return sessionStorage.getItem(INTRO_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
 
   // Deep link: the guard records where an unauthenticated visitor was heading.
   const from = useRef<string>("/screen");
@@ -137,27 +119,25 @@ export function Start() {
   const welcome = phase === "welcome";
 
   useEffect(() => {
+    // T = 0ms: start 1-second metallic logo animation
     const raf = requestAnimationFrame(() => setLive(true));
-    // The hand-over is a separate step from the intro rather than part of it:
-    // the composition holds full-bleed until the word and the sculpture have
-    // both finished, then moves. Cancelled on unmount like every other timer
-    // here, so navigating away mid-sequence cannot set state on a dead tree.
-    handoverRef.current = window.setTimeout(
-      () => setSplit(true),
-      instant ? HANDOVER_INSTANT_MS : HANDOVER_MS
-    );
-    if (!instant) {
-      try {
-        sessionStorage.setItem(INTRO_KEY, "1");
-      } catch {
-        /* private mode */
-      }
-    }
+
+    // T = 1000ms (1s): hero appears
+    heroTimerRef.current = window.setTimeout(() => {
+      setHeroVisible(true);
+    }, reduced ? 0 : HERO_APPEAR_MS);
+
+    // T = 3000ms (2s later): drifts to the left 70% of the screen
+    handoverRef.current = window.setTimeout(() => {
+      setSplit(true);
+    }, reduced ? 200 : HANDOVER_MS);
+
     return () => {
       cancelAnimationFrame(raf);
+      if (heroTimerRef.current !== null) window.clearTimeout(heroTimerRef.current);
       if (handoverRef.current !== null) window.clearTimeout(handoverRef.current);
     };
-  }, [instant]);
+  }, [reduced]);
 
   useEffect(
     () => () => {
@@ -191,9 +171,9 @@ export function Start() {
   return (
     <main
       id="main"
-      className={`entry ${live ? "entry--live" : ""} ${split ? "entry--split" : ""} ${
-        welcome ? "entry--welcome" : ""
-      }`}
+      className={`entry ${live ? "entry--live" : ""} ${heroVisible ? "entry--hero-live" : ""} ${
+        split ? "entry--split" : ""
+      } ${welcome ? "entry--welcome" : ""}`}
     >
       {/* Atmosphere. Also the WebGL fallback surface: if both GL tiers fail,
           this gradient is what remains, so it has to stand on its own. */}
@@ -239,15 +219,15 @@ export function Start() {
                 stacking context so the sculpture genuinely passes between
                 them. */}
             <div className="entry__depth">
-              <WordPlane live={live} instant={instant} plane="back" dimmed={welcome} />
+              <WordPlane live={live} plane="back" dimmed={welcome} />
               <Suspense fallback={null}>
                 <NeuralStage
                   className="entry__stage"
-                  emergeDelayMs={instant ? 120 : 620}
+                  emergeDelayMs={0}
                   focus={welcome ? 1 : 0}
                 />
               </Suspense>
-              <WordPlane live={live} instant={instant} plane="front" dimmed={welcome} />
+              <WordPlane live={live} plane="front" dimmed={welcome} />
             </div>
 
             {/* Falloff over the scene, so type and fields stay readable, plus
