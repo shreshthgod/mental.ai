@@ -57,7 +57,7 @@ const INTRO_KEY = "mental.ai_intro_played";
  * Returning visitors in the same browsing session get the composed state directly via HANDOVER_INSTANT_MS.
  */
 const HERO_APPEAR_MS = 1000;
-const HANDOVER_MS = 3800;
+const HANDOVER_MS = 3250;
 const HANDOVER_INSTANT_MS = 260;
 
 type Phase = "form" | "authenticating" | "welcome";
