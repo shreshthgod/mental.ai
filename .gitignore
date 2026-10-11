@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 *.log
+:memory:.ses
 
 # Secrets. .env.example is the committed template and must stay tracked.
 .env
