@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError, type ConfigurationResponse, type PredictResponse } from "../lib/api";
 import { analysisView, analysisErrorView, formatProbability } from "../lib/analysisView";
-import { clearHistory, historyTitle, loadHistory, mergeAccountHistory, saveScreening, type ScreeningRecord } from "../lib/history";
+import { clearHistory, historyTitle, loadHistory, mergeAccountHistory, mergeHistoryRecords, saveScreening, type ScreeningRecord } from "../lib/history";
 import { clearCheckIn, loadCheckIn } from "../lib/checkin";
 import { currentUserId, onSessionChange, invalidateIfRejected } from "../lib/auth";
 import { PersonalizationControls } from "../components/screen/PersonalizationControls";
@@ -51,21 +51,10 @@ export function Screen() {
   };
   useEffect(() => {
     const configCtrl = new AbortController();
-    const historyCtrl = new AbortController();
     let owner = currentUserId();
     void api.configuration(configCtrl.signal).then(setConfiguration).catch(err => {
       if (!configCtrl.signal.aborted) setConfigurationError(analysisErrorView(err).body);
     });
-    if (owner) {
-      const requestedOwner = owner;
-      void api.screenings(12, historyCtrl.signal).then(data => {
-        if (!historyCtrl.signal.aborted && currentUserId() === requestedOwner) setHistory(mergeAccountHistory(data.screenings));
-      }).catch(err => {
-        if (historyCtrl.signal.aborted || currentUserId() !== requestedOwner) return;
-        if (err instanceof ApiError && err.kind === "unauthorized") invalidateIfRejected(err);
-        else setHistoryMessage("Account history could not be loaded. Device history is shown when available.");
-      });
-    }
     const unsubscribe = onSessionChange(() => {
       const next = currentUserId();
       if (next === owner) return;
@@ -75,19 +64,33 @@ export function Screen() {
       timersRef.current.forEach(t => clearTimeout(t));
       timersRef.current = [];
       abortRef.current?.abort();
-      historyCtrl.abort();
       setServerConsent(false); setSaveLocally(false); setInferenceMode("on_device");
       setText(""); setResult(null); setError(null); setPhase("idle");
       setValidationMsg(null); setRecordedAt(null); setDeviceMessage(null); setHistoryMessage(null);
       setHistory(loadHistory()); setCheckedIn(loadCheckIn() !== null);
     });
     return () => {
-      unsubscribe(); configCtrl.abort(); historyCtrl.abort();
+      unsubscribe(); configCtrl.abort();
       generation.current++;
       timersRef.current.forEach(t => clearTimeout(t));
       abortRef.current?.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (!account) return;
+    const ctrl = new AbortController();
+    void api.screenings(12, ctrl.signal).then(data => {
+      if (!ctrl.signal.aborted && currentUserId() === account) {
+        setHistory(current => mergeHistoryRecords(mergeAccountHistory(data.screenings), current));
+      }
+    }).catch(err => {
+      if (ctrl.signal.aborted || currentUserId() !== account) return;
+      if (err instanceof ApiError && err.kind === "unauthorized") invalidateIfRejected(err);
+      else setHistoryMessage("Account history could not be loaded. Device history is shown when available.");
+    });
+    return () => ctrl.abort();
+  }, [account]);
 
   const startWorkspace = (checkInText: string) => {
     setText(checkInText); setCheckedIn(true);
@@ -100,7 +103,7 @@ export function Screen() {
   };
   // Python len() counts Unicode code points, unlike JavaScript UTF-16 length.
   const len = Array.from(text).length;
-  const limit = configuration?.max_text_length ?? (inferenceMode === "on_device" ? 10000 : undefined);
+  const limit = inferenceMode === "on_device" ? 10000 : configuration?.max_text_length;
   const overLimit = limit !== undefined && len > limit;
   const empty = text.trim().length === 0;
 
@@ -130,9 +133,7 @@ export function Screen() {
     try {
       let response: PredictResponse;
       if (inferenceMode === "on_device") {
-
         response = await runOnDeviceInference(submittedText);
-
       } else {
         response = await api.predict(submittedText, ctrl.signal);
       }
@@ -140,14 +141,18 @@ export function Screen() {
       recordSessionVisit(submittedText);
       clearTimers();
       setStageIdx(STAGE_LABELS.length); setResult(response); setPhase("success");
-      const saved = saveLocally ? saveScreening(submittedText, response) : { records: loadHistory(), savedToDevice: false };
-      setHistory(saved.records);
+      const saved = saveLocally ? saveScreening(submittedText, response) : { records: [], savedToDevice: false };
+      const accountRecords: ScreeningRecord[] = response.persistence.status === "saved" && response.persistence.record_id
+        ? [{ id: response.persistence.record_id, at: Date.now(), text: saveLocally ? submittedText : null,
+            response, assessment: "authoritative" }]
+        : [];
+      setHistory(current => mergeHistoryRecords(current, saved.records, accountRecords));
       setDeviceMessage(
         inferenceMode === "on_device"
           ? (saved.savedToDevice ? "Saved on this device. Local analysis did not upload text." : "Available for this visit only. Local analysis did not upload text.")
           : saved.savedToDevice
           ? "Saved on this device for this account."
-          : "Device saving failed. The result is available for this visit."
+          : saveLocally ? "Device saving failed. The result is available for this visit." : "Not saved on this device."
       );
     } catch (err) {
       if (!active()) return;
@@ -157,6 +162,10 @@ export function Screen() {
     }
   };
   const cancel = () => { stopRequest(); setPhase("idle"); };
+  const selectInferenceMode = (mode: InferenceMode) => {
+    stopRequest(); setPhase("idle"); setResult(null); setError(null); setValidationMsg(null);
+    setRecordedAt(null); setDeviceMessage(null); setInferenceMode(mode); setServerConsent(false);
+  };
   const reset = () => { stopRequest(); setPhase("idle"); setResult(null); setRecordedAt(null); setError(null); };
   const showRecord = (record: ScreeningRecord) => {
     stopRequest();
@@ -234,7 +243,7 @@ export function Screen() {
             <span className="label label--accent">Privacy Mode:</span>
             <button
               type="button"
-              onClick={() => { stopRequest(); setInferenceMode("on_device"); setServerConsent(false); }}
+              onClick={() => selectInferenceMode("on_device")}
               className={`status ${inferenceMode === "on_device" ? "status--ready" : ""}`}
               style={{ cursor: "pointer", background: inferenceMode === "on_device" ? "var(--bg-raise)" : "transparent" }}
               title="Local safety rules; trained browser classifiers unavailable"
@@ -243,7 +252,7 @@ export function Screen() {
             </button>
             <button
               type="button"
-              onClick={() => { stopRequest(); setInferenceMode("server"); }}
+              onClick={() => selectInferenceMode("server")}
               className={`status ${inferenceMode === "server" ? "status--ready" : ""}`}
               style={{ cursor: "pointer", background: inferenceMode === "server" ? "var(--bg-raise)" : "transparent" }}
               title="Runs inference via the authenticated server endpoint"

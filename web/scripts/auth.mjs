@@ -59,7 +59,7 @@ function resolveCredentials() {
     password: password ?? "",
     // Display name is whatever Supabase holds for the account; the greeting
     // assertions derive it rather than assume it.
-    name: fromFile.MENTAL_AI_QA_NAME ?? "",
+    name: process.env.MENTAL_AI_QA_NAME ?? fromFile.MENTAL_AI_QA_NAME ?? "",
   };
 }
 

@@ -138,5 +138,6 @@ try {
   if (!exited) vite.kill("SIGTERM");
   await exit;
   report.owned_vite_stopped=true;
-  fs.writeFileSync(`../reports/browser-oauth${built ? "-built" : ""}.json`,JSON.stringify(report,null,2)+"\n");
+  fs.mkdirSync("shots", { recursive: true });
+  fs.writeFileSync(process.env.MENTAL_AI_BROWSER_REPORT ?? `shots/integration-oauth${built ? "-built" : ""}.json`,JSON.stringify(report,null,2)+"\n");
 }

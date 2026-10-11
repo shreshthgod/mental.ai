@@ -25,10 +25,16 @@ try {
   };
   const checkIn = async () => {
     if (await page.locator("#screen-input").count()) return;
+    await page.getByLabel("Save check-in answers", { exact: false }).check();
     for (let i = 0; i < 4; i++) {
       await page.locator(".checkin__input").fill(i === 0 ? "synthetic check-in" : "");
       await page.locator(".checkin__submit").click();
     }
+  };
+  const consentToServer = async () => {
+    await page.getByRole("button", { name: "Legacy server models", exact: true }).click();
+    await page.getByLabel("I agree to send", { exact: false }).check();
+    await page.getByLabel("Save text and results", { exact: false }).check();
   };
   const submit = async text => {
     if (await page.locator(".results").count()) await page.locator(".results__actions button").click();
@@ -40,6 +46,7 @@ try {
   await signIn("alice@example.com", "alice-pass");
   record("Existing login authenticates synthetic identity");
   await checkIn();
+  await consentToServer();
   const originalHTTP = await submit("i wanna jump from 10th floor");
   const response = await originalHTTP.json();
   await page.waitForSelector(".results", { timeout: 15000 });
@@ -53,7 +60,7 @@ try {
   assert.ok((await page.locator(".results__class-sub").first().innerText()).includes("Normal"));
   assert.equal(response.safety.immediacy, "not_stated");
   record("Original: safety headline, honest raw Normal, useful support and unknown immediacy", { actual_models: true });
-  await page.screenshot({ path: "../reports/browser-original-after.png", fullPage: true });
+  await page.screenshot({ path: process.env.MENTAL_AI_BROWSER_SCREENSHOT ?? "shots/integration-original-after.png", fullPage: true });
   const token = await page.evaluate(() => JSON.parse(localStorage.getItem("mental.ai.auth") ?? sessionStorage.getItem("mental.ai.auth")).token);
   const account = await page.request.get(`${BASE}/api/screenings`, { headers: { Authorization: `Bearer ${token}` } });
   assert.equal(account.status(), 200);
@@ -61,6 +68,17 @@ try {
   assert.deepEqual(saved.analysis_result.safety, response.safety);
   assert.equal(saved.analysis_result.model_version, response.model_version);
   record("Account read-back preserves original authoritative snapshot", { provider: "STUB" });
+  const previousHistoryCount = await page.locator(".history__row").count();
+  await page.getByLabel("Save text and results", { exact: false }).uncheck();
+  const cloudOnlyHTTP = await submit("synthetic server-only history record");
+  const cloudOnly = await cloudOnlyHTTP.json();
+  await page.waitForSelector(".results");
+  assert.equal(cloudOnly.persistence.status, "saved");
+  const localRecords = await page.evaluate(() => JSON.parse(localStorage.getItem("mental.ai.history.uuid-alice")));
+  assert.ok(localRecords.every(record => record.id !== cloudOnly.persistence.record_id));
+  assert.equal(await page.locator(".history__row").count(), Math.min(12, previousHistoryCount + 1));
+  assert.ok((await page.locator(".support__note").innerText()).includes("Not saved on this device."));
+  record("Consented server saving retains cloud history without implicit device persistence", { provider: "STUB", actual_models: true });
   await page.reload();
   await page.waitForSelector(".history__row", { timeout: 15000 });
   await page.locator(".history__row").filter({ hasText: "i wanna jump from 10th floor" }).first().click();
@@ -79,6 +97,7 @@ try {
   await page.waitForSelector("#screen-input", { timeout: 15000 });
   assert.ok((await page.locator(".account__trigger").innerText()).includes("ALICE"));
   record("Expired browser mirror attempts refresh and retains account", { provider: "STUB", actual_provider_expiry_not_tested: true });
+  await consentToServer();
 
   for (const item of [
     { name: "benign floor", text: "I live on the tenth floor", levels: ["NONE_DETECTED"], subject: "self" },
@@ -147,6 +166,26 @@ try {
   assert.equal(await page.locator(".results__class").first().innerText(), "Urgent support");
   await page.unroute("**/api/predict"); record("Cancelled/stale response cannot overwrite newer result", { mocked_response: true });
 
+  let modeRoute, modeStarted;
+  const modeArrived = new Promise(resolve => { modeStarted = resolve; });
+  await page.route("**/api/predict", route => { modeRoute = route; modeStarted(); });
+  await page.locator(".results__actions button").click();
+  await page.locator("#screen-input").fill("synthetic mode change");
+  await page.locator(".screen-form button[type=submit]").click();
+  await modeArrived;
+  await page.getByRole("button", { name: "Local rules (private text)", exact: true }).click();
+  assert.equal(await page.locator(".analysis").count(), 0);
+  assert.equal(await page.locator(".screen-form button[type=submit]").isDisabled(), false);
+  await modeRoute.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(newer) }).catch(() => {});
+  await page.unroute("**/api/predict");
+  await page.locator(".screen-form button[type=submit]").click();
+  await page.waitForSelector(".results");
+  assert.ok((await page.locator(".results__meta").innerText()).includes("local-"));
+  await page.getByRole("button", { name: "Legacy server models", exact: true }).click();
+  assert.equal(await page.getByLabel("I agree to send", { exact: false }).isChecked(), false);
+  await consentToServer();
+  record("Changing mode cancels pending server work, permits local analysis and requires fresh consent", { mocked_pending_response: true });
+
   for (const error of fixtures.error_cases.filter(c => c.status !== 401)) {
     await page.route("**/api/predict", route => route.fulfill({ status: error.status, contentType: "application/json", headers: error.retry_after ? { "Retry-After": error.retry_after } : {}, body: JSON.stringify(error.response) }));
     await submit("synthetic error text"); await page.waitForSelector(".error-panel");
@@ -179,6 +218,7 @@ try {
   assert.equal(await page.locator(".history__row").count(), 0);
   assert.equal(await page.locator(".results").count(), 0);
   await checkIn();
+  await consentToServer();
   assert.ok(!(await page.locator("#screen-input").inputValue()).includes("kill myself"));
   record("Account switch hides prior user's history/result/text", { provider: "STUB" });
   await page.route("**/api/predict", route => route.fulfill({ status: 401, contentType: "application/json", body: JSON.stringify({ detail: "Invalid token" }) }));
@@ -192,7 +232,7 @@ try {
 } catch (err) { report.failure = { name: err.name, message: err.message }; throw err; }
 finally {
   report.finished_at = new Date().toISOString(); report.passed = report.checks.length;
-  const output = process.env.MENTAL_AI_BROWSER_REPORT ?? "../reports/browser-acceptance-current.json";
+  const output = process.env.MENTAL_AI_BROWSER_REPORT ?? "shots/integration-screen.json";
   fs.mkdirSync(path.dirname(output), { recursive: true }); fs.writeFileSync(output, JSON.stringify(report, null, 2) + "\n");
   await browser.close();
   console.log(`${report.passed} browser checks passed; provider STUB; ${output}`);

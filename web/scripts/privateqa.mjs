@@ -60,8 +60,12 @@ try {
   const result = await runOnDeviceInference("private account a text");
   history.saveScreening("private account a text", result);
   const beforeMerge = new Map(storage);
-  history.mergeAccountHistory([{ id: "server-record", created_at: new Date().toISOString(), analysis_result: null }]);
+  const cloud = history.mergeAccountHistory([{ id: "server-record", created_at: new Date().toISOString(), analysis_result: null }]);
   assert.deepEqual(storage, beforeMerge, "Fetched server history must not persist without local consent");
+  const combined = history.mergeHistoryRecords(cloud, history.loadHistory());
+  assert.equal(combined.length, 2);
+  assert.ok(combined.some(record => record.id === "server-record"));
+  assert.deepEqual(storage, beforeMerge, "In-memory history reconciliation must not persist cloud records");
   setPrivateOwner("account-b");
   assert.deepEqual(history.loadHistory(), []);
   assert.equal(prefs.loadPersonalizationPrefs().enabled, false);

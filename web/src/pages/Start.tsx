@@ -236,7 +236,7 @@ export function Start() {
                 focusSignal={focusSignal}
                 busy={busy}
                 error={error}
-                hidden={welcome}
+                hidden={!split || welcome}
                 onSubmit={signIn}
                 returnTo={from.current}
               />

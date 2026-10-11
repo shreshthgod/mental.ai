@@ -21,10 +21,10 @@ try {
         if (node) {
           const scene = node.getBoundingClientRect();
           const word = document.querySelector(".entry__word-plane--front .entry__word").getBoundingClientRect();
-          window.__reviewFrames.push({x:scene.x,w:scene.width,canvasWidth:canvas?.width,wordX:word.x,
+          window.__reviewFrames.push({at:performance.now()-started,x:scene.x,w:scene.width,canvasWidth:canvas?.width,engine:canvas?.dataset.engine,wordX:word.x,
             split:document.querySelector(".entry").classList.contains("entry--split")});
         }
-        if (performance.now()-started<12000) requestAnimationFrame(sample);
+        if (!window.__reviewDone) requestAnimationFrame(sample);
       }
       requestAnimationFrame(sample);
     });
@@ -33,14 +33,18 @@ try {
     const canvas = await page.locator(".entry__stage canvas").elementHandle();
     await page.waitForFunction(() => document.querySelector(".entry").classList.contains("entry--split"));
     await page.waitForTimeout(1500);
+    await page.evaluate(() => { window.__reviewDone = true; });
     const samples = await page.evaluate(() => window.__reviewFrames);
+    fs.writeFileSync(`shots/review-frames-${width}.json`,JSON.stringify(samples,null,2));
     const initial = {x:samples[0].x,width:samples[0].w};
     const final = await page.locator(".hero-stage__scene").boundingBox();
     assert.equal(samples[0].split,false,"sequence must begin before split");
     if (width>1180) {
       assert.ok(final.x<initial.x-100,"scene must shift left");
       assert.ok(samples.every(s=>Math.abs(s.w-initial.width)<1),"scene must not resize during handover");
-      assert.equal(new Set(samples.map(s=>s.canvasWidth).filter(Boolean)).size,1,"canvas backing buffer must remain stable");
+      const initialized=samples.filter(s=>s.engine && s.engine!=="none");
+      assert.ok(initialized.some(s=>!s.split)&&initialized.some(s=>s.split),"initialized canvas must be sampled before and after handover");
+      assert.equal(new Set(initialized.map(s=>s.canvasWidth)).size,1,"initialized canvas backing buffer must remain stable");
       for (let i=1;i<samples.length;i++) {
         assert.ok(samples[i].x<=samples[i-1].x+0.1,"scene must move monotonically left");
         assert.ok(Math.abs((samples[i].wordX-samples[i].x)-(samples[0].wordX-samples[0].x))<1,"word and sculpture move together");
