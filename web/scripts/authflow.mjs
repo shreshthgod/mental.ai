@@ -204,8 +204,8 @@ const reducedPage = await browser.newPage({
 await reducedPage.goto(`${BASE}/login`, { waitUntil: "networkidle" });
 check("field renders under reduced motion",
   await reducedPage.locator(".signin__input").count(), 2);
-// The stage is a lazy chunk, so wait for it rather than sampling on first paint.
-await reducedPage.waitForSelector(".entry__stage canvas", { timeout: 15000 });
+// Software rendering can initialize after the form is already usable.
+await reducedPage.waitForSelector(".entry__stage canvas[data-engine]", { timeout: 60000 });
 check("sculpture present under reduced motion",
   await reducedPage.locator(".entry__stage canvas").count(), 1);
 check("reduced motion picked an engine",
