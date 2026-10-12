@@ -1,21 +1,30 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { api, ApiError, type ConfigurationResponse, type PredictResponse } from "../lib/api";
 import { analysisView, analysisErrorView, formatProbability } from "../lib/analysisView";
-import { clearHistory, historyTitle, loadHistory, mergeAccountHistory, saveScreening, type ScreeningRecord } from "../lib/history";
+import { clearHistory, historyTitle, loadHistory, mergeAccountHistory, mergeHistoryRecords, saveScreening, type ScreeningRecord } from "../lib/history";
 import { clearCheckIn, loadCheckIn } from "../lib/checkin";
 import { currentUserId, onSessionChange, invalidateIfRejected } from "../lib/auth";
+import { PersonalizationControls } from "../components/screen/PersonalizationControls";
 import { CheckInFlow } from "../components/screen/CheckInFlow";
 import { SystemStatus } from "../components/chrome/SystemStatus";
 import { Footer } from "../components/chrome/Footer";
+import { runOnDeviceInference, type OnDevicePredictResponse } from "../lib/onDeviceInference";
+import { recordSessionVisit } from "../lib/personalization";
 
 type Phase = "idle" | "analyzing" | "success" | "error";
+type InferenceMode = "on_device" | "server";
 const STAGE_LABELS = ["Language", "Features", "Condition model", "Urgency model", "Review preparation"];
 const STAGE_INTERVAL_MS = 520;
 
 export function Screen() {
+  const [checkInRevision, setCheckInRevision] = useState(0);
+  const [account, setAccount] = useState(currentUserId);
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<Phase>("idle");
   const [stageIdx, setStageIdx] = useState(0);
+  const [serverConsent, setServerConsent] = useState(false);
+  const [saveLocally, setSaveLocally] = useState(false);
+  const [inferenceMode, setInferenceMode] = useState<InferenceMode>("on_device");
   const [result, setResult] = useState<PredictResponse | null>(null);
   const [error, setError] = useState<ReturnType<typeof analysisErrorView> | null>(null);
   const [validationMsg, setValidationMsg] = useState<string | null>(null);
@@ -42,41 +51,46 @@ export function Screen() {
   };
   useEffect(() => {
     const configCtrl = new AbortController();
-    const historyCtrl = new AbortController();
     let owner = currentUserId();
     void api.configuration(configCtrl.signal).then(setConfiguration).catch(err => {
       if (!configCtrl.signal.aborted) setConfigurationError(analysisErrorView(err).body);
     });
-    if (owner) {
-      const requestedOwner = owner;
-      void api.screenings(12, historyCtrl.signal).then(data => {
-        if (!historyCtrl.signal.aborted && currentUserId() === requestedOwner) setHistory(mergeAccountHistory(data.screenings));
-      }).catch(err => {
-        if (historyCtrl.signal.aborted || currentUserId() !== requestedOwner) return;
-        if (err instanceof ApiError && err.kind === "unauthorized") invalidateIfRejected(err);
-        else setHistoryMessage("Account history could not be loaded. Device history is shown when available.");
-      });
-    }
     const unsubscribe = onSessionChange(() => {
       const next = currentUserId();
       if (next === owner) return;
       owner = next;
+      setAccount(next);
       generation.current++;
       timersRef.current.forEach(t => clearTimeout(t));
       timersRef.current = [];
       abortRef.current?.abort();
-      historyCtrl.abort();
+      setServerConsent(false); setSaveLocally(false); setInferenceMode("on_device");
       setText(""); setResult(null); setError(null); setPhase("idle");
       setValidationMsg(null); setRecordedAt(null); setDeviceMessage(null); setHistoryMessage(null);
       setHistory(loadHistory()); setCheckedIn(loadCheckIn() !== null);
     });
     return () => {
-      unsubscribe(); configCtrl.abort(); historyCtrl.abort();
+      unsubscribe(); configCtrl.abort();
       generation.current++;
       timersRef.current.forEach(t => clearTimeout(t));
       abortRef.current?.abort();
     };
   }, []);
+
+  useEffect(() => {
+    if (!account) return;
+    const ctrl = new AbortController();
+    void api.screenings(12, ctrl.signal).then(data => {
+      if (!ctrl.signal.aborted && currentUserId() === account) {
+        setHistory(current => mergeHistoryRecords(mergeAccountHistory(data.screenings), current));
+      }
+    }).catch(err => {
+      if (ctrl.signal.aborted || currentUserId() !== account) return;
+      if (err instanceof ApiError && err.kind === "unauthorized") invalidateIfRejected(err);
+      else setHistoryMessage("Account history could not be loaded. Device history is shown when available.");
+    });
+    return () => ctrl.abort();
+  }, [account]);
 
   const startWorkspace = (checkInText: string) => {
     setText(checkInText); setCheckedIn(true);
@@ -89,14 +103,20 @@ export function Screen() {
   };
   // Python len() counts Unicode code points, unlike JavaScript UTF-16 length.
   const len = Array.from(text).length;
-  const limit = configuration?.max_text_length;
+  const limit = inferenceMode === "on_device" ? 10000 : configuration?.max_text_length;
   const overLimit = limit !== undefined && len > limit;
   const empty = text.trim().length === 0;
 
   const analyze = async () => {
-    if (!configuration) { setValidationMsg("The service input limit is unavailable. Please try again later."); return; }
+    if (inferenceMode === "server" && !serverConsent) {
+      setValidationMsg("Consent to sending this text to the server before analysis."); return;
+    }
+    if (inferenceMode === "server" && !configuration) {
+      setValidationMsg("The server configuration is unavailable. Switch to On-Device mode or try again later.");
+      return;
+    }
     if (empty) { setValidationMsg("Enter text before running the analysis."); return; }
-    if (overLimit) { setValidationMsg(`Text exceeds the ${configuration.max_text_length.toLocaleString()}-character service limit.`); return; }
+    if (overLimit) { setValidationMsg(`Text exceeds the ${limit?.toLocaleString() ?? 10000}-character limit.`); return; }
     stopRequest();
     const requestGeneration = generation.current;
     const owner = currentUserId();
@@ -106,18 +126,34 @@ export function Screen() {
     const active = () => generation.current === requestGeneration && !ctrl.signal.aborted && currentUserId() === owner;
     setValidationMsg(null); setError(null); setResult(null); setRecordedAt(null); setDeviceMessage(null);
     setPhase("analyzing"); setStageIdx(0);
-    // This existing animation is cosmetic; it is not evidence of completed analysis stages.
+
     STAGE_LABELS.forEach((_, i) => timersRef.current.push(window.setTimeout(() => {
       if (active()) setStageIdx(i);
     }, i * STAGE_INTERVAL_MS)));
     try {
-      const response = await api.predict(submittedText, ctrl.signal);
+      let response: PredictResponse;
+      if (inferenceMode === "on_device") {
+        response = await runOnDeviceInference(submittedText);
+      } else {
+        response = await api.predict(submittedText, ctrl.signal);
+      }
       if (!active()) return;
+      recordSessionVisit(submittedText);
       clearTimers();
       setStageIdx(STAGE_LABELS.length); setResult(response); setPhase("success");
-      const saved = saveScreening(submittedText, response);
-      setHistory(saved.records);
-      setDeviceMessage(saved.savedToDevice ? "Saved on this device for this account." : "Device saving failed. The result is available for this visit.");
+      const saved = saveLocally ? saveScreening(submittedText, response) : { records: [], savedToDevice: false };
+      const accountRecords: ScreeningRecord[] = response.persistence.status === "saved" && response.persistence.record_id
+        ? [{ id: response.persistence.record_id, at: Date.now(), text: saveLocally ? submittedText : null,
+            response, assessment: "authoritative" }]
+        : [];
+      setHistory(current => mergeHistoryRecords(current, saved.records, accountRecords));
+      setDeviceMessage(
+        inferenceMode === "on_device"
+          ? (saved.savedToDevice ? "Saved on this device. Local analysis did not upload text." : "Available for this visit only. Local analysis did not upload text.")
+          : saved.savedToDevice
+          ? "Saved on this device for this account."
+          : saveLocally ? "Device saving failed. The result is available for this visit." : "Not saved on this device."
+      );
     } catch (err) {
       if (!active()) return;
       clearTimers();
@@ -126,14 +162,31 @@ export function Screen() {
     }
   };
   const cancel = () => { stopRequest(); setPhase("idle"); };
+  const selectInferenceMode = (mode: InferenceMode) => {
+    stopRequest(); setPhase("idle"); setResult(null); setError(null); setValidationMsg(null);
+    setRecordedAt(null); setDeviceMessage(null); setInferenceMode(mode); setServerConsent(false);
+  };
   const reset = () => { stopRequest(); setPhase("idle"); setResult(null); setRecordedAt(null); setError(null); };
   const showRecord = (record: ScreeningRecord) => {
     stopRequest();
-    if (record.text !== null) setText(record.text);
+    setText(record.text ?? "");
     setValidationMsg(null); setRecordedAt(record.at); setDeviceMessage(null);
     setResult(record.response); setError(null); setPhase(record.response ? "success" : "idle");
     if (!record.response) setHistoryMessage(`${historyTitle(record)}. Submit text for a new assessment if you wish.`);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+  const exportHistory = () => {
+    try {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(history, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `mental-ai-history-${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    } catch {
+      /* ignore */
+    }
   };
   const sortedProbs = useMemo(() => result ? Object.entries(result.primary.class_probabilities).sort((a, b) => b[1] - a[1]) : [], [result]);
   const view = result ? analysisView(result) : null;
@@ -145,6 +198,11 @@ export function Screen() {
     <>
       <main id="main" className="workspace">
         <div className="workspace__inner">
+          <PersonalizationControls onDelete={() => {
+            stopRequest(); setHistory([]); setText(""); setResult(null); setPhase("idle");
+            setCheckedIn(false); setSaveLocally(false); setServerConsent(false); setInferenceMode("on_device");
+            setCheckInRevision(n => n + 1);
+          }} />
           {!checkedIn ? (
             /* Stage one: the opening check-in. Reached only after signing in. */
             <>
@@ -159,7 +217,7 @@ export function Screen() {
                 </div>
                 <SystemStatus />
               </div>
-              <CheckInFlow initial={loadCheckIn()} onComplete={startWorkspace} />
+              <CheckInFlow key={`${account}:${checkInRevision}`} initial={loadCheckIn()} onComplete={startWorkspace} />
             </>
           ) : (
             <>
@@ -167,10 +225,9 @@ export function Screen() {
             <div>
               <h1 className="workspace__title">SCREEN</h1>
               <p className="workspace__sub">
-                Review your words, then submit them for a limited support
-                assessment. Submitted text and results are saved to your account
-                when saving succeeds. Device history is scoped to this account;
-                saving status is shown with each result.
+                Review your words, then run a limited support assessment. In
+                On-Device Private Mode, your raw text stays 100% inside your browser
+                and is never transmitted to any server.
               </p>
             </div>
             <div className="workspace__head-actions">
@@ -181,6 +238,37 @@ export function Screen() {
               </button>
             </div>
           </div>
+
+          <div style={{ display: "flex", gap: 12, marginTop: 28, marginBottom: 10, alignItems: "center", flexWrap: "wrap" }}>
+            <span className="label label--accent">Privacy Mode:</span>
+            <button
+              type="button"
+              onClick={() => selectInferenceMode("on_device")}
+              className={`status ${inferenceMode === "on_device" ? "status--ready" : ""}`}
+              style={{ cursor: "pointer", background: inferenceMode === "on_device" ? "var(--bg-raise)" : "transparent" }}
+              title="Local safety rules; trained browser classifiers unavailable"
+            >
+              Local rules (private text)
+            </button>
+            <button
+              type="button"
+              onClick={() => selectInferenceMode("server")}
+              className={`status ${inferenceMode === "server" ? "status--ready" : ""}`}
+              style={{ cursor: "pointer", background: inferenceMode === "server" ? "var(--bg-raise)" : "transparent" }}
+              title="Runs inference via the authenticated server endpoint"
+            >
+              Legacy server models
+            </button>
+          </div>
+
+          <p>Authentication, configuration and account-history requests use the network. Local analysis uploads no text, embeddings or scores.</p>
+          {inferenceMode === "server" && <label>
+            <input type="checkbox" checked={serverConsent} onChange={e => setServerConsent(e.target.checked)} />
+            I agree to send the submitted text to the authenticated server for legacy model inference and account storage. Text may be retained by the service.
+          </label>}
+          <label><input type="checkbox" checked={saveLocally} onChange={e => setSaveLocally(e.target.checked)} />
+            Save text and results on this browser for this account. Browser storage is not encrypted; clear device history to delete it.
+          </label>
 
           <form
             className="screen-form"
@@ -213,7 +301,7 @@ export function Screen() {
               </p>
               <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
                 {(validationMsg || configurationError) && <p className="screen-form__error" role="alert">{validationMsg || configurationError}</p>}
-                <button type="submit" className="cta cta--primary" disabled={phase === "analyzing" || empty || overLimit || !configuration}>
+                <button type="submit" className="cta cta--primary" disabled={phase === "analyzing" || empty || overLimit || (inferenceMode === "server" && !configuration)}>
                   Analyze <span className="cta__arrow" aria-hidden="true">→</span>
                 </button>
               </div>
@@ -224,17 +312,27 @@ export function Screen() {
             <section className="history" aria-label="Previous screenings">
               <div className="history__head">
                 <p className="label label--accent">Previous screenings</p>
-                <button
-                  type="button"
-                  className="history__clear"
-                  onClick={() => {
-                    const cleared = clearHistory();
-                    setHistory(cleared ? [] : loadHistory());
-                    setHistoryMessage(cleared ? "Device history cleared. Account history remains available after reload." : "Device history could not be cleared.");
-                  }}
-                >
-                  Clear device history
-                </button>
+                <div style={{ display: "flex", gap: 12 }}>
+                  <button
+                    type="button"
+                    className="history__clear"
+                    onClick={exportHistory}
+                    title="Export local screening records as a JSON file"
+                  >
+                    Export JSON
+                  </button>
+                  <button
+                    type="button"
+                    className="history__clear"
+                    onClick={() => {
+                      const cleared = clearHistory();
+                      setHistory(cleared ? [] : loadHistory());
+                      setHistoryMessage(cleared ? "Device history cleared. Account history remains available after reload." : "Device history could not be cleared.");
+                    }}
+                  >
+                    Clear device history
+                  </button>
+                </div>
               </div>
               <ul className="history__list">
                 {history.map((r) => (
@@ -357,7 +455,7 @@ export function Screen() {
                   <p className="results__class">{view.capabilityTitle}</p>
                   <p className="results__class-sub">
                     {view.capabilityMessage} Raw urgency model: {view.urgencyLabel}.
-                    Threshold: {formatProbability(view.urgencyThreshold)}.
+                    Threshold: {result.urgency.status === "complete" ? formatProbability(view.urgencyThreshold) : "Unavailable"}.
                   </p>
                   {view.urgencyProbability !== null ? (
                     <div className="urgency-meter" role="img" aria-label={`Raw urgency model probability ${formatProbability(view.urgencyProbability)}, threshold ${formatProbability(view.urgencyThreshold)}`}>
@@ -373,7 +471,44 @@ export function Screen() {
                   ) : <p className="urgency-meter__legend">Raw urgency probability: Unavailable</p>}
 
                 </div>
+
+                {(result as OnDevicePredictResponse).emotion?.emotions?.length > 0 && (
+                  <div className="results__cell" style={{ gridColumn: "1 / -1", marginTop: 12 }}>
+                    <p className="label label--accent">Multi-Label Emotional Cues</p>
+                    <p className="results__class-sub">
+                      {(result as OnDevicePredictResponse).emotion.clinical_distinction_advisory}
+                    </p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 10, margin: "14px 0" }}>
+                      {(result as OnDevicePredictResponse).emotion.emotions.map((em) => (
+                        <span
+                          key={em.name}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                            background: "var(--bg-raise)",
+                            border: "1px solid var(--line-2)",
+                            borderRadius: 3,
+                            padding: "6px 12px",
+                            fontSize: 13,
+                            fontFamily: "var(--font-mono)",
+                          }}
+                        >
+                          <strong style={{ textTransform: "capitalize", color: "var(--ink)" }}>{em.name}</strong>
+
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {(result as OnDevicePredictResponse).privacy_guarantee && (
+                <div className="results__caveat" style={{ borderColor: "rgba(77, 159, 255, 0.4)" }}>
+                  <p className="label label--accent">Local analysis privacy</p>
+                  <p>{(result as OnDevicePredictResponse).privacy_guarantee}</p>
+                </div>
+              )}
 
               {result.provenance_caveat && (
                 <div className="results__caveat">
@@ -399,8 +534,7 @@ export function Screen() {
 
               <div className="results__disclaimer">
                 <strong>Research screening result.</strong> These predictions are
-                generated by machine-learning models trained on public datasets
-                with proxy labels. They are not clinical diagnoses and should not
+                generated by limited local rules, or by legacy models in the explicitly selected server mode. They are not clinical diagnoses and should not
                 replace professional assessment.
               </div>
             </section>

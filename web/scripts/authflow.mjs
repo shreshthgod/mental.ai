@@ -181,6 +181,7 @@ check("reloading with the token gone signs the user out", await (async () => {
 
 // 13. Keyboard only: tab from the user field reaches the submit control.
 await page.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+await page.locator(".signin__submit").waitFor({ state: "visible" });
 check("user field takes focus on arrival",
   await page.evaluate(() => document.activeElement?.getAttribute("name")), "username");
 await page.keyboard.type(CREDS.email);
@@ -203,8 +204,8 @@ const reducedPage = await browser.newPage({
 await reducedPage.goto(`${BASE}/login`, { waitUntil: "networkidle" });
 check("field renders under reduced motion",
   await reducedPage.locator(".signin__input").count(), 2);
-// The stage is a lazy chunk, so wait for it rather than sampling on first paint.
-await reducedPage.waitForSelector(".entry__stage canvas", { timeout: 15000 });
+// Software rendering can initialize after the form is already usable.
+await reducedPage.waitForSelector(".entry__stage canvas[data-engine]", { timeout: 60000 });
 check("sculpture present under reduced motion",
   await reducedPage.locator(".entry__stage canvas").count(), 1);
 check("reduced motion picked an engine",
@@ -217,6 +218,7 @@ await reducedPage.close();
 for (const [label, width, height] of [["tablet", 900, 1000], ["mobile", 390, 844]]) {
   const p = await browser.newPage({ viewport: { width, height } });
   await p.goto(`${BASE}/login`, { waitUntil: "networkidle" });
+  await p.locator(".signin__submit").waitFor({ state: "visible" });
   check(`${label}: form visible`, await p.locator(".signin__submit").isVisible(), true);
   check(`${label}: login control present`, await p.locator(".nav__cta, .nav__burger").count() > 0, true);
   check(`${label}: brand wordmark legible`, await p.locator(".entry__word").first().isVisible(), true);

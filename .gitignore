@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 *.log
+:memory:.ses
 
 # Secrets. .env.example is the committed template and must stay tracked.
 .env
@@ -20,4 +21,8 @@ web/node_modules/
 web/dist/
 web/*.tsbuildinfo
 web/shots/
+shots/
 nltk_data/
+
+.cache/
+temp/pr1_corrections.py

@@ -53,6 +53,12 @@
      WebGL, grid) may still run the full viewport. */
   --entry-max: 1920px;
 
+  /* The entry handover: the single full-bleed presentation giving way to the
+     70/30 hero-and-credentials pair. Its duration and easing are the same pair
+     the rest of the entry uses (--ease-out-expo), so the composition reads as
+     one continuous move rather than a transition bolted onto the intro. */
+  --entry-handover: 1200ms;
+
   /* ---- Stacking ---------------------------------------------------------
      A fixed scale, so a layer's position in the composition is readable from
      its declaration rather than from an arbitrary integer. Page scale first,

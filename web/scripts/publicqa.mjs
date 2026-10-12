@@ -36,7 +36,10 @@ try {
       if (route==='/' || route==='/login') assert.equal(await page.locator('.signin__input').count(),2);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1));
       report.checks.push({route,width,status:'PASSED'});
-      if (route==='/about' && width===1440) await page.screenshot({path:new URL('../../reports/browser-built-about.png',import.meta.url).pathname});
+      if (route==='/about' && width===1440) {
+        fs.mkdirSync(new URL('../shots/',import.meta.url),{recursive:true});
+        await page.screenshot({path:new URL('../shots/integration-built-about.png',import.meta.url).pathname});
+      }
     }
     await page.goto(base+'/screen',{waitUntil:'networkidle'});
     assert.equal(new URL(page.url()).pathname,'/login');
@@ -56,10 +59,12 @@ try {
       elements:[...document.querySelectorAll('#main *')].map(element=>({tag:element.tagName,class:element.className,
         right:element.getBoundingClientRect().right,width:element.getBoundingClientRect().width,scroll:element.scrollWidth}))
         .filter(element=>element.right>window.innerWidth+1).slice(0,30)}));
-    await activePage.screenshot({path:new URL('../../reports/browser-built-failure.png',import.meta.url).pathname});
+    fs.mkdirSync(new URL('../shots/',import.meta.url),{recursive:true});
+    await activePage.screenshot({path:new URL('../shots/integration-built-failure.png',import.meta.url).pathname});
   }
   throw error;
 } finally {
   await browser.close();
-  fs.writeFileSync(new URL('../../reports/browser-built-routes.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+  fs.mkdirSync(new URL('../shots/',import.meta.url),{recursive:true});
+  fs.writeFileSync(process.env.MENTAL_AI_BROWSER_REPORT ?? new URL('../shots/integration-built-routes.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
 }

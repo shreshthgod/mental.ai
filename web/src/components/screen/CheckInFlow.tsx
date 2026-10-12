@@ -1,20 +1,7 @@
-/**
- * Opening check-in for the screening workspace.
- *
- * Four short prompts, one screen each, assembled into a single plain-text
- * check-in and handed to the workspace as prefill. Nothing is analysed here and
- * nothing is transmitted: the answers only reach this browser's storage until
- * the user explicitly submits text to POST /predict.
- *
- * This is the entry point of the screening flow, so it runs behind
- * authentication. Asking someone to describe how they feel is the first real
- * task of the product, and it belongs after sign-in rather than in front of it.
- *
- * Copy and structure are carried over unchanged from the flow that used to sit
- * inside the sign-in page; only its home and its completion callback changed.
- */
+/** Collect a local check-in; persistent storage requires a separate choice. */
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { checkInToText, saveCheckIn } from "../../lib/checkin";
+import { checkInToText, saveCheckIn, clearCheckIn } from "../../lib/checkin";
+import { generateWelcomeGreeting, clearRememberedThemes, type WelcomeGreeting } from "../../lib/personalization";
 
 type StepId = "greeting" | "feeling" | "weighing" | "today";
 
@@ -22,7 +9,6 @@ const STEPS: StepId[] = ["greeting", "feeling", "weighing", "today"];
 
 interface Step {
   label: string;
-  /** Compact form, used to label each answer in the recap. */
   short: string;
   prompt: string;
   placeholder: string;
@@ -58,15 +44,16 @@ const STEP_COPY: Record<StepId, Step> = {
 };
 
 interface Props {
-  /** Called with the flattened check-in text once the last step is submitted. */
   onComplete: (text: string, answers: Record<string, string>) => void;
-  /** Answers recovered from a previous visit, used to prefill the fields. */
   initial?: Record<string, string> | null;
+  userName?: string;
 }
 
-export function CheckInFlow({ onComplete, initial }: Props) {
+export function CheckInFlow({ onComplete, initial, userName }: Props) {
+  const [remember, setRemember] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(initial ?? {});
+  const [greeting, setGreeting] = useState<WelcomeGreeting>(() => generateWelcomeGreeting(userName));
   const headingRef = useRef<HTMLParagraphElement>(null);
 
   const stepId = STEPS[stepIndex];
@@ -79,10 +66,21 @@ export function CheckInFlow({ onComplete, initial }: Props) {
     headingRef.current?.focus();
   }, [stepIndex]);
 
+  useEffect(() => {
+    const refresh = () => setGreeting(generateWelcomeGreeting(userName));
+    window.addEventListener("mental-personalization-change", refresh);
+    return () => window.removeEventListener("mental-personalization-change", refresh);
+  }, [userName]);
+
   const setAnswer = (value: string) =>
     setAnswers((prev) => ({ ...prev, [stepId]: value }));
 
   const goBack = () => setStepIndex((i) => Math.max(0, i - 1));
+
+  const handleStartFresh = () => {
+    clearRememberedThemes();
+    setGreeting(generateWelcomeGreeting(userName));
+  };
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
@@ -90,7 +88,8 @@ export function CheckInFlow({ onComplete, initial }: Props) {
       setStepIndex((i) => Math.min(STEPS.length - 1, i + 1));
       return;
     }
-    saveCheckIn(answers);
+    if (remember) saveCheckIn(answers);
+    else clearCheckIn();
     onComplete(checkInToText(answers), answers);
   };
 
@@ -105,7 +104,50 @@ export function CheckInFlow({ onComplete, initial }: Props) {
         </p>
       </div>
 
+      {stepIndex === 0 && (
+        <aside
+          style={{
+            marginBottom: 28,
+            padding: "18px 20px",
+            background: "var(--bg-raise)",
+            border: "1px solid var(--line-2)",
+            borderRadius: 3,
+            lineHeight: 1.6,
+          }}
+          aria-label="Welcome reflection"
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 10 }}>
+            <p className="label label--accent" style={{ margin: 0 }}>
+              {greeting.headline}
+            </p>
+            {greeting.hasPastContext && (
+              <button
+                type="button"
+                onClick={handleStartFresh}
+                style={{
+                  background: "none",
+                  border: "none",
+                  color: "var(--ink-3)",
+                  fontSize: 11,
+                  fontFamily: "var(--font-mono)",
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  padding: 0,
+                }}
+                title="Clears remembered context from previous visits"
+              >
+                Start completely fresh today
+              </button>
+            )}
+          </div>
+          <p style={{ margin: "10px 0 0", color: "var(--ink-2)", fontSize: 14.5 }}>
+            {greeting.subtext}
+          </p>
+        </aside>
+      )}
+
       <form className="checkin__form" onSubmit={submit}>
+        <label><input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} /> Save check-in answers on this browser for this account. Storage is not encrypted.</label>
         <div className="checkin__field">
           <span className="label">{copy.label}</span>
           <p className="checkin__prompt" ref={headingRef} tabIndex={-1}>

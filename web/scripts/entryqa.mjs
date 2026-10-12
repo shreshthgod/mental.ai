@@ -20,6 +20,7 @@ function check(label, actual, expected) {
   results.push(ok);
   console.log(`${ok ? "pass" : "FAIL"}  ${label}${ok ? "" : ` (got ${JSON.stringify(actual)}, want ${JSON.stringify(expected)})`}`);
 }
+const near = (a, b, tol = 1.5) => Math.abs(a - b) <= tol;
 
 const DESKTOP = [
   [1920, 1080],
@@ -36,7 +37,7 @@ const MOBILE = [[430, 932], [390, 844], [412, 915], [360, 800]];
 
 const browser = await launchChromium();
 
-// ---- 1. Composition at every required size ------------------------------
+// Composition at every required size
 for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   const page = await browser.newPage({ viewport: { width: w, height: h } });
   const errors = [];
@@ -47,8 +48,10 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
 
   await page.goto(BASE, { waitUntil: "networkidle" });
   await page.waitForSelector(".signin__submit", { timeout: 30000 });
-  // Let the entrance finish so measurements are of the settled layout.
-  await page.waitForTimeout(2200);
+  // Let the whole entrance finish so measurements are of the settled layout:
+  // the intro assembles to ~3140ms and the hand-over to the 70/30 composition
+  // then runs for --entry-handover (1200ms), so 5s clears both with margin.
+  await page.waitForTimeout(6000);
 
   const m = await page.evaluate(() => {
     const box = (sel) => {
@@ -161,8 +164,71 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 2. The greeting stage, inside the composition ----------------------
+// Opening motion and layering are covered by reviewqa.mjs.
+
+// Reduced motion: the composed state, without the travel
 {
+  const ctx = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    reducedMotion: "reduce",
+  });
+  const page = await ctx.newPage();
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  await page.waitForSelector(".signin__submit", { timeout: 30000 });
+  await page.waitForTimeout(4600);
+
+  const m = await page.evaluate(() => {
+    const box = (sel) => {
+      const node = document.querySelector(sel);
+      if (!node) return null;
+      const r = node.getBoundingClientRect();
+      return { x: r.x, w: r.width };
+    };
+    return {
+      split: document.querySelector(".entry").className.includes("entry--split"),
+      hero: box(".hero-stage"),
+      word: box(".entry__word-plane--back .entry__word"),
+      // The grid and the word must not be mid-travel when reduced motion is on.
+      gridTransition: getComputedStyle(document.querySelector(".entry__main")).transitionDuration,
+      wordTransition: getComputedStyle(document.querySelector(".entry__word")).transitionDuration,
+      submit: !!document.querySelector(".signin__submit")?.offsetParent,
+    };
+  });
+
+  check("reduced motion still reaches the split state", m.split, true);
+  check("reduced motion: no transform travel on the grid",
+    m.gridTransition.split(",").every((d) => parseFloat(d) === 0), true);
+  check("reduced motion: no transform travel on the word",
+    m.wordTransition.split(",").every((d) => parseFloat(d) === 0), true);
+  check("reduced motion: wordmark still on the stage edge", near(m.word.x, m.hero.x, 2), true);
+  check("reduced motion: form still usable", m.submit, true);
+  await page.screenshot({ path: "shots/entry-handover-reduced.png" });
+  await page.close();
+}
+
+// Return visit: the composed state directly, no replay
+{
+  const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  await page.goto(BASE, { waitUntil: "networkidle" });
+  // Same session, so the intro key is already set: this is what a returning
+  // visitor inside one browsing session sees.
+  await page.reload({ waitUntil: "networkidle" });
+  await page.waitForSelector(".signin__submit", { timeout: 30000 });
+  await page.waitForTimeout(900);
+
+  const m = await page.evaluate(() => ({
+    split: document.querySelector(".entry").className.includes("entry--split"),
+    visible: getComputedStyle(document.querySelector(".auth-stage")).visibility,
+  }));
+  check("return visit reaches the composed state quickly", m.split, true);
+  check("return visit reveals the credentials", m.visible, "visible");
+  await page.close();
+}
+
+// The greeting stage, inside the composition
+if (!CREDS.email || !CREDS.password) {
+  console.log("skip  greeting stage QA (no MENTAL_AI_QA_EMAIL / SUPABASE_QA_EMAIL configured)");
+} else {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   // Hold the transition open so the stage can actually be captured.
   await page.addInitScript(() => {
@@ -195,7 +261,7 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 3. WebGL unavailable: the form must still work ----------------------
+// WebGL unavailable: the form must still work
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await ctx.addInitScript(() => {
@@ -223,17 +289,21 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   // what must be absent is an uncaught exception taking the page down.
   check("no WebGL: no uncaught errors", errors, []);
 
-  await page.fill(".signin__input >> nth=0", CREDS.email);
-  await page.fill(".signin__input >> nth=1", CREDS.password);
-  await page.click(".signin__submit");
-  await page.waitForSelector(".entry__greeting", { timeout: 20000 });
-  check("no WebGL: sign-in still completes", true, true);
+  if (CREDS.email && CREDS.password) {
+    await page.fill(".signin__input >> nth=0", CREDS.email);
+    await page.fill(".signin__input >> nth=1", CREDS.password);
+    await page.click(".signin__submit");
+    await page.waitForSelector(".entry__greeting", { timeout: 20000 });
+    check("no WebGL: sign-in still completes", true, true);
+  }
   await page.screenshot({ path: "shots/entry-no-webgl.png" });
   await ctx.close();
 }
 
-// ---- 4. Return state for an authenticated visitor ------------------------
-{
+// Return state for an authenticated visitor
+if (!CREDS.email || !CREDS.password) {
+  console.log("skip  authenticated visitor QA (no MENTAL_AI_QA_EMAIL / SUPABASE_QA_EMAIL configured)");
+} else {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await seedSession(page, BASE);
   await page.goto(BASE, { waitUntil: "networkidle" });
@@ -246,7 +316,7 @@ for (const [w, h] of [...DESKTOP, ...TABLET, ...MOBILE]) {
   await page.close();
 }
 
-// ---- 5. Resize without a reload, and remount -----------------------------
+// Resize without a reload, and remount
 {
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   await page.goto(BASE, { waitUntil: "networkidle" });

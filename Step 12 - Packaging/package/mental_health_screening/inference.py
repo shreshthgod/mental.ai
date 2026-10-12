@@ -38,6 +38,7 @@ import numpy as np
 from mental_health_screening.safety import POLICY_VERSION, evaluate as evaluate_safety, support_action
 import scipy.sparse as sp
 from .fusion import fuse
+from .emotion import EmotionRecognizer, EmotionAnalysis
 
 def clean_and_lemmatize(raw_text):
     from .preprocessing import clean_and_lemmatize as process
@@ -128,6 +129,11 @@ class MentalHealthScreener:
                 model_hashes[filename] = None
         self.model_version = "sha256:" + hashlib.sha256(
             json.dumps(model_hashes, sort_keys=True).encode()).hexdigest()
+        self._emotion_recognizer = EmotionRecognizer(self._feature_options.get("emotion_lexicon"))
+
+    def analyze_emotions(self, text: str) -> EmotionAnalysis:
+        """Analyze multi-label emotional cues separated from clinical conditions."""
+        return self._emotion_recognizer.analyze(text)
 
     def _configured_urgency_threshold(self) -> float:
         """

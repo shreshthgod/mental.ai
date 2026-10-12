@@ -11,7 +11,7 @@ const work = fs.mkdtempSync(path.join(os.tmpdir(), "mental-ai-contract-"));
 const require = createRequire(import.meta.url);
 let checked = 0;
 try {
-  fs.symlinkSync(path.resolve("node_modules"), path.join(work, "node_modules"));
+  fs.symlinkSync(path.resolve("node_modules"), path.join(work, "node_modules"), process.platform === "win32" ? "junction" : "dir");
   fs.writeFileSync(path.join(work, "supabase.js"), "exports.supabase = null; exports.supabaseConfigured = false;\n");
   for (const name of ["analysisView", "api", "privateStore", "history", "checkin", "auth"]) {
     // Replace only Vite's environment object for this isolated Node test.

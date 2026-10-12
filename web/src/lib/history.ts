@@ -59,6 +59,12 @@ export function saveScreening(text: string, response: PredictResponse): { record
   return { records, savedToDevice: persist(records) };
 }
 
+/** Combine visit-only account records and consented device records without persisting. */
+export function mergeHistoryRecords(...groups: ScreeningRecord[][]): ScreeningRecord[] {
+  const byId = new Map(groups.flat().map(record => [record.id, record]));
+  return [...byId.values()].sort((a, b) => b.at - a.at).slice(0, MAX_ENTRIES);
+}
+
 /** Merge only history returned for the current verified account, preserving exact local input. */
 export function mergeAccountHistory(rows: ScreeningSummary[]): ScreeningRecord[] {
   const local = loadHistory();
@@ -76,9 +82,7 @@ export function mergeAccountHistory(rows: ScreeningSummary[]): ScreeningRecord[]
     }
     byId.set(row.id, { id: row.id, at: Date.parse(row.created_at), text: original?.text ?? null, response, assessment });
   }
-  const records = [...byId.values()].sort((a, b) => b.at - a.at).slice(0, MAX_ENTRIES);
-  persist(records);
-  return records;
+  return mergeHistoryRecords([...byId.values()]);
 }
 
 export function historyTitle(record: ScreeningRecord): string {
